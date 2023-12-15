@@ -10,6 +10,12 @@ export default function Home() {
       <header className="fixed inset-4 z-10 text-white flex justify-between h-fit">
         <h2>iOverland</h2>
         <div className="flex gap-4 items-center">
+          <Link
+            href={`/builds/me`}
+            className="text-foreground hover:text-foreground/70"
+          >
+            My builds
+          </Link>
           <SignedIn>
             <Link href="/build/new">
               <Button>New build</Button>
