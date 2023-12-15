@@ -5,11 +5,13 @@ import (
 	"os"
 	"strings"
 
+	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/joho/godotenv"
 )
 
 var ClerkClient clerk.Client
+var BunnyClient *bunnystorage.Client
 
 func GoDotEnvVariable(key string) string {
 
@@ -18,6 +20,10 @@ func GoDotEnvVariable(key string) string {
 
 	if err != nil {
 		log.Fatalf("Error loading .env file")
+	}
+
+	if os.Getenv(key) == "" {
+		log.Fatal("Environment variable not set for key: " + key)
 	}
 
 	return os.Getenv(key)

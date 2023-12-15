@@ -23,12 +23,24 @@ import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import {
   Modification,
+  NewBuild,
   NewBuildSchemaWithoutUserId,
   Trip,
   newBuildSchema,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
 import { useToast } from "@/components/ui/use-toast";
+import { FilePond, registerPlugin } from "react-filepond";
+
+// Import FilePond styles
+
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import { Label } from "@/components/ui/label";
+import { FilePondFile } from "filepond";
+
+// Register the plugins
+registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const Index = () => {
   const { toast } = useToast();
@@ -44,6 +56,8 @@ const Index = () => {
   const [buildLinks, setBuildLinks] = useState<{
     [key: string]: string;
   }>({});
+  const [banner, setBanner] = useState<FilePondFile[]>([]);
+  const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
   const form = useForm({
     resolver: zodResolver(newBuildSchema.omit({ user_id: true })),
@@ -147,24 +161,40 @@ const Index = () => {
       tripsToArray.push(data.trips[key]);
     }
 
-    createBuild.mutate(
-      {
-        ...data,
-        trips: tripsToArray,
-        links: linksToArray,
-        modifications: modificationsToArray,
-        user_id: user.id,
+    interface Payload extends NewBuild {
+      banner?: string;
+      photos?: string[];
+    }
+
+    const payload: Payload = {
+      ...data,
+      trips: tripsToArray,
+      links: linksToArray,
+      modifications: modificationsToArray,
+      user_id: user.id,
+    };
+
+    console.log(banner[0].serverId);
+
+    if (banner[0]) {
+      payload.banner = banner[0].serverId;
+    }
+
+    if (photos.length !== 0) {
+      payload.photos = photos.map((d) => d.serverId);
+    }
+
+    console.log(payload);
+
+    createBuild.mutate(payload, {
+      onSuccess: () => {
+        toast({
+          variant: "success",
+          title: "Build created",
+          description: "Your build has been created. Nice!",
+        });
       },
-      {
-        onSuccess: () => {
-          toast({
-            variant: "success",
-            title: "Build created",
-            description: "Your build has been created. Nice!",
-          });
-        },
-      }
-    );
+    });
   };
 
   return (
@@ -195,6 +225,31 @@ const Index = () => {
             onSubmit={form.handleSubmit(submitHandler, console.log)}
           >
             <h2 className="font-serif text-2xl">The Basics</h2>
+            <div className="flex flex-col">
+              <Label className="mb-2">Banner</Label>
+              <FilePond
+                onupdatefiles={setBanner}
+                allowMultiple={false}
+                maxFiles={1}
+                server={{
+                  url: "http://localhost:8000/api/upload",
+
+                  process: {
+                    url: "/process",
+                    method: "POST",
+                    withCredentials: true,
+                  },
+                  revert: {
+                    url: "/revert",
+                    method: "POST",
+                    withCredentials: true,
+                  },
+                }}
+                name="file"
+                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+              />
+            </div>
             <FormField
               name="name"
               render={({ field }) => (
@@ -482,6 +537,32 @@ const Index = () => {
                 Add link
               </Button>
             </section>
+
+            <div className="flex flex-col">
+              <Label className="mb-2">Photos</Label>
+              <FilePond
+                onupdatefiles={setPhotos}
+                allowMultiple={true}
+                maxFiles={5}
+                server={{
+                  url: "http://localhost:8000/api/upload",
+
+                  process: {
+                    url: "/process",
+                    method: "POST",
+                    withCredentials: true,
+                  },
+                  revert: {
+                    url: "/revert",
+                    method: "POST",
+                    withCredentials: true,
+                  },
+                }}
+                name="file"
+                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+              />
+            </div>
 
             <Separator className="my-4" />
             <Button>Save build</Button>

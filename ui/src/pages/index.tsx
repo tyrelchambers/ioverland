@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 export default function Home() {
-  const { isSignedIn, isLoaded } = useUser();
-
   return (
     <main>
       <header className="fixed inset-4 z-10 text-white flex justify-between h-fit">

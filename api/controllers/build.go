@@ -43,6 +43,8 @@ func Build(newBuild build.BuildDto) (build.BuildDto, error) {
 		Trips:         trips,
 		Links:         links,
 		UserId:        newBuild.UserId,
+		Banner:        newBuild.Banner,
+		Photos:        newBuild.Photos,
 	}
 
 	err := buildEntity.Create(db.Client)

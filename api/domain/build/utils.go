@@ -40,5 +40,8 @@ func (b *Build) ToDTO() BuildDto {
 		Vehicle:       vehicle,
 		Modifications: modifications,
 		Private:       b.Private,
+		UserId:        b.UserId,
+		Banner:        b.Banner,
+		Photos:        b.Photos,
 	}
 }

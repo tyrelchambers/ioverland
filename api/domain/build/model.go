@@ -13,6 +13,8 @@ type Build struct {
 	Modifications []Modification
 	Private       bool
 	UserId        string
+	Banner        string
+	Photos        pq.StringArray `gorm:"type:text[]"`
 }
 
 type Trip struct {
@@ -53,6 +55,8 @@ type BuildDto struct {
 	Modifications []ModificationDto `json:"modifications"`
 	Private       bool              `json:"private"`
 	UserId        string            `json:"user_id"`
+	Banner        string            `json:"banner"`
+	Photos        pq.StringArray    `json:"photos"`
 }
 
 type TripDto struct {

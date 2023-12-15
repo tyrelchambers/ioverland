@@ -4,6 +4,9 @@ import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Carter_One, Mulish } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+
 export const headingFont = Carter_One({
   weight: "400",
   subsets: ["latin"],
