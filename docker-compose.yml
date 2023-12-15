@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  db:
+    container_name: overland_db
+    image: postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5434:5432"
+networks:
+  default:
+    name: overland
+volumes:
+  postgres_data:
