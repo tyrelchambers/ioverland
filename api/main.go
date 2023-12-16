@@ -67,6 +67,8 @@ func main() {
 	upload := api.Group("/upload")
 
 	build.POST("/", routes.CreateBuild)
+	build.GET("/:id", routes.GetById)
+	build.PUT("/:id", routes.Update)
 
 	builds.GET("/user/:user_id", routes.GetBuilds)
 

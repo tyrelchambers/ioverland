@@ -14,7 +14,7 @@ func CreateBuild(c echo.Context) error {
 		return err
 	}
 
-	var reqBody build.BuildDto
+	var reqBody build.Build
 
 	if err := c.Bind(&reqBody); err != nil {
 		return err
@@ -41,4 +41,34 @@ func GetBuilds(c echo.Context) error {
 	}
 
 	return c.JSON(200, builds)
+}
+
+func GetById(c echo.Context) error {
+	id := c.Param("id")
+
+	build, err := controllers.GetById(id)
+
+	if err != nil {
+		return echo.NewHTTPError(404, "Build not found")
+	}
+
+	return c.JSON(200, build)
+}
+
+func Update(c echo.Context) error {
+	id := c.Param("id")
+
+	var reqBody build.Build
+
+	if err := c.Bind(&reqBody); err != nil {
+		return err
+	}
+
+	updated_build, err := controllers.UpdateBuild(id, reqBody)
+
+	if err != nil {
+		return echo.NewHTTPError(500, err)
+	}
+
+	return c.JSON(200, updated_build)
 }

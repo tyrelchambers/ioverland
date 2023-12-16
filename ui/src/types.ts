@@ -3,7 +3,7 @@ import { z } from "zod";
 const trip = z.object({
   name: z.string().optional(),
   year: z.string().optional(),
-  build_id: z.number().optional(),
+  build_id: z.union([z.string(), z.number()]).optional(),
   uuid: z.string().optional(),
   id: z.number().optional(),
 });
@@ -15,6 +15,9 @@ const modification = z.object({
   subcategory: z.string().optional(),
   name: z.string().optional(),
   price: z.string().optional(),
+  build_id: z.union([z.string(), z.number()]).optional(),
+  uuid: z.string().optional(),
+  id: z.number().optional(),
 });
 export type Modification = z.infer<typeof modification>;
 

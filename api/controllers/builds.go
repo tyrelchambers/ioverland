@@ -5,8 +5,8 @@ import (
 	"api/domain/build"
 )
 
-func GetUserBuilds(user_id string) ([]build.BuildDto, error) {
-	var buildsDto []build.BuildDto
+func GetUserBuilds(user_id string) ([]build.Build, error) {
+	var buildsDto []build.Build
 	builds, err := build.AllByUser(db.Client, user_id)
 
 	if err != nil {
@@ -14,7 +14,7 @@ func GetUserBuilds(user_id string) ([]build.BuildDto, error) {
 	}
 
 	for _, v := range builds {
-		buildsDto = append(buildsDto, v.ToDTO())
+		buildsDto = append(buildsDto, v)
 	}
 
 	return buildsDto, nil

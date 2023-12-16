@@ -5,15 +5,16 @@ import (
 	"api/domain/build"
 )
 
-func Build(newBuild build.BuildDto) (build.BuildDto, error) {
+func Build(newBuild build.Build) (build.Build, error) {
 	modifications := []build.Modification{}
 	links := []string{}
 	trips := []build.Trip{}
 
 	for _, v := range newBuild.Trips {
 		trips = append(trips, build.Trip{
-			Name: v.Name,
-			Year: v.Year,
+			Name:    v.Name,
+			Year:    v.Year,
+			BuildId: v.BuildId,
 		})
 	}
 
@@ -50,8 +51,30 @@ func Build(newBuild build.BuildDto) (build.BuildDto, error) {
 	err := buildEntity.Create(db.Client)
 
 	if err != nil {
-		return build.BuildDto{}, err
+		return build.Build{}, err
 	}
 
-	return buildEntity.ToDTO(), nil
+	return *buildEntity, nil
+}
+
+func GetById(id string) (build.Build, error) {
+	buildEntity, err := build.GetById(db.Client, id)
+
+	if err != nil {
+		return build.Build{}, err
+	}
+
+	return buildEntity, nil
+
+}
+
+func UpdateBuild(id string, data build.Build) (build.Build, error) {
+
+	err := data.Update(db.Client)
+
+	if err != nil {
+		return build.Build{}, err
+	}
+
+	return data, nil
 }

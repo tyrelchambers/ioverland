@@ -44,6 +44,7 @@ const Edit = () => {
   }>({});
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
+
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
   });
@@ -79,9 +80,13 @@ const Edit = () => {
         }
       }
 
-      setBuildLinks(formattedData.links);
-      setModifications(formattedData.modifications);
-      setTripsInput(formattedData.trips);
+      setBuildLinks(formattedData.links as { [key: string]: string });
+      setModifications(
+        formattedData.modifications as {
+          [key: string]: Modification;
+        }
+      );
+      setTripsInput(formattedData.trips as { [key: string]: Trip });
 
       form.reset(formattedData);
     }
@@ -95,6 +100,7 @@ const Edit = () => {
     trips[id] = {
       name: "",
       year: "0",
+      build_id: String(getById.data?.id),
     };
 
     setTripsInput(trips);
@@ -117,6 +123,7 @@ const Edit = () => {
       subcategory: "",
       name: "",
       price: "0",
+      build_id: String(getById.data?.id),
     };
 
     setModifications(mods);
@@ -164,11 +171,17 @@ const Edit = () => {
       linksToArray.push(data.links[key]);
     }
     for (const key in data.modifications) {
-      modificationsToArray.push(data.modifications[key]);
+      modificationsToArray.push({
+        ...data.modifications[key],
+        build_id: Number(getById.data?.id),
+      });
     }
 
     for (const key in data.trips) {
-      tripsToArray.push(data.trips[key]);
+      tripsToArray.push({
+        ...data.trips[key],
+        build_id: Number(getById.data?.id),
+      });
     }
 
     interface Payload extends Build {
@@ -178,6 +191,7 @@ const Edit = () => {
 
     const payload: Payload = {
       ...data,
+      id: getById.data?.id,
       trips: tripsToArray,
       links: linksToArray,
       modifications: modificationsToArray,
@@ -207,7 +221,7 @@ const Edit = () => {
     <div>
       <Form {...form}>
         <form
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-4 max-w-2xl mx-auto"
           onSubmit={form.handleSubmit(submitHandler, console.log)}
         >
           <FormField

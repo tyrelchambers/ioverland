@@ -3,76 +3,42 @@ package build
 import "github.com/lib/pq"
 
 type Build struct {
-	ID            int `gorm:"primaryKey"`
-	Name          string
-	Description   string
-	Budget        string
-	Trips         []Trip
-	Links         pq.StringArray `gorm:"type:text[]"`
-	Vehicle       Vehicle
-	Modifications []Modification
-	Private       bool
-	UserId        string
-	Banner        string
-	Photos        pq.StringArray `gorm:"type:text[]"`
+	ID            int            `gorm:"primaryKey" json:"id"`
+	Uuid          string         `gorm:"type:uuid;default:gen_random_uuid()" json:"uuid"`
+	Name          string         `gorm:"not null" json:"name"`
+	Description   string         `gorm:"type:varchar(1000)" json:"description"`
+	Budget        string         `gorm:"type:varchar(255)" json:"budget"`
+	Trips         []Trip         `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE" json:"trips"`
+	Links         pq.StringArray `gorm:"type:text[]" json:"links"`
+	Vehicle       Vehicle        `gorm:"embedded;embeddedPrefix:vehicle_;" json:"vehicle"`
+	Modifications []Modification `gorm:"constraint:OnUpdate:CASCADE;" json:"modifications"`
+	Private       bool           `gorm:"default:false" json:"private"`
+	UserId        string         `gorm:"not null" json:"user_id"`
+	Banner        string         `json:"banner"`
+	Photos        pq.StringArray `gorm:"type:text[]" json:"photos"`
 }
 
 type Trip struct {
-	ID      int `gorm:"primaryKey"`
-	Name    string
-	Year    string
-	BuildId int
-	Build   Build `gorm:"foreignKey:BuildId;references:ID"`
+	ID      int    `gorm:"primaryKey" json:"id"`
+	Uuid    string `gorm:"type:uuid;default:gen_random_uuid()" json:"uuid"`
+	Name    string `gorm:"type:varchar(255)" json:"name"`
+	Year    string `gorm:"type:varchar(255)" json:"year"`
+	BuildId int    `json:"build_id"`
+	Build   Build  `gorm:"foreignKey:BuildId;references:ID" json:"-"`
 }
 
 type Vehicle struct {
-	ID      int `gorm:"primaryKey"`
-	Model   string
-	Make    string
-	Year    string
-	BuildId int
+	Model string `gorm:"type:varchar(255)" json:"model"`
+	Make  string `gorm:"type:varchar(255)" json:"make"`
+	Year  string `gorm:"type:varchar(255)" json:"year"`
 }
 
 type Modification struct {
-	ID          int `gorm:"primaryKey"`
-	Category    string
-	Subcategory string
-	Name        string
-	Price       string
-	BuildId     int
-	Build       Build `gorm:"foreignKey:BuildId;references:ID"`
-}
-
-// DTOS ----
-
-type BuildDto struct {
-	Name          string            `json:"name"`
-	Description   string            `json:"description"`
-	Budget        string            `json:"budget"`
-	Trips         []TripDto         `json:"trips"`
-	Links         pq.StringArray    `json:"links"`
-	Vehicle       VehicleDto        `json:"vehicle"`
-	Modifications []ModificationDto `json:"modifications"`
-	Private       bool              `json:"private"`
-	UserId        string            `json:"user_id"`
-	Banner        string            `json:"banner"`
-	Photos        pq.StringArray    `json:"photos"`
-}
-
-type TripDto struct {
-	Name string `json:"name"`
-	Year string `json:"year"`
-}
-
-type VehicleDto struct {
-	Model string `json:"model"`
-	Make  string `json:"make"`
-	Year  string `json:"year"`
-}
-
-type ModificationDto struct {
-	Category    string `json:"category"`
-	Subcategory string `json:"subcategory"`
-	Name        string `json:"name"`
-	Price       string `json:"price"`
+	ID          int    `gorm:"primaryKey" json:"id"`
+	Category    string `gorm:"type:varchar(255)" json:"category"`
+	Subcategory string `gorm:"type:varchar(255)" json:"subcategory"`
+	Name        string `gorm:"type:varchar(255)" json:"name"`
+	Price       string `gorm:"type:varchar(255)" json:"price"`
+	BuildId     int    `json:"build_id"`
+	Build       Build  `gorm:"foreignKey:BuildId;references:ID" json:"build"`
 }
