@@ -1,10 +1,11 @@
+import { Build } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export const useBuilds = (id: string | undefined) => {
   const query = useQuery({
     queryKey: ["build", id],
-    queryFn: () => {
+    queryFn: (): Promise<Build[]> => {
       return axios
         .get(`http://localhost:8000/api/builds/user/${id}`, {
           withCredentials: true,

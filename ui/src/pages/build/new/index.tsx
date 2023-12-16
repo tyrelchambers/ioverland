@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import {
   Modification,
-  NewBuild,
+  Build,
   NewBuildSchemaWithoutUserId,
   Trip,
   newBuildSchema,
@@ -158,10 +158,12 @@ const Index = () => {
     }
 
     for (const key in data.trips) {
-      tripsToArray.push(data.trips[key]);
+      tripsToArray.push({
+        ...data.trips[key],
+      });
     }
 
-    interface Payload extends NewBuild {
+    interface Payload extends Build {
       banner?: string;
       photos?: string[];
     }
@@ -174,8 +176,6 @@ const Index = () => {
       user_id: user.id,
     };
 
-    console.log(banner[0].serverId);
-
     if (banner[0]) {
       payload.banner = banner[0].serverId;
     }
@@ -183,8 +183,6 @@ const Index = () => {
     if (photos.length !== 0) {
       payload.photos = photos.map((d) => d.serverId);
     }
-
-    console.log(payload);
 
     createBuild.mutate(payload, {
       onSuccess: () => {

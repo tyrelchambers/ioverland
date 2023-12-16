@@ -1,15 +1,35 @@
-import { NewBuild } from "@/types";
-import { useMutation } from "@tanstack/react-query";
+import { Build } from "@/types";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 
-export const useBuild = () => {
+export const useBuild = (id?: string) => {
+  const getById = useQuery({
+    queryKey: ["build", id],
+    queryFn: (): Promise<Build> => {
+      return axios
+        .get(`http://localhost:8000/api/build/${id}`, {
+          withCredentials: true,
+        })
+        .then((res) => res.data as Build);
+    },
+    enabled: !!id,
+  });
+
   const createBuild = useMutation({
-    mutationFn: (data: NewBuild) => {
+    mutationFn: (data: Build) => {
       return axios.post("http://localhost:8000/api/build/", data, {
         withCredentials: true,
       });
     },
   });
 
-  return { createBuild };
+  const updateBuild = useMutation({
+    mutationFn: (data: Build) => {
+      return axios.put(`http://localhost:8000/api/build/${id}`, data, {
+        withCredentials: true,
+      });
+    },
+  });
+
+  return { createBuild, getById, update: updateBuild };
 };

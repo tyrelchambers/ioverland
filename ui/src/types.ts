@@ -3,6 +3,9 @@ import { z } from "zod";
 const trip = z.object({
   name: z.string().optional(),
   year: z.string().optional(),
+  build_id: z.number().optional(),
+  uuid: z.string().optional(),
+  id: z.number().optional(),
 });
 
 export type Trip = z.infer<typeof trip>;
@@ -16,6 +19,7 @@ const modification = z.object({
 export type Modification = z.infer<typeof modification>;
 
 export const newBuildSchema = z.object({
+  uuid: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
   budget: z.string().optional(),
@@ -33,11 +37,11 @@ export const newBuildSchema = z.object({
   user_id: z.string(),
 });
 
-type NewBuildSchema = z.infer<typeof newBuildSchema>;
+export type NewBuildSchema = z.infer<typeof newBuildSchema>;
 
 export type NewBuildSchemaWithoutUserId = Omit<NewBuildSchema, "user_id">;
 
-const newBuild = z.object({
+export const buildSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   budget: z.string().optional(),
@@ -53,6 +57,10 @@ const newBuild = z.object({
   modifications: z.array(modification).optional(),
   private: z.boolean(),
   user_id: z.string(),
+  photos: z.array(z.string()).optional(),
+  banner: z.string().optional(),
+  id: z.string().optional(),
+  uuid: z.string().optional(),
 });
 
-export type NewBuild = z.infer<typeof newBuild>;
+export type Build = z.infer<typeof buildSchema>;
