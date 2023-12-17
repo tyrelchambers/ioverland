@@ -17,7 +17,6 @@ import {
 import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { createId } from "@paralleldrive/cuid2";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
@@ -30,14 +29,9 @@ import {
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
 import { useToast } from "@/components/ui/use-toast";
-import { FilePond, registerPlugin } from "react-filepond";
 
-// Import FilePond styles
-
-import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { Label } from "@/components/ui/label";
-import { FilePondFile } from "filepond";
+import { FilePondFile, FileStatus } from "filepond";
 import Uploader from "@/components/Uploader";
 import {
   formattedTrips,
@@ -47,9 +41,7 @@ import {
   removeModification,
   removeLink,
 } from "@/lib/form/helpers";
-
-// Register the plugins
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
+import { isValid } from "zod";
 
 const Index = () => {
   const { toast } = useToast();
@@ -69,7 +61,7 @@ const Index = () => {
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
   const form = useForm({
-    resolver: zodResolver(newBuildSchema.omit({ user_id: true })),
+    resolver: zodResolver(newBuildSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -167,11 +159,11 @@ const Index = () => {
     };
 
     if (banner[0]) {
-      payload.banner = banner[0].serverId;
+      payload.banner = JSON.parse(banner[0].serverId);
     }
 
     if (photos.length !== 0) {
-      payload.photos = photos.map((d) => d.serverId);
+      payload.photos = photos.map((d) => JSON.parse(d.serverId));
     }
 
     createBuild.mutate(payload, {
@@ -274,7 +266,7 @@ const Index = () => {
                 )}
               />
 
-              {form.getValues("vehicle.make") && (
+              {form.getValues("vehicle.make") && watchMake && (
                 <FormField
                   name="vehicle.model"
                   render={({ field }) => (
@@ -523,7 +515,7 @@ const Index = () => {
             </div>
 
             <Separator className="my-4" />
-            <Button>Save build</Button>
+            <Button disabled={!form.formState.isValid}>Save build</Button>
           </form>
         </Form>
       </div>

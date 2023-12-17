@@ -28,16 +28,14 @@ export const newBuildSchema = z.object({
   budget: z.string().optional(),
   trips: z.record(z.string(), trip).optional(),
   links: z.record(z.string(), z.string().optional()).optional(),
-  vehicle: z
-    .object({
-      model: z.string(),
-      make: z.string(),
-      year: z.string(),
-    })
-    .optional(),
+  vehicle: z.object({
+    model: z.string().optional(),
+    make: z.string().optional(),
+    year: z.string().optional(),
+  }),
+
   modifications: z.record(z.string(), modification).optional(),
   private: z.boolean(),
-  user_id: z.string(),
 });
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;
@@ -50,13 +48,11 @@ export const buildSchema = z.object({
   budget: z.string().optional(),
   trips: z.array(trip).optional(),
   links: z.array(z.string().optional()).optional(),
-  vehicle: z
-    .object({
-      model: z.string(),
-      make: z.string(),
-      year: z.string(),
-    })
-    .optional(),
+  vehicle: z.object({
+    model: z.string().optional(),
+    make: z.string().optional(),
+    year: z.string().optional(),
+  }),
   modifications: z.array(modification).optional(),
   private: z.boolean(),
   user_id: z.string(),

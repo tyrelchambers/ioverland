@@ -3,6 +3,7 @@ package controllers
 import (
 	"api/db"
 	"api/domain/build"
+	"fmt"
 )
 
 func Build(newBuild build.Build) (build.Build, error) {
@@ -51,6 +52,7 @@ func Build(newBuild build.Build) (build.Build, error) {
 	err := buildEntity.Create(db.Client)
 
 	if err != nil {
+		fmt.Println(err)
 		return build.Build{}, err
 	}
 
@@ -78,3 +80,5 @@ func UpdateBuild(id string, data build.Build) (build.Build, error) {
 
 	return data, nil
 }
+
+// func RemoveImage(build_id string,) error {}

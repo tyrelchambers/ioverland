@@ -238,7 +238,7 @@ const Edit = () => {
             <Label className="mb-2">Banner</Label>
             {form.getValues("banner") ? (
               <div className="flex flex-col p-4 bg-card rounded-2xl">
-                <div className="relative h-[300px] flex items-center rounded-xl overflow-hidden">
+                <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
                   <Image
                     src={form.getValues("banner")}
                     alt=""

@@ -8,14 +8,14 @@ type Build struct {
 	Name          string         `gorm:"not null" json:"name"`
 	Description   string         `gorm:"type:varchar(1000)" json:"description"`
 	Budget        string         `gorm:"type:varchar(255)" json:"budget"`
-	Trips         []Trip         `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE" json:"trips"`
+	Trips         []Trip         `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId" json:"trips"`
 	Links         pq.StringArray `gorm:"type:text[]" json:"links"`
 	Vehicle       Vehicle        `gorm:"embedded;embeddedPrefix:vehicle_;" json:"vehicle"`
-	Modifications []Modification `gorm:"constraint:OnUpdate:CASCADE;" json:"modifications"`
+	Modifications []Modification `gorm:"constraint:OnUpdate:CASCADE;foreignKey:BuildId" json:"modifications"`
 	Private       bool           `gorm:"default:false" json:"private"`
 	UserId        string         `gorm:"not null" json:"user_id"`
-	Banner        string         `json:"banner"`
-	Photos        pq.StringArray `gorm:"type:text[]" json:"photos"`
+	Banner        Media          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:Uuid;references:Uuid" json:"banner"`
+	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:Uuid;references:Uuid" json:"photos"`
 }
 
 type Trip struct {
@@ -24,7 +24,6 @@ type Trip struct {
 	Name    string `gorm:"type:varchar(255)" json:"name"`
 	Year    string `gorm:"type:varchar(255)" json:"year"`
 	BuildId int    `json:"build_id"`
-	Build   Build  `gorm:"foreignKey:BuildId;references:ID" json:"-"`
 }
 
 type Vehicle struct {
@@ -40,5 +39,13 @@ type Modification struct {
 	Name        string `gorm:"type:varchar(255)" json:"name"`
 	Price       string `gorm:"type:varchar(255)" json:"price"`
 	BuildId     int    `json:"build_id"`
-	Build       Build  `gorm:"foreignKey:BuildId;references:ID" json:"build"`
+}
+
+type Media struct {
+	ID       int    `gorm:"primaryKey" json:"id"`
+	Uuid     string `gorm:"type:uuid;" json:"uuid"`
+	Name     string `gorm:"type:varchar(255)" json:"name"`
+	Type     string `gorm:"type:varchar(255)" json:"type"`
+	MimeType string `gorm:"type:varchar(255)" json:"mime_type"`
+	Url      string `json:"url"`
 }

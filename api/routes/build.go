@@ -4,6 +4,7 @@ import (
 	"api/controllers"
 	"api/domain/build"
 	"api/middleware"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,7 +18,12 @@ func CreateBuild(c echo.Context) error {
 	var reqBody build.Build
 
 	if err := c.Bind(&reqBody); err != nil {
+		fmt.Println(err)
 		return err
+	}
+
+	if reqBody.Name == "" {
+		return echo.NewHTTPError(400, "Build name is required")
 	}
 
 	reqBody.UserId = user.ID

@@ -1,6 +1,7 @@
+import { toast } from "@/components/ui/use-toast";
 import { Build } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, isAxiosError } from "axios";
 
 export const useBuild = (id?: string) => {
   const getById = useQuery({
@@ -20,6 +21,21 @@ export const useBuild = (id?: string) => {
       return axios.post("http://localhost:8000/api/build/", data, {
         withCredentials: true,
       });
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.response?.data.message,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong",
+        });
+      }
     },
   });
 
