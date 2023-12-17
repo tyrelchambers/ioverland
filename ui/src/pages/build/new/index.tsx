@@ -38,6 +38,15 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { Label } from "@/components/ui/label";
 import { FilePondFile } from "filepond";
+import Uploader from "@/components/Uploader";
+import {
+  formattedTrips,
+  formattedModifications,
+  formattedLinks,
+  removeTrip,
+  removeModification,
+  removeLink,
+} from "@/lib/form/helpers";
 
 // Register the plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
@@ -79,60 +88,41 @@ const Index = () => {
 
   const watchMake = form.watch("vehicle.make");
 
-  const addTripInput = () => {
-    const id = createId();
-    const trips = { ...tripsInput };
-    trips[id] = {
-      name: "",
-      year: "0",
-    };
-
-    setTripsInput(trips);
-    form.setValue("trips", trips);
+  const addTripHandler = () => {
+    const fTrips = formattedTrips(tripsInput);
+    setTripsInput(fTrips);
+    form.setValue("trips", fTrips);
   };
 
-  const removeTrip = (id: string) => {
-    const trips = { ...tripsInput };
-    delete trips[id];
-
-    setTripsInput(trips);
-    form.setValue("trips", trips);
+  const removeTripHandler = (id: string) => {
+    const newTrips = removeTrip(tripsInput, id);
+    setTripsInput(newTrips);
+    form.setValue("trips", newTrips);
   };
 
   const addModification = () => {
-    const id = createId();
-    const mods = { ...modifications };
-    mods[id] = {
-      category: "",
-      subcategory: "",
-      name: "",
-      price: "0",
-    };
+    const mods = formattedModifications(modifications);
 
     setModifications(mods);
     form.setValue("modifications", mods);
   };
 
-  const removeModification = (id: string) => {
-    const mods = { ...modifications };
-    delete mods[id];
+  const removeModificationHandler = (id: string) => {
+    const mods = removeModification(modifications, id);
 
     setModifications(mods);
     form.setValue("modifications", mods);
   };
 
   const addLink = () => {
-    const id = createId();
-    const links = { ...buildLinks };
-    links[id] = "";
+    const links = formattedLinks(buildLinks);
 
     setBuildLinks(links);
     form.setValue("links", links);
   };
 
-  const removeLink = (id: string) => {
-    const links = { ...buildLinks };
-    delete links[id];
+  const removeLinkHandler = (id: string) => {
+    const links = removeLink(buildLinks, id);
 
     setBuildLinks(links);
     form.setValue("links", links);
@@ -225,27 +215,12 @@ const Index = () => {
             <h2 className="font-serif text-2xl">The Basics</h2>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
-              <FilePond
-                onupdatefiles={setBanner}
+              <Uploader
+                onUpdate={setBanner}
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
                 allowMultiple={false}
                 maxFiles={1}
-                server={{
-                  url: "http://localhost:8000/api/upload",
-
-                  process: {
-                    url: "/process",
-                    method: "POST",
-                    withCredentials: true,
-                  },
-                  revert: {
-                    url: "/revert",
-                    method: "POST",
-                    withCredentials: true,
-                  },
-                }}
-                name="file"
-                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                type="banner"
               />
             </div>
             <FormField
@@ -344,7 +319,7 @@ const Index = () => {
                           variant="link"
                           className="text-red-500"
                           size="sm"
-                          onClick={() => removeTrip(input)}
+                          onClick={() => removeTripHandler(input)}
                         >
                           Remove
                         </Button>
@@ -381,7 +356,7 @@ const Index = () => {
                 type="button"
                 variant="secondary"
                 className="mt-4"
-                onClick={addTripInput}
+                onClick={addTripHandler}
               >
                 Add trip
               </Button>
@@ -406,7 +381,7 @@ const Index = () => {
                         variant="link"
                         className="text-red-500"
                         size="sm"
-                        onClick={() => removeModification(input)}
+                        onClick={() => removeModificationHandler(input)}
                       >
                         Remove
                       </Button>
@@ -509,7 +484,7 @@ const Index = () => {
                         variant="link"
                         className="text-red-500"
                         size="sm"
-                        onClick={() => removeLink(input)}
+                        onClick={() => removeLinkHandler(input)}
                       >
                         Remove
                       </Button>
@@ -538,27 +513,12 @@ const Index = () => {
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
-              <FilePond
-                onupdatefiles={setPhotos}
+              <Uploader
+                onUpdate={setPhotos}
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
                 allowMultiple={true}
                 maxFiles={5}
-                server={{
-                  url: "http://localhost:8000/api/upload",
-
-                  process: {
-                    url: "/process",
-                    method: "POST",
-                    withCredentials: true,
-                  },
-                  revert: {
-                    url: "/revert",
-                    method: "POST",
-                    withCredentials: true,
-                  },
-                }}
-                name="file"
-                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                type="photos"
               />
             </div>
 

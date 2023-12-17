@@ -1,7 +1,9 @@
+import Uploader from "@/components/Uploader";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
@@ -12,18 +14,26 @@ import {
 } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import {
+  formattedLinks,
+  formattedModifications,
+  formattedTrips,
+  removeLink,
+  removeModification,
+  removeTrip,
+} from "@/lib/form/helpers";
+import {
   Build,
   Modification,
   NewBuildSchema,
   NewBuildSchemaWithoutUserId,
   Trip,
-  buildSchema,
   newBuildSchema,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -47,6 +57,22 @@ const Edit = () => {
 
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      budget: "0",
+      trips: {},
+      links: {},
+      vehicle: {
+        model: "",
+        make: "",
+        year: "",
+      },
+      private: false,
+      banner: "",
+      photos: [],
+      modifications: {},
+    },
   });
 
   useEffect(() => {
@@ -94,62 +120,45 @@ const Edit = () => {
 
   const watchMake = form.watch("vehicle.make");
 
-  const addTripInput = () => {
-    const id = createId();
-    const trips = { ...tripsInput };
-    trips[id] = {
-      name: "",
-      year: "0",
+  const addTripHandler = () => {
+    const fTrips = formattedTrips(tripsInput, {
       build_id: String(getById.data?.id),
-    };
-
-    setTripsInput(trips);
-    form.setValue("trips", trips);
+    });
+    setTripsInput(fTrips);
+    form.setValue("trips", fTrips);
   };
 
-  const removeTrip = (id: string) => {
-    const trips = { ...tripsInput };
-    delete trips[id];
-
-    setTripsInput(trips);
-    form.setValue("trips", trips);
+  const removeTripHandler = (id: string) => {
+    const newTrips = removeTrip(tripsInput, id);
+    setTripsInput(newTrips);
+    form.setValue("trips", newTrips);
   };
 
   const addModification = () => {
-    const id = createId();
-    const mods = { ...modifications };
-    mods[id] = {
-      category: "",
-      subcategory: "",
-      name: "",
-      price: "0",
+    const mods = formattedModifications(modifications, {
       build_id: String(getById.data?.id),
-    };
+    });
 
     setModifications(mods);
     form.setValue("modifications", mods);
   };
 
-  const removeModification = (id: string) => {
-    const mods = { ...modifications };
-    delete mods[id];
+  const removeModificationHandler = (id: string) => {
+    const mods = removeModification(modifications, id);
 
     setModifications(mods);
     form.setValue("modifications", mods);
   };
 
   const addLink = () => {
-    const id = createId();
-    const links = { ...buildLinks };
-    links[id] = "";
+    const links = formattedLinks(buildLinks);
 
     setBuildLinks(links);
     form.setValue("links", links);
   };
 
-  const removeLink = (id: string) => {
-    const links = { ...buildLinks };
-    delete links[id];
+  const removeLinkHandler = (id: string) => {
+    const links = removeLink(buildLinks, id);
 
     setBuildLinks(links);
     form.setValue("links", links);
@@ -224,6 +233,33 @@ const Edit = () => {
           className="flex flex-col gap-4 max-w-2xl mx-auto"
           onSubmit={form.handleSubmit(submitHandler, console.log)}
         >
+          <h1>Edit</h1>
+          <div className="flex flex-col">
+            <Label className="mb-2">Banner</Label>
+            {form.getValues("banner") ? (
+              <div className="flex flex-col p-4 bg-card rounded-2xl">
+                <div className="relative h-[300px] flex items-center rounded-xl overflow-hidden">
+                  <Image
+                    src={form.getValues("banner")}
+                    alt=""
+                    className=" object-cover"
+                    fill
+                  />
+                </div>
+                <Button variant="destructive" className="mt-3">
+                  Delete banner
+                </Button>
+              </div>
+            ) : (
+              <Uploader
+                onUpdate={setBanner}
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                allowMultiple={false}
+                maxFiles={1}
+                type="banner"
+              />
+            )}
+          </div>
           <FormField
             name="name"
             render={({ field }) => (
@@ -317,7 +353,7 @@ const Edit = () => {
                         variant="link"
                         className="text-red-500"
                         size="sm"
-                        onClick={() => removeTrip(input)}
+                        onClick={() => removeTripHandler(input)}
                       >
                         Remove
                       </Button>
@@ -354,7 +390,7 @@ const Edit = () => {
               type="button"
               variant="secondary"
               className="mt-4"
-              onClick={addTripInput}
+              onClick={addTripHandler}
             >
               Add trip
             </Button>
@@ -379,7 +415,7 @@ const Edit = () => {
                       variant="link"
                       className="text-red-500"
                       size="sm"
-                      onClick={() => removeModification(input)}
+                      onClick={() => removeModificationHandler(input)}
                     >
                       Remove
                     </Button>
@@ -481,7 +517,7 @@ const Edit = () => {
                       variant="link"
                       className="text-red-500"
                       size="sm"
-                      onClick={() => removeLink(input)}
+                      onClick={() => removeLinkHandler(input)}
                     >
                       Remove
                     </Button>
@@ -507,6 +543,20 @@ const Edit = () => {
               Add link
             </Button>
           </section>
+          <Separator className="my-4" />
+
+          <div className="flex flex-col">
+            <Label className="mb-2">Photos</Label>
+            <Uploader
+              type="photos"
+              onUpdate={setPhotos}
+              acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+              allowMultiple={true}
+              maxFiles={5}
+            />
+          </div>
+
+          <Separator className="my-4" />
 
           <Button>Save changes</Button>
         </form>

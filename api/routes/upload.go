@@ -3,6 +3,7 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
+	"fmt"
 	"io"
 
 	"github.com/labstack/echo/v4"
@@ -10,6 +11,8 @@ import (
 
 func Upload(c echo.Context) error {
 	file, err := c.FormFile("file")
+
+	fmt.Println(c.Request().Header.Get("file-type"))
 
 	if err != nil {
 		return echo.NewHTTPError(500, err)
