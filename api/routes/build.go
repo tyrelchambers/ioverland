@@ -78,3 +78,19 @@ func Update(c echo.Context) error {
 
 	return c.JSON(200, updated_build)
 }
+
+func RemoveImage(c echo.Context) error {
+	id := c.Param("id")
+	build_id := c.Param("build_id")
+	url := c.QueryParam("url")
+
+	err := controllers.RemoveImage(build_id, id)
+	err = controllers.Revert(c, url)
+
+	if err != nil {
+		return echo.NewHTTPError(500, err)
+	}
+
+	return c.String(200, "success")
+
+}

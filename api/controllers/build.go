@@ -81,4 +81,6 @@ func UpdateBuild(id string, data build.Build) (build.Build, error) {
 	return data, nil
 }
 
-// func RemoveImage(build_id string,) error {}
+func RemoveImage(build_id string, media_id string) error {
+	return build.RemoveImage(db.Client, build_id, media_id)
+}

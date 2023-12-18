@@ -23,6 +23,7 @@ import {
 } from "@/lib/form/helpers";
 import {
   Build,
+  Media,
   Modification,
   NewBuildSchema,
   NewBuildSchemaWithoutUserId,
@@ -41,7 +42,7 @@ import { useForm } from "react-hook-form";
 const Edit = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { getById, update } = useBuild(id as string);
+  const { getById, update, removeImage } = useBuild(id as string);
   const { user } = useUser();
   const [tripsInput, setTripsInput] = useState<{
     [key: string]: Trip;
@@ -169,7 +170,7 @@ const Edit = () => {
       ?.subcategories;
   };
 
-  const submitHandler = (data: NewBuildSchemaWithoutUserId) => {
+  const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
     if (!user?.id) return;
 
     const modificationsToArray = [];
@@ -194,8 +195,8 @@ const Edit = () => {
     }
 
     interface Payload extends Build {
-      banner?: string;
-      photos?: string[];
+      banner?: Media;
+      photos?: Media[];
     }
 
     const payload: Payload = {
@@ -208,14 +209,17 @@ const Edit = () => {
     };
 
     if (banner[0]) {
-      payload.banner = banner[0].serverId;
+      payload.banner = JSON.parse(banner[0].serverId);
     }
 
     if (photos.length !== 0) {
-      payload.photos = photos.map((d) => d.serverId);
+      payload.photos = photos.map((d) => ({
+        ...JSON.parse(d.serverId),
+        build_id: getById.data?.uuid,
+      }));
     }
 
-    update.mutate(payload, {
+    update.mutateAsync(payload, {
       onSuccess: () => {
         toast({
           variant: "success",
@@ -223,6 +227,19 @@ const Edit = () => {
           description: "Your build has been updated!",
         });
       },
+    });
+
+    setBanner([]);
+    setPhotos([]);
+  };
+
+  const removeImageHandler = (image_id: string, url: string) => {
+    if (!getById.data?.uuid) return;
+
+    removeImage.mutate({
+      image_id,
+      url,
+      build_id: getById.data?.uuid,
     });
   };
 
@@ -236,11 +253,11 @@ const Edit = () => {
           <h1>Edit</h1>
           <div className="flex flex-col">
             <Label className="mb-2">Banner</Label>
-            {form.getValues("banner") ? (
+            {getById.data?.banner ? (
               <div className="flex flex-col p-4 bg-card rounded-2xl">
                 <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
                   <Image
-                    src={form.getValues("banner")}
+                    src={getById.data?.banner.url}
                     alt=""
                     className=" object-cover"
                     fill
@@ -547,13 +564,53 @@ const Edit = () => {
 
           <div className="flex flex-col">
             <Label className="mb-2">Photos</Label>
-            <Uploader
-              type="photos"
-              onUpdate={setPhotos}
-              acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
-              allowMultiple={true}
-              maxFiles={5}
-            />
+            {getById.data?.photos && (
+              <div className="grid grid-cols-2 gap-4">
+                {getById.data?.photos?.map((photo, index) => {
+                  return (
+                    <div
+                      className="bg-card rounded-xl p-4 relative flex flex-col items-center gap-4"
+                      key={photo.id}
+                    >
+                      <div className="relative aspect-square h-[200px]">
+                        <Image
+                          src={photo.url}
+                          alt=""
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={() =>
+                          removeImageHandler(photo.uuid, photo.url)
+                        }
+                      >
+                        Remove photo
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="mt-8">
+              <Label>
+                Upload photos - max 6{" "}
+                <span className="italic text-muted-foreground">
+                  ({6 - (getById.data?.photos?.length || 0)} remaining )
+                </span>
+              </Label>
+              <Uploader
+                files={photos as any}
+                onUpdate={setPhotos}
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                allowMultiple={true}
+                maxFiles={6 - (getById.data?.photos?.length || 0)}
+                type="photos"
+              />
+            </div>
           </div>
 
           <Separator className="my-4" />

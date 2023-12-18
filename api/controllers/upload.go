@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lucsky/cuid"
 )
 
 func Process(file *multipart.FileHeader, user_id string, c echo.Context) (build.Media, error) {
@@ -32,6 +33,7 @@ func Process(file *multipart.FileHeader, user_id string, c echo.Context) (build.
 		Type:     file_type,
 		MimeType: file.Header.Get("Content-Type"),
 		Url:      full_url,
+		Uuid:     cuid.New(),
 	}
 
 	return r, nil

@@ -33,7 +33,6 @@ export const newBuildSchema = z.object({
     make: z.string().optional(),
     year: z.string().optional(),
   }),
-
   modifications: z.record(z.string(), modification).optional(),
   private: z.boolean(),
 });

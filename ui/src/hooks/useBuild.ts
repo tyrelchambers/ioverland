@@ -1,9 +1,10 @@
 import { toast } from "@/components/ui/use-toast";
 import { Build } from "@/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosResponse, isAxiosError } from "axios";
 
 export const useBuild = (id?: string) => {
+  const context = useQueryClient();
   const getById = useQuery({
     queryKey: ["build", id],
     queryFn: (): Promise<Build> => {
@@ -45,7 +46,24 @@ export const useBuild = (id?: string) => {
         withCredentials: true,
       });
     },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["build", id] });
+    },
   });
 
-  return { createBuild, getById, update: updateBuild };
+  const removeImage = useMutation({
+    mutationFn: (data: { build_id: string; image_id: string; url: string }) => {
+      return axios.delete(
+        `http://localhost:8000/api/build/${data.build_id}/image/${data.image_id}?url=${data.url}`,
+        {
+          withCredentials: true,
+        }
+      );
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["build", id] });
+    },
+  });
+
+  return { createBuild, getById, update: updateBuild, removeImage };
 };

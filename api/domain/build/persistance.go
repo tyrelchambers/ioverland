@@ -1,6 +1,8 @@
 package build
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 )
 
@@ -16,9 +18,11 @@ func (b *Build) Create(db *gorm.DB) error {
 }
 
 func (b *Build) Update(db *gorm.DB) error {
+	fmt.Println(b.Photos)
 	db.Save(&b)
 	db.Model(&b).Association("Trips").Replace(b.Trips)
 	db.Model(&b).Association("Modifications").Replace(b.Modifications)
+	db.Model(&b).Association("Photos").Append(b.Photos)
 
 	return nil
 }
@@ -51,4 +55,10 @@ func GetById(db *gorm.DB, uuid string) (Build, error) {
 	}
 
 	return build, nil
+}
+
+func RemoveImage(db *gorm.DB, build_id, media_id string) error {
+	db.Table("media").Where("uuid = ? AND build_id = ?", media_id, build_id).Delete(&Media{})
+
+	return nil
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { FilePond, registerPlugin } from "react-filepond";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import { FilePondInitialFile } from "filepond";
 
 // Register the plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
@@ -12,6 +13,7 @@ interface Props {
   maxFiles?: number;
   acceptedFileTypes?: string[];
   type: string;
+  files?: (string | FilePondInitialFile | Blob | File)[];
 }
 const Uploader = ({
   onUpdate,
@@ -19,10 +21,12 @@ const Uploader = ({
   maxFiles,
   acceptedFileTypes,
   type,
+  files,
 }: Props) => {
   const url = "http://localhost:8000/api/upload";
   return (
     <FilePond
+      {...(files && { files })}
       onupdatefiles={onUpdate}
       allowMultiple={allowMultiple}
       maxFiles={maxFiles}
