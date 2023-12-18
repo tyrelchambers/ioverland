@@ -233,8 +233,11 @@ const Edit = () => {
     setPhotos([]);
   };
 
-  const removeImageHandler = (image_id: string, url: string) => {
-    if (!getById.data?.uuid) return;
+  const removeImageHandler = (
+    image_id: string | undefined,
+    url: string | undefined
+  ) => {
+    if (!getById.data?.uuid || !image_id || !url) return;
 
     removeImage.mutate({
       image_id,
@@ -253,7 +256,7 @@ const Edit = () => {
           <h1>Edit</h1>
           <div className="flex flex-col">
             <Label className="mb-2">Banner</Label>
-            {getById.data?.banner ? (
+            {getById.data?.banner?.url && getById.data?.banner?.uuid ? (
               <div className="flex flex-col p-4 bg-card rounded-2xl">
                 <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
                   <Image
@@ -263,7 +266,16 @@ const Edit = () => {
                     fill
                   />
                 </div>
-                <Button variant="destructive" className="mt-3">
+                <Button
+                  variant="destructive"
+                  className="mt-3"
+                  onClick={() =>
+                    removeImageHandler(
+                      getById.data.banner?.uuid,
+                      getById.data.banner?.url
+                    )
+                  }
+                >
                   Delete banner
                 </Button>
               </div>
