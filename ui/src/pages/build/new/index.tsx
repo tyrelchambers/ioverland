@@ -26,6 +26,7 @@ import {
   NewBuildSchemaWithoutUserId,
   Trip,
   newBuildSchema,
+  Media,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
 import { useToast } from "@/components/ui/use-toast";
@@ -146,8 +147,8 @@ const Index = () => {
     }
 
     interface Payload extends Build {
-      banner?: string;
-      photos?: string[];
+      banner?: Media;
+      photos?: Media[];
     }
 
     const payload: Payload = {
@@ -509,7 +510,7 @@ const Index = () => {
                 onUpdate={setPhotos}
                 acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
                 allowMultiple={true}
-                maxFiles={5}
+                maxFiles={6}
                 type="photos"
               />
             </div>

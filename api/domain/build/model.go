@@ -14,8 +14,8 @@ type Build struct {
 	Modifications []Modification `gorm:"constraint:OnUpdate:CASCADE;foreignKey:BuildId" json:"modifications"`
 	Private       bool           `gorm:"default:false" json:"private"`
 	UserId        string         `gorm:"not null" json:"user_id"`
-	Banner        Media          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:Uuid;references:Uuid" json:"banner"`
-	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:Uuid;references:Uuid" json:"photos"`
+	Banner        Media          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"banner"`
+	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"photos"`
 }
 
 type Trip struct {
@@ -43,7 +43,7 @@ type Modification struct {
 
 type Media struct {
 	ID       int    `gorm:"primaryKey" json:"id"`
-	Uuid     string `gorm:"type:uuid;" json:"uuid"`
+	BuildId  string `gorm:"type:uuid;" json:"uuid"`
 	Name     string `gorm:"type:varchar(255)" json:"name"`
 	Type     string `gorm:"type:varchar(255)" json:"type"`
 	MimeType string `gorm:"type:varchar(255)" json:"mime_type"`

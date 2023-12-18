@@ -40,10 +40,14 @@ func GetById(db *gorm.DB, uuid string) (Build, error) {
 
 	var build Build
 
-	err := db.Preload("Trips").Preload("Modifications").Where("uuid = ?", uuid).First(&build).Error
+	db.Preload("Trips").Preload("Modifications").Where("uuid = ?", uuid).First(&build)
 
-	if err != nil {
-		return build, err
+	db.Table("media").Where("build_id = ? AND type = 'banner'", uuid).First(&build.Banner)
+
+	db.Table("media").Where("build_id = ? AND type = 'photos'", uuid).Find(&build.Photos)
+
+	if db.Error != nil {
+		return build, db.Error
 	}
 
 	return build, nil

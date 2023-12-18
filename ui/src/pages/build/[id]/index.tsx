@@ -21,7 +21,12 @@ const Build = () => {
       <section className="max-w-screen-xl mx-auto my-20">
         {build?.banner && (
           <div className="relative w-full h-[700px] rounded-xl overflow-hidden">
-            <Image src={build.banner} alt="" fill className="object-cover" />
+            <Image
+              src={build.banner.url}
+              alt=""
+              fill
+              className="object-cover"
+            />
           </div>
         )}
 
@@ -54,16 +59,16 @@ const Build = () => {
             )}
           </header>
 
-          <div className="flex flex-col my-20 gap-8">
+          <div className="grid grid-cols-3 my-20 gap-8">
             {build?.photos?.map((photo, i) => (
               <div
-                key={photo}
+                key={photo.uuid}
                 className={cn(
-                  "relative max-w-3xl w-full aspect-video rounded-xl overflow-hidden shadow-xl  bg-card",
+                  "relative max-w-3xl w-full aspect-square rounded-xl overflow-hidden shadow-xl  bg-card",
                   i % 2 ? "ml-auto" : "mr-auto"
                 )}
               >
-                <Image src={photo} alt="" fill className="object-contain" />
+                <Image src={photo.url} alt="" fill className="object-contain" />
               </div>
             ))}
           </div>

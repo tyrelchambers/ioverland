@@ -42,6 +42,17 @@ export type NewBuildSchema = z.infer<typeof newBuildSchema>;
 
 export type NewBuildSchemaWithoutUserId = Omit<NewBuildSchema, "user_id">;
 
+const media = z.object({
+  id: z.string(),
+  url: z.string(),
+  type: z.string(),
+  uuid: z.string(),
+  mime_type: z.string(),
+  name: z.string(),
+});
+
+export type Media = z.infer<typeof media>;
+
 export const buildSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
@@ -56,8 +67,8 @@ export const buildSchema = z.object({
   modifications: z.array(modification).optional(),
   private: z.boolean(),
   user_id: z.string(),
-  photos: z.array(z.string()).optional(),
-  banner: z.string().optional(),
+  photos: z.array(media).optional(),
+  banner: media.optional(),
   id: z.string().optional(),
   uuid: z.string().optional(),
 });
