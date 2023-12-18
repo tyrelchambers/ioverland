@@ -1,7 +1,15 @@
 import Uploader from "@/components/Uploader";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox } from "@/components/ui/combobox";
-import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -626,7 +634,27 @@ const Edit = () => {
           </div>
 
           <Separator className="my-4" />
-
+          <FormField
+            control={form.control}
+            name="private"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Make this build private?</FormLabel>
+                  <FormDescription>
+                    Making this build private will hide it from other users so
+                    no one can see it.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
           <Button>Save changes</Button>
         </form>
       </Form>

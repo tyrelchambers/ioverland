@@ -2,18 +2,18 @@ import "@/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Carter_One, Mulish } from "next/font/google";
+import { Lato, Mulish } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 
-export const headingFont = Carter_One({
-  weight: "400",
+export const headingFont = Lato({
+  weight: ["400", "700", "900"],
   subsets: ["latin"],
   variable: "--font-heading",
 });
 export const paragraphFont = Mulish({
-  weight: ["300", "400", "700"],
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
   variable: "--font-paragraph",
 });

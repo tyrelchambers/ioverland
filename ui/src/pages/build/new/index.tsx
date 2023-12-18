@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -43,6 +45,9 @@ import {
   removeLink,
 } from "@/lib/form/helpers";
 import { isValid } from "zod";
+import { H1, H2 } from "@/components/Heading";
+import { Checkbox } from "@/components/ui/checkbox";
+import { PlusCircle } from "lucide-react";
 
 const Index = () => {
   const { toast } = useToast();
@@ -180,9 +185,9 @@ const Index = () => {
 
   return (
     <section className="flex">
-      <div className="relative h-screen w-1/2">
+      <div className="sticky top-0 h-screen w-[400px] ">
         <div
-          className="absolute z-10 inset-0"
+          className=" absolute z-10 inset-0"
           style={{
             boxShadow: "inset 0 0 40px rgba(0, 0, 0, 0.5)",
           }}
@@ -194,9 +199,9 @@ const Index = () => {
           objectFit="cover"
         />
       </div>
-      <div className=" p-10 h-screen overflow-y-auto flex-1">
-        <h1 className="text-5xl font-serif">Let&apos;s build</h1>
-        <p>
+      <div className=" p-10 w-full max-w-2xl flex-1">
+        <H1>Let&apos;s build</H1>
+        <p className="text-muted-foreground">
           Create your first build here. Include as many or as little details as
           you want.
         </p>
@@ -205,17 +210,8 @@ const Index = () => {
             className="w-full mt-10 flex flex-col gap-4"
             onSubmit={form.handleSubmit(submitHandler, console.log)}
           >
-            <h2 className="font-serif text-2xl">The Basics</h2>
-            <div className="flex flex-col">
-              <Label className="mb-2">Banner</Label>
-              <Uploader
-                onUpdate={setBanner}
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
-                allowMultiple={false}
-                maxFiles={1}
-                type="banner"
-              />
-            </div>
+            <H2>The Basics</H2>
+
             <FormField
               name="name"
               render={({ field }) => (
@@ -245,6 +241,9 @@ const Index = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Budget</FormLabel>
+                  <FormDescription>
+                    How much did you spend on this build, roughly?
+                  </FormDescription>
                   <Input type="number" {...field} />
                 </FormItem>
               )}
@@ -297,10 +296,29 @@ const Index = () => {
                 />
               )}
             </div>
-
+            <div className="flex flex-col">
+              <Label className="mb-2">Banner</Label>
+              <Uploader
+                onUpdate={setBanner}
+                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                allowMultiple={false}
+                maxFiles={1}
+                type="banner"
+              />
+            </div>
             <Separator className="my-4" />
             <div className="flex flex-col">
-              <p className="font-serif text-2xl">Trips</p>
+              <H2>
+                Trips{" "}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={addTripHandler}
+                >
+                  <PlusCircle />
+                </Button>
+              </H2>
               <div className="flex flex-col gap-2">
                 {Object.keys(tripsInput).map((input, index) => {
                   return (
@@ -345,19 +363,21 @@ const Index = () => {
                   );
                 })}
               </div>
-              <Button
-                type="button"
-                variant="secondary"
-                className="mt-4"
-                onClick={addTripHandler}
-              >
-                Add trip
-              </Button>
             </div>
             <Separator className="my-4" />
 
             <section className="flex flex-col">
-              <h2 className="font-serif text-2xl">Modifications</h2>
+              <H2>
+                Modifications{" "}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={addModification}
+                >
+                  <PlusCircle />
+                </Button>
+              </H2>
               {Object.keys(modifications).map((input, index) => {
                 const itemKey = form.getValues(`modifications`) as {
                   [key: string]: Modification;
@@ -447,22 +467,23 @@ const Index = () => {
                   </div>
                 );
               })}
-
-              <Button
-                type="button"
-                variant="secondary"
-                className="mt-4"
-                onClick={addModification}
-              >
-                Add modification
-              </Button>
             </section>
 
             <Separator className="my-4" />
 
             <section className="flex flex-col">
-              <h2 className="font-serif text-2xl leading-tight">Links</h2>
-              <p>
+              <H2>
+                Links{" "}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={addLink}
+                >
+                  <PlusCircle />
+                </Button>
+              </H2>
+              <p className="text-muted-foreground">
                 Include any links you&apos;d like to have included with this
                 build.
               </p>
@@ -493,16 +514,8 @@ const Index = () => {
                   </div>
                 );
               })}
-
-              <Button
-                type="button"
-                variant="secondary"
-                className="mt-4"
-                onClick={addLink}
-              >
-                Add link
-              </Button>
             </section>
+            <Separator className="my-4" />
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
@@ -516,6 +529,27 @@ const Index = () => {
             </div>
 
             <Separator className="my-4" />
+            <FormField
+              control={form.control}
+              name="private"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Make this build private?</FormLabel>
+                    <FormDescription>
+                      Making this build private will hide it from other users so
+                      no one can see it.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
             <Button disabled={!form.formState.isValid}>Save build</Button>
           </form>
         </Form>
