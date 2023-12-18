@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
@@ -5,26 +6,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main>
-      <header className="fixed inset-4 z-10 text-white flex justify-between h-fit">
-        <h2>iOverland</h2>
-        <div className="flex gap-4 items-center">
-          <Link
-            href={`/builds/me`}
-            className="text-foreground hover:text-foreground/70"
-          >
-            My builds
-          </Link>
-          <SignedIn>
-            <Link href="/build/new">
-              <Button>New build</Button>
-            </Link>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
-          <SignedOut>
-            <Button>Sign up</Button>
-          </SignedOut>
-        </div>
-      </header>
+      <Header on="dark" />
       <section className="h-screen bg-slate-100 clip flex items-center justify-center relative">
         <div className="max-w-screen-xl absolute inset-0 z-10 top-1/2 translate-y-[-50%] mx-auto">
           <h1 className="font-serif text-8xl mb-6 text-white">

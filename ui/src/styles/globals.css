@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 20 6% 96%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 96%;
@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 85 85% 35%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -76,5 +76,21 @@
 
   .clip-rev {
     clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@layer components {
+  .header {
+    @apply fixed inset-0 z-10 text-white flex h-fit justify-between;
+  }
+
+  .header-scrolled {
+    backdrop-filter: blur(10px);
+
+    @apply shadow-xl bg-white bg-opacity-80;
+  }
+
+  .header-scrolled h2 {
+    @apply text-slate-900;
   }
 }
