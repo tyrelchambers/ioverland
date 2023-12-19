@@ -48,6 +48,7 @@ import { isValid } from "zod";
 import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
+import { findCategorySubcategories } from "@/lib/utils";
 
 const Index = () => {
   const { toast } = useToast();
@@ -124,11 +125,6 @@ const Index = () => {
 
     setBuildLinks(links);
     form.setValue("links", links);
-  };
-
-  const findCategorySubcategories = (category: string) => {
-    return modificationCategories.find((d) => d.value === category)
-      ?.subcategories;
   };
 
   const submitHandler = (data: NewBuildSchemaWithoutUserId) => {

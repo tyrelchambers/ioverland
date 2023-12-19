@@ -7,7 +7,7 @@ export const H1 = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <h1 className={cn("text-5xl font-black font-serif mb-1", className)}>
+  <h1 className={cn("text-4xl font-black font-serif mb-1", className)}>
     {children}
   </h1>
 );

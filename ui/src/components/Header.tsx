@@ -24,16 +24,11 @@ const Header = ({ on }: Props) => {
   }, []);
 
   return (
-    <header className="header p-4 transition-all flex items-center">
-      <h2 className="font-bold font-serif text-xl">iOverland</h2>
+    <header className="header sticky top-0 p-4 transition-all flex items-center z-50">
+      <h2 className="text-primary font-bold font-serif">iOverland</h2>
       <div className="flex gap-4 items-center ">
         <Link href={`/builds/me`}>
-          <Button
-            variant="link"
-            className={cn({ "text-slate-900": on === "dark" })}
-          >
-            My builds
-          </Button>
+          <Button variant="link">My builds</Button>
         </Link>
         <SignedIn>
           <Link href="/build/new">

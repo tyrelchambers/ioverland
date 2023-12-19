@@ -6,7 +6,7 @@ type Build struct {
 	ID            int            `gorm:"primaryKey" json:"id"`
 	Uuid          string         `gorm:"type:uuid;default:gen_random_uuid()" json:"uuid"`
 	Name          string         `gorm:"not null" json:"name"`
-	Description   string         `gorm:"type:varchar(1000)" json:"description"`
+	Description   string         `gorm:"type:text" json:"description"`
 	Budget        string         `gorm:"type:varchar(255)" json:"budget"`
 	Trips         []Trip         `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId" json:"trips"`
 	Links         pq.StringArray `gorm:"type:text[]" json:"links"`

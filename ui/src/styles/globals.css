@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 20 6% 96%;
+    --background: 20 6% 99%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 96%;
@@ -81,13 +81,13 @@
 
 @layer components {
   .header {
-    @apply fixed inset-0 z-10 text-white flex h-fit justify-between;
+    @apply text-white flex h-fit justify-between;
   }
 
   .header-scrolled {
     backdrop-filter: blur(10px);
 
-    @apply shadow-xl bg-white bg-opacity-80;
+    @apply shadow-xl fixed inset-0 z-10 bg-white bg-opacity-80;
   }
 
   .header-scrolled h2 {

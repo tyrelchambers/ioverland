@@ -31,7 +31,7 @@ func AllByUser(db *gorm.DB, user_id string) ([]Build, error) {
 
 	var builds []Build
 
-	err := db.Where("user_id = ?", user_id).Find(&builds).Error
+	err := db.Preload("Banner").Where("user_id = ?", user_id).Find(&builds).Error
 
 	if err != nil {
 		return nil, err
