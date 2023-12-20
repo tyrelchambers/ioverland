@@ -1,2 +1,4 @@
 - Figure out a way to do the view and followers on the server rather than sending via the client edit
 - Refactor types and stuff
+- Redesign Trips section of build
+- Change "Contact" to "Message" in build ID page

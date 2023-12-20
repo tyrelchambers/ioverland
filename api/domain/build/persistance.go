@@ -23,14 +23,7 @@ func (b *Build) IncrementViews(db *gorm.DB) error {
 }
 
 func (b *Build) Update(db *gorm.DB) error {
-	db.Transaction(func(tx *gorm.DB) error {
-		tx.Save(&b)
-		tx.Model(&b).Association("Trips").Replace(&b.Trips)
-		tx.Model(&b).Association("Modifications").Replace(&b.Modifications)
-		tx.Model(&b).Association("Photos").Append(&b.Photos)
-
-		return nil
-	})
+	db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&b)
 
 	if db.Error != nil {
 		fmt.Println(db.Error)
