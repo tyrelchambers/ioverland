@@ -75,3 +75,26 @@ func RemoveImage(db *gorm.DB, build_id, media_id string) error {
 
 	return nil
 }
+
+func (b *Build) Like(db *gorm.DB, user_id string) error {
+	likes := b.Likes
+	likes = append(likes, user_id)
+
+	db.Model(&b).Where("uuid = ?", b.Uuid).Update("likes", likes)
+
+	return nil
+}
+
+func (b *Build) DisLike(db *gorm.DB, user_id string) error {
+	likes := b.Likes
+	for i, like := range likes {
+		if like == user_id {
+			likes = append(likes[:i], likes[i+1:]...)
+			break
+		}
+	}
+
+	db.Model(&b).Where("uuid = ?", b.Uuid).Update("likes", likes)
+
+	return nil
+}

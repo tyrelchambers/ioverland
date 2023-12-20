@@ -102,3 +102,27 @@ func IncrementViews(c echo.Context) error {
 
 	return c.String(200, "success")
 }
+
+func Like(c echo.Context) error {
+	id := c.Param("id")
+	user, err := middleware.Authorize(c)
+	if err != nil {
+		return err
+	}
+
+	err = controllers.Like(id, user.ID)
+
+	return c.String(200, "success")
+}
+
+func Dislike(c echo.Context) error {
+	id := c.Param("id")
+	user, err := middleware.Authorize(c)
+	if err != nil {
+		return err
+	}
+
+	err = controllers.Dislike(id, user.ID)
+
+	return c.String(200, "success")
+}

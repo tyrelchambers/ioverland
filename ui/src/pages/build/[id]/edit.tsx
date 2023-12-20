@@ -220,6 +220,7 @@ const Edit = () => {
       modifications: modificationsToArray,
       user_id: user.id,
       views: build?.views,
+      likes: build?.likes,
     };
 
     if (banner[0]) {

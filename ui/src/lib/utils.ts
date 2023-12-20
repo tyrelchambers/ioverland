@@ -32,3 +32,7 @@ export const groupModificationsByCategory = (mods: Modification[]) => {
   });
   return grouped;
 };
+
+export const hasLiked = (likes: string[], user_id: string) => {
+  return likes.some((like) => like === user_id);
+};

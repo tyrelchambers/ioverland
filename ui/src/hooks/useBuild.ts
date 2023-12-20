@@ -81,11 +81,43 @@ export const useBuild = (id?: string) => {
     },
   });
 
+  const likeBuild = useMutation({
+    mutationFn: (data: { build_id: string }) => {
+      return axios.post(
+        `http://localhost:8000/api/build/${data.build_id}/like`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["build", id] });
+    },
+  });
+
+  const dislikeBuild = useMutation({
+    mutationFn: (data: { build_id: string }) => {
+      return axios.post(
+        `http://localhost:8000/api/build/${data.build_id}/dislike`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["build", id] });
+    },
+  });
+
   return {
     createBuild,
     getById,
     update: updateBuild,
     removeImage,
     incrementView,
+    likeBuild,
+    dislikeBuild,
   };
 };

@@ -70,6 +70,9 @@ func main() {
 	build.GET("/:id", routes.GetById)
 	build.PUT("/:id", routes.Update)
 	build.POST("/:id/view", routes.IncrementViews)
+	build.POST("/:id/like", routes.Like)
+	build.POST("/:id/dislike", routes.Dislike)
+
 	build.DELETE("/:build_id/image/:id", routes.RemoveImage)
 
 	builds.GET("/user/:user_id", routes.GetBuilds)

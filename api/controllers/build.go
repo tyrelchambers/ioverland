@@ -94,3 +94,29 @@ func IncrementViews(id string) error {
 
 	return build.IncrementViews(db.Client)
 }
+
+func Like(build_id, user_id string) error {
+
+	build, err := GetById(build_id)
+
+	if err != nil {
+		return err
+	}
+
+	build.Like(db.Client, user_id)
+
+	return nil
+}
+
+func Dislike(build_id, user_id string) error {
+
+	build, err := GetById(build_id)
+
+	if err != nil {
+		return err
+	}
+
+	build.DisLike(db.Client, user_id)
+
+	return nil
+}

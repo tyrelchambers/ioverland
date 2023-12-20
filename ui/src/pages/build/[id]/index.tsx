@@ -1,35 +1,35 @@
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import {
   cn,
   findCategory,
-  findCategorySubcategories,
-  findSubcategory,
   groupModificationsByCategory,
+  hasLiked,
 } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { ExternalLink, Eye, Flag, Heart, PencilRuler } from "lucide-react";
+import {
+  ExternalLink,
+  Eye,
+  Flag,
+  Heart,
+  HeartOff,
+  PencilRuler,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 const Build = () => {
   const router = useRouter();
   const { user } = useUser();
   const paramId = router.query.id as string;
-  const { getById, incrementView } = useBuild(paramId);
+  const { getById, incrementView, likeBuild, dislikeBuild } = useBuild(paramId);
+  const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const build = getById.data;
 
@@ -41,7 +41,52 @@ const Build = () => {
     }
   }, [paramId]);
 
+  useEffect(() => {
+    if (paramId && build?.likes && user?.id) {
+      setLiked(hasLiked(build?.likes, user?.id));
+    }
+  }, [paramId, build?.likes, user?.id]);
+
   if (!build) return null;
+
+  const likeHandler = () => {
+    likeBuild.mutate(
+      {
+        build_id: paramId,
+      },
+      {
+        onSuccess: () => {
+          setLiked(true);
+        },
+      }
+    );
+  };
+
+  const dislikeHandler = () => {
+    dislikeBuild.mutate(
+      {
+        build_id: paramId,
+      },
+      {
+        onSuccess: () => {
+          setLiked(false);
+        },
+      }
+    );
+  };
+
+  const LikeButton = () =>
+    liked ? (
+      <Button variant="destructive" onClick={dislikeHandler}>
+        <HeartOff size={20} className="mr-2" />{" "}
+        <span className="font-bold">{build?.likes?.length}</span>
+      </Button>
+    ) : (
+      <Button variant="ghost" onClick={likeHandler}>
+        <Heart size={20} className="text-muted-foreground mr-2" />{" "}
+        <span className="font-bold">{build?.likes?.length || 0}</span>
+      </Button>
+    );
 
   return (
     <section>
@@ -50,8 +95,7 @@ const Build = () => {
       {/* <section className="h-screen absolute inset-0 z-0 bg-stone-900 clip"></section> */}
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-20">
         <span className="flex items-center text-muted-foreground gap-1 mb-4">
-          <Heart />
-          <span className="font-bold">20</span>
+          {liked !== undefined && <LikeButton />}
         </span>
         <div className="flex justify-between items-center w-full">
           <H1 className="text-7xl font-serif font-light mb-8">{build?.name}</H1>
@@ -67,9 +111,7 @@ const Build = () => {
                 <Flag size={20} className="text-muted-foreground" />
               </Link>
             </Button>
-            <Button variant="ghost" size="icon">
-              <Heart size={20} className="text-muted-foreground" />
-            </Button>
+
             {build?.user_id === user?.id && (
               <Button size="sm" asChild>
                 <Link
