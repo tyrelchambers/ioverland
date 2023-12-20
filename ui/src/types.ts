@@ -70,6 +70,7 @@ export const buildSchema = z.object({
   banner: media.optional(),
   id: z.string().optional(),
   uuid: z.string().optional(),
+  views: z.number().optional(),
 });
 
 export type Build = z.infer<typeof buildSchema>;

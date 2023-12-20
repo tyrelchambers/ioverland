@@ -69,6 +69,7 @@ func main() {
 	build.POST("/", routes.CreateBuild)
 	build.GET("/:id", routes.GetById)
 	build.PUT("/:id", routes.Update)
+	build.POST("/:id/view", routes.IncrementViews)
 	build.DELETE("/:build_id/image/:id", routes.RemoveImage)
 
 	builds.GET("/user/:user_id", routes.GetBuilds)

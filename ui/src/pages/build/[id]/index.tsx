@@ -23,15 +23,23 @@ import { ExternalLink, Eye, Flag, Heart, PencilRuler } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 
 const Build = () => {
   const router = useRouter();
   const { user } = useUser();
   const paramId = router.query.id as string;
-  const { getById } = useBuild(paramId);
+  const { getById, incrementView } = useBuild(paramId);
 
   const build = getById.data;
+
+  useEffect(() => {
+    if (paramId) {
+      incrementView.mutate({
+        build_id: paramId,
+      });
+    }
+  }, [paramId]);
 
   if (!build) return null;
 
@@ -50,7 +58,8 @@ const Build = () => {
 
           <div className="flex items-center ">
             <p className=" text-muted-foreground mr-4 flex items-center">
-              <Eye size={20} className="text-muted-foreground mr-2" /> 123
+              <Eye size={20} className="text-muted-foreground mr-2" />{" "}
+              {build.views}
             </p>
 
             <Button variant="ghost" size="icon" asChild>

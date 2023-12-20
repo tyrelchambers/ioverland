@@ -94,3 +94,11 @@ func RemoveImage(c echo.Context) error {
 	return c.String(200, "success")
 
 }
+
+func IncrementViews(c echo.Context) error {
+	id := c.Param("id")
+
+	controllers.IncrementViews(id)
+
+	return c.String(200, "success")
+}

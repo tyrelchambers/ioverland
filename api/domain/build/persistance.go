@@ -17,6 +17,12 @@ func (b *Build) Create(db *gorm.DB) error {
 	return nil
 }
 
+func (b *Build) IncrementViews(db *gorm.DB) error {
+	fmt.Println(b.Uuid)
+	db.Model(&b).Where("uuid = ?", b.Uuid).Update("views", b.Views+1)
+	return nil
+}
+
 func (b *Build) Update(db *gorm.DB) error {
 	db.Transaction(func(tx *gorm.DB) error {
 		tx.Save(&b)

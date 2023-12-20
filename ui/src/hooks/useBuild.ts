@@ -65,5 +65,27 @@ export const useBuild = (id?: string) => {
     },
   });
 
-  return { createBuild, getById, update: updateBuild, removeImage };
+  const incrementView = useMutation({
+    mutationFn: (data: { build_id: string }) => {
+      return axios.post(
+        `http://localhost:8000/api/build/${data.build_id}/view`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+    },
+
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["build", id] });
+    },
+  });
+
+  return {
+    createBuild,
+    getById,
+    update: updateBuild,
+    removeImage,
+    incrementView,
+  };
 };

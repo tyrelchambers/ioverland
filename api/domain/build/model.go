@@ -16,6 +16,7 @@ type Build struct {
 	UserId        string         `gorm:"not null" json:"user_id"`
 	Banner        Media          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"banner"`
 	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"photos"`
+	Views         int            `gorm:"default:0" json:"views"`
 }
 
 type Trip struct {
