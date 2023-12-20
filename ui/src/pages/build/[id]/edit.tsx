@@ -219,6 +219,7 @@ const Edit = () => {
       links: linksToArray,
       modifications: modificationsToArray,
       user_id: user.id,
+      views: build?.views,
     };
 
     if (banner[0]) {
