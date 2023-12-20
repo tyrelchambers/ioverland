@@ -1,3 +1,5 @@
+import Header from "@/components/Header";
+import { H1, H2 } from "@/components/Heading";
 import Uploader from "@/components/Uploader";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,6 +44,7 @@ import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
+import { PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -64,6 +67,8 @@ const Edit = () => {
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
+  const build = getById.data;
+
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
     defaultValues: {
@@ -85,8 +90,8 @@ const Edit = () => {
   });
 
   useEffect(() => {
-    if (id && getById.data) {
-      const data = getById.data;
+    if (id && build) {
+      const data = build;
       const formattedData: NewBuildSchema = {
         ...data,
         trips: {},
@@ -125,13 +130,13 @@ const Edit = () => {
 
       form.reset(formattedData);
     }
-  }, [id, getById.data]);
+  }, [id, build]);
 
   const watchMake = form.watch("vehicle.make");
 
   const addTripHandler = () => {
     const fTrips = formattedTrips(tripsInput, {
-      build_id: String(getById.data?.id),
+      build_id: String(build?.id),
     });
     setTripsInput(fTrips);
     form.setValue("trips", fTrips);
@@ -145,7 +150,7 @@ const Edit = () => {
 
   const addModification = () => {
     const mods = formattedModifications(modifications, {
-      build_id: String(getById.data?.id),
+      build_id: String(build?.id),
     });
 
     setModifications(mods);
@@ -191,14 +196,14 @@ const Edit = () => {
     for (const key in data.modifications) {
       modificationsToArray.push({
         ...data.modifications[key],
-        build_id: Number(getById.data?.id),
+        build_id: Number(build?.id),
       });
     }
 
     for (const key in data.trips) {
       tripsToArray.push({
         ...data.trips[key],
-        build_id: Number(getById.data?.id),
+        build_id: Number(build?.id),
       });
     }
 
@@ -209,7 +214,7 @@ const Edit = () => {
 
     const payload: Payload = {
       ...data,
-      id: getById.data?.id,
+      id: build?.id,
       trips: tripsToArray,
       links: linksToArray,
       modifications: modificationsToArray,
@@ -223,7 +228,7 @@ const Edit = () => {
     if (photos.length !== 0) {
       payload.photos = photos.map((d) => ({
         ...JSON.parse(d.serverId),
-        build_id: getById.data?.uuid,
+        build_id: build?.uuid,
       }));
     }
 
@@ -245,420 +250,428 @@ const Edit = () => {
     image_id: string | undefined,
     url: string | undefined
   ) => {
-    if (!getById.data?.uuid || !image_id || !url) return;
+    if (!build?.uuid || !image_id || !url) return;
 
     removeImage.mutate({
       image_id,
       url,
-      build_id: getById.data?.uuid,
+      build_id: build?.uuid,
     });
   };
 
   return (
-    <div>
-      <Form {...form}>
-        <form
-          className="flex flex-col gap-4 max-w-2xl mx-auto"
-          onSubmit={form.handleSubmit(submitHandler, console.log)}
-        >
-          <h1>Edit</h1>
-          <div className="flex flex-col">
-            <Label className="mb-2">Banner</Label>
-            {getById.data?.banner?.url && getById.data?.banner?.uuid ? (
-              <div className="flex flex-col p-4 bg-card rounded-2xl">
-                <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
-                  <Image
-                    src={getById.data?.banner.url}
-                    alt=""
-                    className=" object-cover"
-                    fill
-                  />
+    <section>
+      <Header />
+      <div className="py-10">
+        <Form {...form}>
+          <form
+            className="flex flex-col gap-4 max-w-2xl mx-auto"
+            onSubmit={form.handleSubmit(submitHandler, console.log)}
+          >
+            <H1>Editing &quot;{build?.name}&quot;</H1>
+            <div className="flex flex-col">
+              <Label className="mb-2">Banner</Label>
+              {build?.banner?.url && build?.banner?.uuid ? (
+                <div className="flex flex-col p-4 bg-card rounded-2xl">
+                  <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
+                    <Image
+                      src={build?.banner.url}
+                      alt=""
+                      className=" object-cover"
+                      fill
+                    />
+                  </div>
+                  <Button
+                    variant="destructive"
+                    className="mt-3"
+                    onClick={() =>
+                      removeImageHandler(build.banner?.uuid, build.banner?.url)
+                    }
+                  >
+                    Delete banner
+                  </Button>
                 </div>
-                <Button
-                  variant="destructive"
-                  className="mt-3"
-                  onClick={() =>
-                    removeImageHandler(
-                      getById.data.banner?.uuid,
-                      getById.data.banner?.url
-                    )
-                  }
-                >
-                  Delete banner
-                </Button>
-              </div>
-            ) : (
-              <Uploader
-                onUpdate={setBanner}
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
-                allowMultiple={false}
-                maxFiles={1}
-                type="banner"
-              />
-            )}
-          </div>
-          <FormField
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <Input {...field} />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <Textarea {...field} />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="budget"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Budget</FormLabel>
-                <Input type="number" {...field} />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid grid-cols-3 items-end gap-4 ">
+              ) : (
+                <Uploader
+                  onUpdate={setBanner}
+                  acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                  allowMultiple={false}
+                  maxFiles={1}
+                  type="banner"
+                />
+              )}
+            </div>
             <FormField
-              name="vehicle.make"
+              name="name"
               render={({ field }) => (
-                <FormItem className=" flex-1">
-                  <FormLabel>Make</FormLabel>
-                  <Combobox
-                    defaultLabel="Select a make..."
-                    searchLabel="makes"
-                    notFoundLabel="No makes found"
-                    data={popularCarBrands}
-                    {...field}
-                  />
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <Input {...field} />
                 </FormItem>
               )}
             />
 
-            {form.getValues("vehicle.make") && (
+            <FormField
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <Textarea {...field} />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="budget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Budget</FormLabel>
+                  <Input type="number" {...field} />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-3 items-end gap-4 ">
               <FormField
-                name="vehicle.model"
+                name="vehicle.make"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem className=" flex-1">
                     <FormLabel>Make</FormLabel>
                     <Combobox
                       defaultLabel="Select a make..."
                       searchLabel="makes"
                       notFoundLabel="No makes found"
-                      data={carModels[watchMake]}
+                      data={popularCarBrands}
                       {...field}
                     />
                   </FormItem>
                 )}
               />
-            )}
 
-            {form.getValues("vehicle.model") && (
-              <FormField
-                name="vehicle.year"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Year</FormLabel>
-                    <Input type="number" min={0} {...field} />
-                  </FormItem>
-                )}
-              />
-            )}
-          </div>
-
-          <Separator className="my-4" />
-
-          <div className="flex flex-col">
-            <p className="font-serif text-2xl">Trips</p>
-            <div className="flex flex-col gap-2">
-              {Object.keys(tripsInput).map((input, index) => {
-                return (
-                  <div className="bg-card rounded-xl p-4" key={input}>
-                    <header className="flex flex-row justify-between">
-                      <p className="font-serif">Trip #{index + 1}</p>
-                      <Button
-                        type="button"
-                        variant="link"
-                        className="text-red-500"
-                        size="sm"
-                        onClick={() => removeTripHandler(input)}
-                      >
-                        Remove
-                      </Button>
-                    </header>
-                    <div className="flex flex-1 gap-4">
-                      <FormField
-                        name={`trips[${input}].name`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            <FormLabel>Name</FormLabel>
-                            <Input
-                              placeholder="eg: Valley of the Gods Road, The Alpine Loop"
-                              {...field}
-                            />
-                          </FormItem>
-                        )}
+              {form.getValues("vehicle.make") && (
+                <FormField
+                  name="vehicle.model"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Make</FormLabel>
+                      <Combobox
+                        defaultLabel="Select a make..."
+                        searchLabel="makes"
+                        notFoundLabel="No makes found"
+                        data={carModels[watchMake]}
+                        {...field}
                       />
-
-                      <FormField
-                        name={`trips[${input}].year`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Year</FormLabel>
-                            <Input type="number" min={0} {...field} />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <Button
-              type="button"
-              variant="secondary"
-              className="mt-4"
-              onClick={addTripHandler}
-            >
-              Add trip
-            </Button>
-          </div>
-          <Separator className="my-4" />
-
-          <section className="flex flex-col">
-            <h2 className="font-serif text-2xl">Modifications</h2>
-            {Object.keys(modifications).map((input, index) => {
-              const itemKey = form.getValues(`modifications`) as {
-                [key: string]: Modification;
-              };
-              const item = itemKey[input];
-              const subcategories =
-                item.category && findCategorySubcategories(item.category);
-              return (
-                <div className="bg-card rounded-xl p-4" key={input}>
-                  <header className="flex flex-row justify-between">
-                    <p className="font-serif">Modification #{index + 1}</p>
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="text-red-500"
-                      size="sm"
-                      onClick={() => removeModificationHandler(input)}
-                    >
-                      Remove
-                    </Button>
-                  </header>
-                  <FormField
-                    name={`modifications[${input}].category`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Combobox
-                          defaultLabel="Select a make..."
-                          searchLabel="makes"
-                          notFoundLabel="No makes found"
-                          data={modificationCategories}
-                          {...field}
-                        />
-                      </FormItem>
-                    )}
-                  />
-
-                  {item.category && subcategories && (
-                    <FormField
-                      name={`modifications[${input}].subcategory`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Category</FormLabel>
-                          <Combobox
-                            defaultLabel="Select a make..."
-                            searchLabel="makes"
-                            notFoundLabel="No makes found"
-                            data={subcategories}
-                            {...field}
-                          />
-                        </FormItem>
-                      )}
-                    />
+                    </FormItem>
                   )}
+                />
+              )}
 
-                  <div className="flex gap-3">
-                    <FormField
-                      name={`modifications[${input}].name`}
-                      render={({ field }) => (
-                        <div className="flex-1">
-                          <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <Input
-                              placeholder="What's the name of the modification?"
-                              {...field}
-                            />
-                          </FormItem>
-                        </div>
-                      )}
-                    />
+              {form.getValues("vehicle.model") && (
+                <FormField
+                  name="vehicle.year"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Year</FormLabel>
+                      <Input type="number" min={0} {...field} />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
 
-                    <FormField
-                      name={`modifications[${input}].price`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Price</FormLabel>
-                          <Input
-                            type="number"
-                            min={0}
-                            placeholder="What's the name of the modification?"
-                            {...field}
-                          />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+            <Separator className="my-4" />
 
-            <Button
-              type="button"
-              variant="secondary"
-              className="mt-4"
-              onClick={addModification}
-            >
-              Add modification
-            </Button>
-          </section>
-          <Separator className="my-4" />
-
-          <section className="flex flex-col">
-            <h2 className="font-serif text-2xl leading-tight">Links</h2>
-            <p>
-              Include any links you&apos;d like to have included with this
-              build.
-            </p>
-
-            {Object.keys(buildLinks).map((input, index) => {
-              return (
-                <div className="bg-card rounded-xl p-4" key={input}>
-                  <header className="flex flex-row justify-between">
-                    <p className="font-serif">Link #{index + 1}</p>
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="text-red-500"
-                      size="sm"
-                      onClick={() => removeLinkHandler(input)}
-                    >
-                      Remove
-                    </Button>
-                  </header>
-                  <FormField
-                    name={`links[${input}]`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <Input placeholder="https://" {...field} />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              );
-            })}
-
-            <Button
-              type="button"
-              variant="secondary"
-              className="mt-4"
-              onClick={addLink}
-            >
-              Add link
-            </Button>
-          </section>
-          <Separator className="my-4" />
-
-          <div className="flex flex-col">
-            <Label className="mb-2">Photos</Label>
-            {getById.data?.photos && (
-              <div className="grid grid-cols-2 gap-4">
-                {getById.data?.photos?.map((photo, index) => {
+            <div className="flex flex-col">
+              <H2>
+                Trips{" "}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={addTripHandler}
+                >
+                  <PlusCircle />
+                </Button>
+              </H2>
+              <div className="flex flex-col mt-6 gap-2">
+                {Object.keys(tripsInput).map((input, index) => {
                   return (
-                    <div
-                      className="bg-card rounded-xl p-4 relative flex flex-col items-center gap-4"
-                      key={photo.id}
-                    >
-                      <div className="relative aspect-square h-[200px]">
-                        <Image
-                          src={photo.url}
-                          alt=""
-                          fill
-                          className="object-cover"
+                    <div className="bg-card rounded-xl p-4" key={input}>
+                      <header className="flex flex-row justify-between">
+                        <p className="font-serif">Trip #{index + 1}</p>
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="text-red-500"
+                          size="sm"
+                          onClick={() => removeTripHandler(input)}
+                        >
+                          Remove
+                        </Button>
+                      </header>
+                      <div className="flex flex-1 gap-4">
+                        <FormField
+                          name={`trips[${input}].name`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Name</FormLabel>
+                              <Input
+                                placeholder="eg: Valley of the Gods Road, The Alpine Loop"
+                                {...field}
+                              />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          name={`trips[${input}].year`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Year</FormLabel>
+                              <Input type="number" min={0} {...field} />
+                            </FormItem>
+                          )}
                         />
                       </div>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() =>
-                          removeImageHandler(photo.uuid, photo.url)
-                        }
-                      >
-                        Remove photo
-                      </Button>
                     </div>
                   );
                 })}
               </div>
-            )}
-
-            <div className="mt-8">
-              <Label>
-                Upload photos - max 6{" "}
-                <span className="italic text-muted-foreground">
-                  ({6 - (getById.data?.photos?.length || 0)} remaining )
-                </span>
-              </Label>
-              <Uploader
-                files={photos as any}
-                onUpdate={setPhotos}
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
-                allowMultiple={true}
-                maxFiles={6 - (getById.data?.photos?.length || 0)}
-                type="photos"
-              />
             </div>
-          </div>
+            <Separator className="my-4" />
 
-          <Separator className="my-4" />
-          <FormField
-            control={form.control}
-            name="private"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Make this build private?</FormLabel>
-                  <FormDescription>
-                    Making this build private will hide it from other users so
-                    no one can see it.
-                  </FormDescription>
+            <section className="flex flex-col">
+              <H2>
+                Modifications{" "}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={addModification}
+                >
+                  <PlusCircle />
+                </Button>
+              </H2>
+              <div className="flex flex-col gap-3 mt-6">
+                {Object.keys(modifications).map((input, index) => {
+                  const itemKey = form.getValues(`modifications`) as {
+                    [key: string]: Modification;
+                  };
+                  const item = itemKey[input];
+                  const subcategories =
+                    item?.category && findCategorySubcategories(item.category);
+                  return (
+                    <div className="bg-card rounded-xl p-4" key={input}>
+                      <header className="flex flex-row justify-between">
+                        <p className="font-serif">Modification #{index + 1}</p>
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="text-red-500"
+                          size="sm"
+                          onClick={() => removeModificationHandler(input)}
+                        >
+                          Remove
+                        </Button>
+                      </header>
+                      <FormField
+                        name={`modifications[${input}].category`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <Combobox
+                              defaultLabel="Select a make..."
+                              searchLabel="makes"
+                              notFoundLabel="No makes found"
+                              data={modificationCategories}
+                              {...field}
+                            />
+                          </FormItem>
+                        )}
+                      />
+
+                      {item?.category && subcategories && (
+                        <FormField
+                          name={`modifications[${input}].subcategory`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category</FormLabel>
+                              <Combobox
+                                defaultLabel="Select a make..."
+                                searchLabel="makes"
+                                notFoundLabel="No makes found"
+                                data={subcategories}
+                                {...field}
+                              />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+
+                      <div className="flex gap-3">
+                        <FormField
+                          name={`modifications[${input}].name`}
+                          render={({ field }) => (
+                            <div className="flex-1">
+                              <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <Input
+                                  placeholder="What's the name of the modification?"
+                                  {...field}
+                                />
+                              </FormItem>
+                            </div>
+                          )}
+                        />
+
+                        <FormField
+                          name={`modifications[${input}].price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Price</FormLabel>
+                              <Input
+                                type="number"
+                                min={0}
+                                placeholder="What's the name of the modification?"
+                                {...field}
+                              />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+            <Separator className="my-4" />
+
+            <section className="flex flex-col">
+              <H2>
+                Links{" "}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={addLink}
+                >
+                  <PlusCircle />
+                </Button>
+              </H2>
+              <p className="text-muted-foreground">
+                Include any links you&apos;d like to have included with this
+                build.
+              </p>
+
+              <div className="flex flex-col gap-3 mt-6">
+                {Object.keys(buildLinks).map((input, index) => {
+                  return (
+                    <div className="bg-card rounded-xl p-4" key={input}>
+                      <header className="flex flex-row justify-between">
+                        <p className="font-serif">Link #{index + 1}</p>
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="text-red-500"
+                          size="sm"
+                          onClick={() => removeLinkHandler(input)}
+                        >
+                          Remove
+                        </Button>
+                      </header>
+                      <FormField
+                        name={`links[${input}]`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <Input placeholder="https://" {...field} />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+            <Separator className="my-4" />
+
+            <div className="flex flex-col">
+              <Label className="mb-2">Photos</Label>
+              {build?.photos && (
+                <div className="grid grid-cols-2 gap-4">
+                  {build?.photos?.map((photo, index) => {
+                    return (
+                      <div
+                        className="bg-card rounded-xl p-4 relative flex flex-col items-center gap-4"
+                        key={photo.id}
+                      >
+                        <div className="relative aspect-square h-[200px]">
+                          <Image
+                            src={photo.url}
+                            alt=""
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() =>
+                            removeImageHandler(photo.uuid, photo.url)
+                          }
+                        >
+                          Remove photo
+                        </Button>
+                      </div>
+                    );
+                  })}
                 </div>
-              </FormItem>
-            )}
-          />
-          <Button>Save changes</Button>
-        </form>
-      </Form>
-    </div>
+              )}
+
+              <div className="mt-8">
+                <Label>
+                  Upload photos - max 6{" "}
+                  <span className="italic text-muted-foreground">
+                    ({6 - (build?.photos?.length || 0)} remaining )
+                  </span>
+                </Label>
+                <Uploader
+                  files={photos as any}
+                  onUpdate={setPhotos}
+                  acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                  allowMultiple={true}
+                  maxFiles={6 - (build?.photos?.length || 0)}
+                  type="photos"
+                />
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+            <FormField
+              control={form.control}
+              name="private"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Make this build private?</FormLabel>
+                    <FormDescription>
+                      Making this build private will hide it from other users so
+                      no one can see it.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <Button>Save changes</Button>
+          </form>
+        </Form>
+      </div>
+    </section>
   );
 };
 

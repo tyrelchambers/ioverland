@@ -19,7 +19,7 @@ import {
   groupModificationsByCategory,
 } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Eye, Flag, Heart, PencilRuler } from "lucide-react";
+import { ExternalLink, Eye, Flag, Heart, PencilRuler } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -32,6 +32,9 @@ const Build = () => {
   const { getById } = useBuild(paramId);
 
   const build = getById.data;
+
+  if (!build) return null;
+
   return (
     <section>
       <Header />
@@ -40,7 +43,7 @@ const Build = () => {
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-20">
         <span className="flex items-center text-muted-foreground gap-1 mb-4">
           <Heart />
-          <span className="font-bold">20</span> likes
+          <span className="font-bold">20</span>
         </span>
         <div className="flex justify-between items-center w-full">
           <H1 className="text-7xl font-serif font-light mb-8">{build?.name}</H1>
@@ -50,14 +53,6 @@ const Build = () => {
               <Eye size={20} className="text-muted-foreground mr-2" /> 123
             </p>
 
-            {build?.user_id === user?.id && (
-              <Button variant="ghost" size="icon" asChild>
-                <Link href={`/build/${build?.uuid}/edit`}>
-                  <PencilRuler size={20} className="text-green-500" />
-                </Link>
-              </Button>
-            )}
-
             <Button variant="ghost" size="icon" asChild>
               <Link href="#">
                 <Flag size={20} className="text-muted-foreground" />
@@ -66,6 +61,17 @@ const Build = () => {
             <Button variant="ghost" size="icon">
               <Heart size={20} className="text-muted-foreground" />
             </Button>
+            {build?.user_id === user?.id && (
+              <Button size="sm" asChild>
+                <Link
+                  href={`/build/${build?.uuid}/edit`}
+                  className="text-green-foreground"
+                >
+                  <PencilRuler size={18} className="mr-2" />
+                  Edit
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 
@@ -136,33 +142,76 @@ const Build = () => {
             <H2 className="mb-6">Modifications</H2>
             {build?.modifications && (
               <div className="grid grid-cols-3 gap-6">
-                {Object.values(
+                {Object.entries(
                   groupModificationsByCategory(build.modifications)
-                ).map((mod, i) => (
-                  <div
-                    key={mod[i].category}
-                    className="border-border border rounded-xl p-4"
-                  >
-                    <p className="font-serif text-xl mb-6">
-                      {findCategory(mod[i].category)?.label}
-                    </p>
-                    <ul className="flex flex-col  gap-4">
-                      {mod.map((mod) => (
-                        <li
-                          key={mod.id}
-                          className="flex justify-between odd:bg-muted p-2 px-4 rounded-md"
-                        >
-                          <p className="text-muted-foreground font-bold">
-                            {mod.name}
-                          </p>
-                          <p className="text-muted-foreground">${mod.price}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                ).map(([i, mod]) => {
+                  const category = findCategory(i);
+                  return (
+                    <div
+                      key={i}
+                      className="border-border border rounded-xl p-4"
+                    >
+                      <p className="font-serif text-xl mb-6">
+                        {category?.label}
+                      </p>
+                      <ul className="flex flex-col  gap-4">
+                        {mod.map((mod) => (
+                          <li
+                            key={mod.id}
+                            className="flex justify-between odd:bg-muted p-2 px-4 rounded-md"
+                          >
+                            <p className="text-muted-foreground font-bold">
+                              {mod.name}
+                            </p>
+                            <p className="text-muted-foreground">
+                              ${mod.price}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
               </div>
             )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col my-10">
+              <H2 className="mb-6">Trips</H2>
+              <div className="flex flex-col gap-3">
+                {build?.trips &&
+                  build.trips.map((trip) => (
+                    <div
+                      key={trip.uuid}
+                      className="border border-border rounded-xl p-3 flex justify-between items-start"
+                    >
+                      <p className="font-bold">{trip.name}</p>
+                      <p>{trip.year}</p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* find out why modifications are not saving during edit */}
+
+            <div className="flex flex-col my-10">
+              <H2 className="mb-6">Links</H2>
+              <div className="flex flex-col gap-3">
+                {build?.links &&
+                  build.links.map((link, id) => (
+                    <a
+                      href={link}
+                      key={link + "_" + id}
+                      className="border border-border rounded-xl p-3 flex gap-3 items-center hover:underline hover:text-blue-400"
+                      target="_blank"
+                    >
+                      <ExternalLink size={16} />
+                      <p className="truncate">{link}</p>
+                    </a>
+                  ))}
+              </div>
+            </div>
           </div>
         </section>
       </section>

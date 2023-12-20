@@ -18,11 +18,19 @@ func (b *Build) Create(db *gorm.DB) error {
 }
 
 func (b *Build) Update(db *gorm.DB) error {
-	fmt.Println(b.Photos)
-	db.Save(&b)
-	db.Model(&b).Association("Trips").Replace(b.Trips)
-	db.Model(&b).Association("Modifications").Replace(b.Modifications)
-	db.Model(&b).Association("Photos").Append(b.Photos)
+	db.Transaction(func(tx *gorm.DB) error {
+		tx.Save(&b)
+		tx.Model(&b).Association("Trips").Replace(&b.Trips)
+		tx.Model(&b).Association("Modifications").Replace(&b.Modifications)
+		tx.Model(&b).Association("Photos").Append(&b.Photos)
+
+		return nil
+	})
+
+	if db.Error != nil {
+		fmt.Println(db.Error)
+		return db.Error
+	}
 
 	return nil
 }

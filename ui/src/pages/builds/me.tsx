@@ -25,7 +25,9 @@ const Me = () => {
                 <p className="mt-3 font-bold text-xl font-serif text-foreground">
                   {build.name}
                 </p>
-                <p className="text-muted-foreground">{build.description}</p>
+                <p className="text-muted-foreground line-clamp-3">
+                  {build.description}
+                </p>
               </div>
             </Link>
           ))}
