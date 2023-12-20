@@ -100,8 +100,8 @@ const Build = () => {
         <div className="flex justify-between items-center w-full">
           <H1 className="text-7xl font-serif font-light mb-8">{build?.name}</H1>
 
-          <div className="flex items-center ">
-            <p className=" text-muted-foreground mr-4 flex items-center">
+          <div className="flex items-center gap-3">
+            <p className=" text-muted-foreground flex items-center">
               <Eye size={20} className="text-muted-foreground mr-2" />{" "}
               {build.views}
             </p>
