@@ -120,3 +120,21 @@ func Dislike(build_id, user_id string) error {
 
 	return nil
 }
+func DeleteBuild(id string) error {
+
+	build, err := GetById(id)
+	banner := build.Banner
+	photos := build.Photos
+
+	DeleteImageFromStorage(banner.Url)
+
+	for _, v := range photos {
+		DeleteImageFromStorage(v.Url)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return build.Delete(db.Client)
+}

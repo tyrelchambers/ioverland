@@ -36,7 +36,7 @@ export const newBuildSchema = z.object({
   modifications: z.record(z.string(), modification).optional(),
   private: z.boolean(),
   views: z.number().optional(),
-  likes: z.array(z.string()).optional(),
+  likes: z.array(z.string()).optional().nullable(),
 });
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;

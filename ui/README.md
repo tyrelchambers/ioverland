@@ -5,3 +5,6 @@
 - ability to document the trips a vehicle has gone on
 - add DMs
 - add comments on builds and trips
+- Report a trip or build
+- Show number of comments on a builds
+- implement build visibility functionality

@@ -2,7 +2,7 @@ import { Trip } from "@/types";
 import React from "react";
 
 const Trips = ({ trips }: { trips: Trip[] | undefined }) => {
-  if (!trips) return null;
+  if (!trips || trips.length === 0) return <div>No trips</div>;
 
   return (
     <div className="flex flex-col gap-3">

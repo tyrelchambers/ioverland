@@ -72,6 +72,7 @@ func main() {
 	build.POST("/:id/view", routes.IncrementViews)
 	build.POST("/:id/like", routes.Like)
 	build.POST("/:id/dislike", routes.Dislike)
+	build.DELETE("/:id/delete", routes.Delete)
 
 	build.DELETE("/:build_id/image/:id", routes.RemoveImage)
 

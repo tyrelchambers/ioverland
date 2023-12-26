@@ -53,7 +53,7 @@ import { useForm } from "react-hook-form";
 const Edit = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { getById, update, removeImage } = useBuild(id as string);
+  const { getById, update, removeImage, deleteBuild } = useBuild(id as string);
   const { user } = useUser();
   const [tripsInput, setTripsInput] = useState<{
     [key: string]: Trip;
@@ -261,13 +261,38 @@ const Edit = () => {
     });
   };
 
+  const deleteBuildHandler = () => {
+    if (!build?.uuid) return;
+    deleteBuild.mutate(
+      {
+        build_id: build?.uuid,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            variant: "success",
+            title: "Build deleted",
+            description: "Your build has been deleted!",
+          });
+          router.push("/builds/me");
+        },
+        onError: () => {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Something went wrong",
+          });
+        },
+      }
+    );
+  };
   return (
     <section>
       <Header />
-      <div className="py-10">
+      <div className="py-10  max-w-2xl mx-auto">
         <Form {...form}>
           <form
-            className="flex flex-col gap-4 max-w-2xl mx-auto"
+            className="flex flex-col gap-4"
             onSubmit={form.handleSubmit(submitHandler, console.log)}
           >
             <H1>Editing &quot;{build?.name}&quot;</H1>
@@ -672,6 +697,22 @@ const Edit = () => {
             <Button>Save changes</Button>
           </form>
         </Form>
+        <Separator className="my-10" />
+        <section className="flex flex-col">
+          <H2>Danger zone</H2>
+          <p className="text-muted-foreground">
+            This action cannot be undone. Are you sure you want to delete this
+            build?
+          </p>
+
+          <Button
+            variant="destructiveMuted"
+            className="mt-6"
+            onClick={deleteBuildHandler}
+          >
+            Delete build
+          </Button>
+        </section>
       </div>
     </section>
   );

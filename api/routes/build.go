@@ -126,3 +126,15 @@ func Dislike(c echo.Context) error {
 
 	return c.String(200, "success")
 }
+
+func Delete(c echo.Context) error {
+	id := c.Param("id")
+
+	err := controllers.DeleteBuild(id)
+
+	if err != nil {
+		return echo.NewHTTPError(500, err)
+	}
+
+	return c.String(200, "success")
+}

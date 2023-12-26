@@ -111,6 +111,20 @@ export const useBuild = (id?: string) => {
     },
   });
 
+  const deleteBuild = useMutation({
+    mutationFn: (data: { build_id: string }) => {
+      return axios.delete(
+        `http://localhost:8000/api/build/${data.build_id}/delete`,
+        {
+          withCredentials: true,
+        }
+      );
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["user_builds", id] });
+    },
+  });
+
   return {
     createBuild,
     getById,
@@ -119,5 +133,6 @@ export const useBuild = (id?: string) => {
     incrementView,
     likeBuild,
     dislikeBuild,
+    deleteBuild,
   };
 };

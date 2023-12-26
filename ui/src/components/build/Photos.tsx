@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 
 const Photos = ({ photos }: { photos: Media[] | undefined }) => {
-  if (!photos) return null;
+  if (!photos || photos.length === 0) return <div>No photos</div>;
 
   return (
     <div className="grid grid-cols-2 gap-8">
@@ -14,7 +14,7 @@ const Photos = ({ photos }: { photos: Media[] | undefined }) => {
           target="_blank"
           key={photo.uuid}
           className={cn(
-            "relative  w-full aspect-square rounded-xl overflow-hidden shadow-xl ",
+            "relative  w-full aspect-square overflow-hidden shadow-xl ",
             i % 2 && "mt-[100px]"
           )}
         >

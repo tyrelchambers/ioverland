@@ -2,7 +2,7 @@ import { ExternalLink } from "lucide-react";
 import React from "react";
 
 const Links = ({ links }: { links: (string | undefined)[] | undefined }) => {
-  if (!links) return null;
+  if (!links || links.length === 0) return <div>No links</div>;
 
   return (
     <div className="flex flex-col gap-3">

@@ -37,7 +37,7 @@ func AllByUser(db *gorm.DB, user_id string) ([]Build, error) {
 
 	var builds []Build
 
-	err := db.Preload("Banner").Where("user_id = ?", user_id).Find(&builds).Error
+	err := db.Order("name").Preload("Banner", "type='banner'").Where("user_id = ?", user_id).Find(&builds).Error
 
 	if err != nil {
 		return nil, err
@@ -88,6 +88,17 @@ func (b *Build) DisLike(db *gorm.DB, user_id string) error {
 	}
 
 	db.Model(&b).Where("uuid = ?", b.Uuid).Update("likes", likes)
+
+	return nil
+}
+
+func (b *Build) Delete(db *gorm.DB) error {
+
+	err := db.Delete(&b).Error
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

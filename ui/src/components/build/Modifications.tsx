@@ -7,7 +7,8 @@ const Modifications = ({
 }: {
   modifications: Modification[] | undefined;
 }) => {
-  if (!modifications) return null;
+  if (!modifications || modifications.length === 0)
+    return <div>No modifications</div>;
   return (
     <div className="grid grid-cols-3 gap-6">
       {Object.entries(groupModificationsByCategory(modifications)).map(

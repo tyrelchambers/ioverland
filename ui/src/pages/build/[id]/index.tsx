@@ -9,21 +9,9 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
-import {
-  cn,
-  findCategory,
-  groupModificationsByCategory,
-  hasLiked,
-} from "@/lib/utils";
+import { hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import {
-  ExternalLink,
-  Eye,
-  Flag,
-  Heart,
-  HeartOff,
-  PencilRuler,
-} from "lucide-react";
+import { Eye, Flag, Heart, HeartOff, PencilRuler } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -47,7 +35,7 @@ const Build = () => {
   }, [paramId]);
 
   useEffect(() => {
-    if (paramId && build?.likes && user?.id) {
+    if (paramId && user?.id) {
       setLiked(hasLiked(build?.likes, user?.id));
     }
   }, [paramId, build?.likes, user?.id]);
@@ -111,12 +99,6 @@ const Build = () => {
               {build.views}
             </p>
 
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="#">
-                <Flag size={20} className="text-muted-foreground" />
-              </Link>
-            </Button>
-
             {build?.user_id === user?.id && (
               <Button size="sm" asChild>
                 <Link
@@ -132,7 +114,7 @@ const Build = () => {
         </div>
 
         {build?.banner && (
-          <div className="relative w-full h-[700px] rounded-xl overflow-hidden shadow-xl">
+          <div className="relative w-full h-[700px]  overflow-hidden shadow-xl">
             <Image
               src={build.banner.url}
               alt=""
@@ -145,7 +127,7 @@ const Build = () => {
           <Vehicle {...build.vehicle} />
         </div>
         <section>
-          <div className="min-h-[400px] flex flex-col py-10">
+          <div className="flex flex-col py-10">
             <p className="mb-8 max-w-3xl whitespace-pre-wrap leading-relaxed">
               {build?.description}
             </p>

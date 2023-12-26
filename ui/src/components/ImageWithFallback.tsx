@@ -6,6 +6,8 @@ interface Props {
   url?: string;
 }
 const ImageWithFallback = ({ url }: Props) => {
+  console.log(url);
+
   return url ? (
     <Image src={url} alt="" fill objectFit="cover" />
   ) : (
