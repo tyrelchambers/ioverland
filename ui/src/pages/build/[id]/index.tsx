@@ -92,7 +92,7 @@ const Build = () => {
     <section>
       <Header />
 
-      {/* <section className="h-screen absolute inset-0 z-0 bg-stone-900 clip"></section> */}
+      <section className="h-screen absolute inset-0 z-0 bg-stone-100 clip"></section>
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-20">
         <span className="flex items-center text-muted-foreground gap-1 mb-4">
           {liked !== undefined && <LikeButton />}
@@ -176,7 +176,9 @@ const Build = () => {
             <H2 className="mb-6">The Gallery</H2>
             <div className="grid grid-cols-2 gap-8">
               {build?.photos?.map((photo, i) => (
-                <div
+                <a
+                  href={photo.url}
+                  target="_blank"
                   key={photo.uuid}
                   className={cn(
                     "relative  w-full aspect-square rounded-xl overflow-hidden shadow-xl ",
@@ -184,7 +186,7 @@ const Build = () => {
                   )}
                 >
                   <Image src={photo.url} alt="" fill className="object-cover" />
-                </div>
+                </a>
               ))}
             </div>
           </div>
