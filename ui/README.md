@@ -3,3 +3,5 @@
 - Redesign Trips section of build
 - Change "Contact" to "Message" in build ID page
 - ability to document the trips a vehicle has gone on
+- add DMs
+- add comments on builds and trips

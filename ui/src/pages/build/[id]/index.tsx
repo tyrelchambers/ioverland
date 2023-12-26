@@ -1,5 +1,10 @@
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import Links from "@/components/build/Links";
+import Modifications from "@/components/build/Modifications";
+import Photos from "@/components/build/Photos";
+import Trips from "@/components/build/Trips";
+import Vehicle from "@/components/build/Vehicle";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -137,17 +142,7 @@ const Build = () => {
           </div>
         )}
         <div className="flex gap-10 items-center mt-2">
-          <p className="flex gap-2 capitalize">
-            <span className="text-foreground font-bold">
-              {build?.vehicle.make}
-            </span>{" "}
-            <span className="text-muted-foreground">
-              {build?.vehicle.model}
-            </span>{" "}
-            <span className="text-muted-foreground font-light">
-              {build?.vehicle.year}
-            </span>
-          </p>
+          <Vehicle {...build.vehicle} />
         </div>
         <section>
           <div className="min-h-[400px] flex flex-col py-10">
@@ -162,11 +157,6 @@ const Build = () => {
                   </Avatar>
                 </div>
                 <p className="font-bold flex-1">{user.fullName}</p>
-                <div className="flex ml-8">
-                  <Button variant="secondary" title="Message">
-                    Contact
-                  </Button>
-                </div>
               </div>
             )}
           </div>
@@ -174,96 +164,23 @@ const Build = () => {
 
           <div className="flex flex-col my-10">
             <H2 className="mb-6">The Gallery</H2>
-            <div className="grid grid-cols-2 gap-8">
-              {build?.photos?.map((photo, i) => (
-                <a
-                  href={photo.url}
-                  target="_blank"
-                  key={photo.uuid}
-                  className={cn(
-                    "relative  w-full aspect-square rounded-xl overflow-hidden shadow-xl ",
-                    i % 2 && "mt-[100px]"
-                  )}
-                >
-                  <Image src={photo.url} alt="" fill className="object-cover" />
-                </a>
-              ))}
-            </div>
+            <Photos photos={build?.photos} />
           </div>
 
           <div className="flex flex-col my-10">
             <H2 className="mb-6">Modifications</H2>
-            {build?.modifications && (
-              <div className="grid grid-cols-3 gap-6">
-                {Object.entries(
-                  groupModificationsByCategory(build.modifications)
-                ).map(([i, mod]) => {
-                  const category = findCategory(i);
-                  return (
-                    <div
-                      key={i}
-                      className="border-border border rounded-xl p-4"
-                    >
-                      <p className="font-serif text-xl mb-6">
-                        {category?.label}
-                      </p>
-                      <ul className="flex flex-col  gap-4">
-                        {mod.map((mod) => (
-                          <li
-                            key={mod.id}
-                            className="flex justify-between odd:bg-muted p-2 px-4 rounded-md"
-                          >
-                            <p className="text-muted-foreground font-bold">
-                              {mod.name}
-                            </p>
-                            <p className="text-muted-foreground">
-                              ${mod.price}
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <Modifications modifications={build?.modifications} />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col my-10">
               <H2 className="mb-6">Trips</H2>
-              <div className="flex flex-col gap-3">
-                {build?.trips &&
-                  build.trips.map((trip) => (
-                    <div
-                      key={trip.uuid}
-                      className="border border-border rounded-xl p-3 flex justify-between items-start"
-                    >
-                      <p className="font-bold">{trip.name}</p>
-                      <p>{trip.year}</p>
-                    </div>
-                  ))}
-              </div>
+              <Trips trips={build?.trips} />
             </div>
-
-            {/* find out why modifications are not saving during edit */}
 
             <div className="flex flex-col my-10">
               <H2 className="mb-6">Links</H2>
-              <div className="flex flex-col gap-3">
-                {build?.links &&
-                  build.links.map((link, id) => (
-                    <a
-                      href={link}
-                      key={link + "_" + id}
-                      className="border border-border rounded-xl p-3 flex gap-3 items-center hover:underline hover:text-blue-400"
-                      target="_blank"
-                    >
-                      <ExternalLink size={16} />
-                      <p className="truncate">{link}</p>
-                    </a>
-                  ))}
-              </div>
+              <Links links={build?.links} />
             </div>
           </div>
         </section>
