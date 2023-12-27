@@ -1,3 +1,5 @@
+# Roadmap
+
 - Figure out a way to do the view and followers on the server rather than sending via the client edit
 - Refactor types and stuff
 - Redesign Trips section of build
@@ -10,3 +12,10 @@
 - implement build visibility functionality
 - explore page
 - seeding the db with stuff
+- builds should have a count for how many times thye've been saved
+- video support
+
+## Pages
+
+- builds
+- bookmarks/saves

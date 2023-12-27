@@ -8,7 +8,7 @@ import (
 
 func (b *Build) Create(db *gorm.DB) error {
 
-	err := db.Create(&b).Error
+	err := db.Omit("Likes", "Views").Create(&b).Error
 
 	if err != nil {
 		return err
@@ -23,7 +23,7 @@ func (b *Build) IncrementViews(db *gorm.DB) error {
 }
 
 func (b *Build) Update(db *gorm.DB) error {
-	db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&b)
+	db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Likes", "Views").Save(&b)
 
 	if db.Error != nil {
 		fmt.Println(db.Error)
