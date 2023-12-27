@@ -8,3 +8,5 @@
 - Report a trip or build
 - Show number of comments on a builds
 - implement build visibility functionality
+- explore page
+- seeding the db with stuff

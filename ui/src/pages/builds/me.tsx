@@ -17,15 +17,19 @@ const Me = () => {
         <H1 className="mb-10">Viewing all my builds</H1>
         <ul className="grid grid-cols-3 gap-6">
           {builds.data?.map((build) => (
-            <Link href={`/build/${build.uuid}`} key={build.uuid}>
-              <div key={build.uuid}>
+            <Link
+              href={`/build/${build.uuid}`}
+              key={build.uuid}
+              className="builds-item"
+            >
+              <div>
                 <header className="relative h-[240px] shadow-md">
                   <ImageWithFallback url={build.banner?.url} />
                 </header>
                 <p className="mt-3 font-bold text-xl font-serif text-foreground">
                   {build.name}
                 </p>
-                <p className="text-muted-foreground line-clamp-3">
+                <p className="text-muted-foreground line-clamp-3 text-sm mt-1">
                   {build.description}
                 </p>
               </div>

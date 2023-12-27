@@ -93,4 +93,12 @@
   .header-scrolled h2 {
     @apply text-slate-900;
   }
+
+  .builds-item * {
+    @apply transition-all;
+  }
+
+  .builds-item:hover img {
+    @apply scale-105;
+  }
 }
