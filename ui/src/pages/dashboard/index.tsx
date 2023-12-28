@@ -1,17 +1,15 @@
+import BuildItem from "@/components/BuildItem";
 import Header from "@/components/Header";
-import { H1 } from "@/components/Heading";
-import ImageWithFallback from "@/components/ImageWithFallback";
-import { Separator } from "@/components/ui/separator";
+import { H1, H2, H3 } from "@/components/Heading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Bookmark, CarFront, Heart } from "lucide-react";
-import Link from "next/link";
+import { Bookmark, CarFront, Fingerprint, Heart } from "lucide-react";
 import { useRouter } from "next/router";
-import React, { useMemo } from "react";
+import React from "react";
 
 const Dashboard = () => {
   const router = useRouter();
-  const { user } = useDomainUser();
+  const { user, getStripeAccount } = useDomainUser();
 
   const builds = user.data?.builds;
   const bookmarks = user.data?.bookmarks;
@@ -30,6 +28,7 @@ const Dashboard = () => {
       <Header />
 
       <Tabs
+        defaultValue="builds"
         className="w-full"
         value={router.query.tab as string}
         onValueChange={updateUrl}
@@ -46,6 +45,10 @@ const Dashboard = () => {
                 <Bookmark size={18} className="mr-2" />
                 Bookmarks
               </TabsTrigger>
+              <TabsTrigger value="account">
+                <Fingerprint size={18} className="mr-2" />
+                Account
+              </TabsTrigger>
             </TabsList>
           </div>
         </header>
@@ -54,55 +57,36 @@ const Dashboard = () => {
             <TabsContent value="builds">
               <ul className="grid grid-cols-3 gap-6">
                 {builds?.map((build) => (
-                  <Link
-                    href={`/build/${build.uuid}`}
+                  <BuildItem
+                    build={build}
                     key={build.uuid}
-                    className="builds-item"
-                  >
-                    <div>
-                      <header className="relative h-[240px] shadow-md">
-                        <ImageWithFallback url={build.banner?.url} />
-                      </header>
-                      <p className="mt-3 font-bold text-xl font-serif text-foreground">
-                        {build.name}
-                      </p>
-                      <p className="text-muted-foreground line-clamp-3 text-sm mt-1">
-                        {build.description}
-                      </p>
-
+                    footer={
                       <footer className="flex mt-2">
                         <div className="flex text-muted-foreground items-center">
                           <Heart size={16} className="mr-1" />
                           <p className="text-sm">{build.likes?.length}</p>
                         </div>
                       </footer>
-                    </div>
-                  </Link>
+                    }
+                  />
                 ))}
               </ul>
             </TabsContent>
             <TabsContent value="bookmarks">
               <ul className="grid grid-cols-3 gap-6">
                 {bookmarks?.map((build) => (
-                  <Link
-                    href={`/build/${build.uuid}`}
-                    key={build.uuid}
-                    className="builds-item"
-                  >
-                    <div>
-                      <header className="relative h-[240px] shadow-md">
-                        <ImageWithFallback url={build.banner?.url} />
-                      </header>
-                      <p className="mt-3 font-bold text-xl font-serif text-foreground">
-                        {build.name}
-                      </p>
-                      <p className="text-muted-foreground line-clamp-3 text-sm mt-1">
-                        {build.description}
-                      </p>
-                    </div>
-                  </Link>
+                  <BuildItem build={build} key={build.uuid} />
                 ))}
               </ul>
+            </TabsContent>
+
+            <TabsContent value="account">
+              <H3>Subscription</H3>
+              <p className="text-muted-foreground">
+                Your subscription is managed by Stripe.
+              </p>
+
+              <div></div>
             </TabsContent>
           </section>
         </section>

@@ -99,6 +99,6 @@
   }
 
   .builds-item:hover img {
-    @apply scale-105;
+    transform: scale(1.01);
   }
 }

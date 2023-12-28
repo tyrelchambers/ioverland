@@ -15,6 +15,7 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/stripe/stripe-go/v76"
 )
 
 func main() {
@@ -35,6 +36,9 @@ func main() {
 	if wh_secret == "" {
 		os.Exit(1)
 	}
+
+	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
+	stripe.Key = stripe_key
 
 	// Create new Config to be initialize a Client.
 	cfg := &bunnystorage.Config{
@@ -74,6 +78,7 @@ func main() {
 	upload := api.Group("/upload")
 	webhooks := api.Group("/webhooks")
 	user := api.Group("/user")
+	billing := api.Group("/billing")
 
 	build.POST("/", routes.CreateBuild)
 	build.GET("/:id", routes.GetById)
@@ -87,14 +92,21 @@ func main() {
 
 	builds.GET("/user/:user_id", routes.GetBuilds)
 
+	billing.GET("/checkout", routes.CreateCheckout)
+
 	upload.POST("/process", routes.Upload)
 	upload.POST("/revert", routes.Revert)
-
-	webhooks.POST("/", routes.Webhooks)
 
 	user.POST("/:build_id/bookmark", routes.Bookmark)
 	user.POST("/:build_id/remove-bookmark", routes.Unbookmark)
 	user.GET("/me", routes.GetCurrentUser)
+	user.GET("/me/stripe", routes.GetStripeAccount)
+
+	webhooks.POST("/", routes.Webhooks)
+
+	for _, route := range r.Routes() {
+		fmt.Println(route.Method, route.Path)
+	}
 
 	http.ListenAndServe(":8000", r)
 }

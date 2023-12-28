@@ -27,10 +27,10 @@ const Header = ({ on }: Props) => {
     <header className="header sticky top-0 p-4 transition-all flex items-center z-50">
       <h2 className="text-primary font-bold font-serif">iOverland</h2>
       <div className="flex gap-4 items-center ">
-        <Link href={`/dashboard`}>
-          <Button variant="link">Dashboard</Button>
-        </Link>
         <SignedIn>
+          <Link href={`/dashboard`}>
+            <Button variant="link">Dashboard</Button>
+          </Link>
           <Link href="/build/new">
             <Button
               size="sm"
@@ -44,7 +44,9 @@ const Header = ({ on }: Props) => {
           <UserButton afterSignOutUrl="/" />
         </SignedIn>
         <SignedOut>
-          <Button>Sign up</Button>
+          <Link href="/sign-up">
+            <Button>Sign up</Button>
+          </Link>
         </SignedOut>
       </div>
     </header>

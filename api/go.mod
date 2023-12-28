@@ -3,14 +3,17 @@ module api
 go 1.21.5
 
 require (
+	git.sr.ht/~jamesponddotco/bunnystorage-go v0.3.0
 	github.com/clerkinc/clerk-sdk-go v1.48.4
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.3
+	github.com/lucsky/cuid v1.2.1
+	github.com/stripe/stripe-go/v76 v76.10.0
+	github.com/svix/svix-webhooks v1.15.0
 	gorm.io/gorm v1.25.5
 )
 
 require (
-	git.sr.ht/~jamesponddotco/bunnystorage-go v0.3.0 // indirect
 	git.sr.ht/~jamesponddotco/httpx-go v0.0.0-20230427215504-7c26a7f028e7 // indirect
 	git.sr.ht/~jamesponddotco/pagecache-go v0.0.0-20230411150210-54b704d32088 // indirect
 	git.sr.ht/~jamesponddotco/recache-go v1.0.1 // indirect
@@ -22,8 +25,6 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/lucsky/cuid v1.2.1 // indirect
-	github.com/svix/svix-webhooks v1.15.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect

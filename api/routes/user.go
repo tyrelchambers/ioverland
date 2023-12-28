@@ -3,6 +3,7 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 )
@@ -61,4 +62,16 @@ func GetCurrentUser(c echo.Context) error {
 	}
 
 	return c.JSON(200, domainUser)
+}
+
+func GetStripeAccount(c echo.Context) error {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(user.PrivateMetadata)
+
+	return c.JSON(200, "")
 }

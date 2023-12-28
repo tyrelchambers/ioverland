@@ -46,3 +46,5 @@ func Unbookmark(build_id, user_id string) error {
 func GetCurrentUser(id string) (user.User, error) {
 	return user.FindCurrentUser(db.Client, id)
 }
+
+func GetStripeAccount() {}

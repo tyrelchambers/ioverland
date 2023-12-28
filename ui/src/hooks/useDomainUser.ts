@@ -49,9 +49,21 @@ export const useDomainUser = (id?: string) => {
     },
   });
 
+  const getStripeAccount = useQuery({
+    queryKey: ["stripe-account"],
+    queryFn: (): Promise<DomainUser> => {
+      return axios
+        .get(`http://localhost:8000/api/user/me/stripe`, {
+          withCredentials: true,
+        })
+        .then((res) => res.data);
+    },
+  });
+
   return {
     user: query,
     bookmark,
     removeBookmark,
+    getStripeAccount,
   };
 };
