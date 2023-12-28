@@ -8,14 +8,57 @@ import (
 )
 
 func Bookmark(c echo.Context) error {
-	build_id := c.Param("build_id")
+	var body struct {
+		BuildId string `json:"build_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		return echo.NewHTTPError(500, err)
+	}
+
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
 		return err
 	}
 
-	err = controllers.Bookmark(build_id, user.ID)
+	err = controllers.Bookmark(body.BuildId, user.ID)
 
 	return c.String(200, "success")
+}
+
+func Unbookmark(c echo.Context) error {
+	var body struct {
+		BuildId string `json:"build_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		return echo.NewHTTPError(500, err)
+	}
+
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		return err
+	}
+
+	err = controllers.Unbookmark(body.BuildId, user.ID)
+
+	return c.String(200, "success")
+}
+
+func GetCurrentUser(c echo.Context) error {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		return err
+	}
+
+	domainUser, err := controllers.GetCurrentUser(user.ID)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(200, domainUser)
 }

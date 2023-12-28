@@ -77,3 +77,11 @@ export const buildSchema = z.object({
 });
 
 export type Build = z.infer<typeof buildSchema>;
+
+const domainUser = z.object({
+  uuid: z.string(),
+  builds: z.array(buildSchema),
+  bookmarks: z.array(buildSchema),
+});
+
+export type DomainUser = z.infer<typeof domainUser>;

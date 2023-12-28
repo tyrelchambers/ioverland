@@ -20,8 +20,18 @@ func (u User) Bookmark(db *gorm.DB, build build.Build) error {
 	return nil
 }
 
+func (u User) Unbookmark(db *gorm.DB, build build.Build) error {
+	db.Model(&u).Association("Bookmarks").Delete(&build)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
 func FindUser(db *gorm.DB, uuid string) (User, error) {
 	var user User
-	err := db.Where("uuid = ?", uuid).First(&user).Error
+	err := db.Preload("Bookmarks").Preload("Builds").Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }

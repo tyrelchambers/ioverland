@@ -125,21 +125,6 @@ export const useBuild = (id?: string) => {
     },
   });
 
-  const bookmarkBuild = useMutation({
-    mutationFn: () => {
-      return axios.post(
-        `http://localhost:8000/api/user/${id}/bookmark`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
-    },
-    onSuccess: () => {
-      context.invalidateQueries({ queryKey: ["build", id] });
-    },
-  });
-
   return {
     createBuild,
     getById,
@@ -149,6 +134,5 @@ export const useBuild = (id?: string) => {
     likeBuild,
     dislikeBuild,
     deleteBuild,
-    bookmarkBuild,
   };
 };

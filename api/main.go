@@ -93,6 +93,8 @@ func main() {
 	webhooks.POST("/", routes.Webhooks)
 
 	user.POST("/:build_id/bookmark", routes.Bookmark)
+	user.POST("/:build_id/remove-bookmark", routes.Unbookmark)
+	user.GET("/me", routes.GetCurrentUser)
 
 	http.ListenAndServe(":8000", r)
 }
