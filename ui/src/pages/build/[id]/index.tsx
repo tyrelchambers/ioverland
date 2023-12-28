@@ -9,22 +9,37 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
+import { useDomainUser } from "@/hooks/useDomainUser";
 import { hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Eye, Flag, Heart, HeartOff, PencilRuler } from "lucide-react";
+import {
+  Bookmark,
+  BookmarkCheck,
+  BookmarkMinus,
+  Eye,
+  Heart,
+  HeartOff,
+  PencilRuler,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Build = () => {
   const router = useRouter();
   const { user } = useUser();
-  const paramId = router.query.id as string;
-  const { getById, incrementView, likeBuild, dislikeBuild } = useBuild(paramId);
-  const [liked, setLiked] = useState<boolean | undefined>(undefined);
+  const { user: domainUser, bookmark, removeBookmark } = useDomainUser();
 
-  const build = getById.data;
+  const paramId = router.query.id as string;
+  const {
+    getById: { data: build },
+    incrementView,
+    likeBuild,
+    dislikeBuild,
+  } = useBuild(paramId);
+  const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     if (paramId) {
@@ -68,6 +83,32 @@ const Build = () => {
     );
   };
 
+  const bookmarkHandler = () => {
+    bookmark.mutate(
+      {
+        build_id: paramId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Build bookmarked");
+        },
+      }
+    );
+  };
+
+  const removeBookmarkHandler = () => {
+    removeBookmark.mutate(
+      {
+        build_id: paramId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Build removed from bookmarks");
+        },
+      }
+    );
+  };
+
   const LikeButton = () =>
     liked ? (
       <Button variant="destructive" onClick={dislikeHandler}>
@@ -85,33 +126,46 @@ const Build = () => {
     <section>
       <Header />
 
-      <section className="h-screen absolute inset-0 z-0 bg-stone-100 clip"></section>
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-20">
-        <span className="flex items-center text-muted-foreground gap-1 mb-4">
-          {liked !== undefined && <LikeButton />}
-        </span>
-        <div className="flex justify-between items-center w-full">
-          <H1 className="text-7xl font-serif font-light mb-8">{build?.name}</H1>
+        <header className="flex flex-col">
+          <span className="flex items-center text-muted-foreground gap-1 mb-4">
+            {liked !== undefined && <LikeButton />}
+          </span>
+          <div className="flex justify-between items-center w-full">
+            <H1 className="text-7xl font-serif font-light mb-8">
+              {build?.name}
+            </H1>
 
-          <div className="flex items-center gap-3">
-            <p className=" text-muted-foreground flex items-center">
-              <Eye size={20} className="text-muted-foreground mr-2" />{" "}
-              {build.views}
-            </p>
+            <div className="flex items-center gap-3">
+              <p className=" text-muted-foreground flex items-center">
+                <Eye size={20} className="text-muted-foreground mr-2" />{" "}
+                {build.views}
+              </p>
 
-            {build?.user_id === user?.id && (
-              <Button size="sm" asChild>
-                <Link
-                  href={`/build/${build?.uuid}/edit`}
-                  className="text-green-foreground"
-                >
-                  <PencilRuler size={18} className="mr-2" />
-                  Edit
-                </Link>
-              </Button>
-            )}
+              <BookmarkButton
+                isBookmarked={
+                  domainUser.data?.bookmarks.some(
+                    (bookmark) => bookmark.id === build?.id
+                  ) || false
+                }
+                bookmarkHandler={bookmarkHandler}
+                removeBookmarkHandler={removeBookmarkHandler}
+              />
+
+              {build?.user_id === user?.id && (
+                <Button size="sm" asChild>
+                  <Link
+                    href={`/build/${build?.uuid}/edit`}
+                    className="text-green-foreground"
+                  >
+                    <PencilRuler size={18} className="mr-2" />
+                    Edit
+                  </Link>
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        </header>
 
         {build?.banner && (
           <div className="relative w-full h-[700px]  overflow-hidden shadow-xl">
@@ -170,5 +224,25 @@ const Build = () => {
     </section>
   );
 };
+
+const BookmarkButton = ({
+  isBookmarked,
+  bookmarkHandler,
+  removeBookmarkHandler,
+}: {
+  isBookmarked: boolean;
+  bookmarkHandler: () => void;
+  removeBookmarkHandler: () => void;
+}) =>
+  isBookmarked ? (
+    <Button variant="default" onClick={removeBookmarkHandler}>
+      <BookmarkCheck size={18} className="text-white mr-2" />
+      Bookmarked
+    </Button>
+  ) : (
+    <Button variant="ghost" onClick={bookmarkHandler}>
+      <Bookmark size={18} className="text-muted-foreground" />
+    </Button>
+  );
 
 export default Build;

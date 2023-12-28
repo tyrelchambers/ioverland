@@ -3,6 +3,7 @@ package main
 import (
 	"api/db"
 	"api/domain/build"
+	"api/domain/user"
 	"api/routes"
 	"api/utils"
 	"fmt"
@@ -18,7 +19,7 @@ import (
 
 func main() {
 	db.Init()
-	err := db.Client.AutoMigrate(&build.Build{}, &build.Trip{}, &build.Vehicle{}, &build.Modification{}, &build.Media{})
+	err := db.Client.AutoMigrate(&build.Build{}, &build.Trip{}, &build.Vehicle{}, &build.Modification{}, &build.Media{}, &user.User{})
 
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))
@@ -26,6 +27,12 @@ func main() {
 	utils.ClerkClient = client
 
 	if err != nil {
+		os.Exit(1)
+	}
+
+	wh_secret := utils.GoDotEnvVariable("CLERK_WH_SECRET")
+
+	if wh_secret == "" {
 		os.Exit(1)
 	}
 
@@ -65,6 +72,8 @@ func main() {
 	build := api.Group("/build")
 	builds := api.Group("/builds")
 	upload := api.Group("/upload")
+	webhooks := api.Group("/webhooks")
+	user := api.Group("/user")
 
 	build.POST("/", routes.CreateBuild)
 	build.GET("/:id", routes.GetById)
@@ -80,6 +89,12 @@ func main() {
 
 	upload.POST("/process", routes.Upload)
 	upload.POST("/revert", routes.Revert)
+
+	webhooks.POST("/", routes.Webhooks)
+
+	user.POST("/:build_id/bookmark", routes.Bookmark)
+	user.POST("/:build_id/remove-bookmark", routes.Unbookmark)
+	user.GET("/me", routes.GetCurrentUser)
 
 	http.ListenAndServe(":8000", r)
 }

@@ -72,6 +72,16 @@ export const buildSchema = z.object({
   banner: media.optional(),
   id: z.string().optional(),
   uuid: z.string().optional(),
+  views: z.number().optional(),
+  likes: z.array(z.string()).optional(),
 });
 
 export type Build = z.infer<typeof buildSchema>;
+
+const domainUser = z.object({
+  uuid: z.string(),
+  builds: z.array(buildSchema),
+  bookmarks: z.array(buildSchema),
+});
+
+export type DomainUser = z.infer<typeof domainUser>;

@@ -16,12 +16,17 @@ require (
 	git.sr.ht/~jamesponddotco/recache-go v1.0.1 // indirect
 	git.sr.ht/~jamesponddotco/xstd-go v0.0.0-20230709232003-22489c0e7382 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
+	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/lucsky/cuid v1.2.1 // indirect
+	github.com/svix/svix-webhooks v1.15.0 // indirect
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c // indirect
+	google.golang.org/appengine v1.6.6 // indirect
+	google.golang.org/protobuf v1.25.0 // indirect
 )
 
 require (

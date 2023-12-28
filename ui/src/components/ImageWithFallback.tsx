@@ -6,10 +6,8 @@ interface Props {
   url?: string;
 }
 const ImageWithFallback = ({ url }: Props) => {
-  console.log(url);
-
   return url ? (
-    <Image src={url} alt="" fill objectFit="cover" />
+    <Image src={url} alt="" fill objectFit="cover" priority />
   ) : (
     <div className="w-full h-full bg-gradient-to-tr from-gray-300 to-muted  text-muted-foreground flex justify-center items-center">
       <ImageIcon />
