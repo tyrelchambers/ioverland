@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
-import { H1, H2 } from "@/components/Heading";
+import { H2 } from "@/components/Heading";
+import BuildHeader from "@/components/build/Header";
 import Links from "@/components/build/Links";
 import Modifications from "@/components/build/Modifications";
 import Photos from "@/components/build/Photos";
@@ -11,9 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import { hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Eye, Flag, Heart, HeartOff, PencilRuler } from "lucide-react";
+import { Heart, HeartOff } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -21,7 +21,8 @@ const Build = () => {
   const router = useRouter();
   const { user } = useUser();
   const paramId = router.query.id as string;
-  const { getById, incrementView, likeBuild, dislikeBuild } = useBuild(paramId);
+  const { getById, incrementView, likeBuild, dislikeBuild, bookmarkBuild } =
+    useBuild(paramId);
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const build = getById.data;
@@ -85,33 +86,14 @@ const Build = () => {
     <section>
       <Header />
 
-      <section className="h-screen absolute inset-0 z-0 bg-stone-100 clip"></section>
+      {/* <section className="h-screen absolute inset-0 z-0 bg-stone-900 clip"></section> */}
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-20">
-        <span className="flex items-center text-muted-foreground gap-1 mb-4">
-          {liked !== undefined && <LikeButton />}
-        </span>
-        <div className="flex justify-between items-center w-full">
-          <H1 className="text-7xl font-serif font-light mb-8">{build?.name}</H1>
-
-          <div className="flex items-center gap-3">
-            <p className=" text-muted-foreground flex items-center">
-              <Eye size={20} className="text-muted-foreground mr-2" />{" "}
-              {build.views}
-            </p>
-
-            {build?.user_id === user?.id && (
-              <Button size="sm" asChild>
-                <Link
-                  href={`/build/${build?.uuid}/edit`}
-                  className="text-green-foreground"
-                >
-                  <PencilRuler size={18} className="mr-2" />
-                  Edit
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
+        <BuildHeader
+          build={build}
+          liked={liked ?? false}
+          likeBtn={<LikeButton />}
+          canEdit={build?.user_id === user?.id}
+        />
 
         {build?.banner && (
           <div className="relative w-full h-[700px]  overflow-hidden shadow-xl">

@@ -42,3 +42,19 @@ func GetHeaderValueFromString(src string, key string) string {
 
 	return ""
 }
+
+func GetProperty(data map[string]interface{}, key string) interface{} {
+	value, ok := data[key]
+	if !ok {
+		// Property does not exist
+		return nil
+	}
+	return value
+}
+
+func ConvertToMap(data interface{}) map[string]interface{} {
+	if m, ok := data.(map[string]interface{}); ok {
+		return m
+	}
+	return nil
+}

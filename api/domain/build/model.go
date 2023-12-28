@@ -1,6 +1,8 @@
 package build
 
-import "github.com/lib/pq"
+import (
+	"github.com/lib/pq"
+)
 
 type Build struct {
 	ID            int            `gorm:"primaryKey" json:"id"`
