@@ -4,7 +4,7 @@ import React from "react";
 const Page = () => {
   return (
     <section className="h-screen w-full flex justify-center items-center">
-      <SignUp />
+      <SignUp afterSignUpUrl="onboard" />
     </section>
   );
 };

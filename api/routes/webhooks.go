@@ -5,14 +5,24 @@ import (
 	"api/domain/user"
 	"api/utils"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
+	"net/http"
+	"os"
 
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
+	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/customer"
+	"github.com/stripe/stripe-go/webhook"
 	svix "github.com/svix/svix-webhooks/go"
 )
 
 func Webhooks(c *gin.Context) {
+	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
+	stripe.Key = stripe_key
+
 	var body map[string]interface{}
 
 	payload, err := io.ReadAll(c.Request.Body)
@@ -43,13 +53,37 @@ func Webhooks(c *gin.Context) {
 	}
 
 	if evtType == "user.created" {
-		data := utils.GetProperty(body, "data")
-		id := utils.ConvertToMap(data)["id"]
-
-		newUser := user.User{
-			Uuid: id.(string),
+		var body struct {
+			Data  clerk.User `json:"data"`
+			Event string     `json:"event"`
+			Type  string     `json:"type"`
 		}
 
+		if err := json.Unmarshal(payload, &body); err != nil {
+			fmt.Println(err)
+			c.String(400, "Bad Request")
+			return
+		}
+
+		// Create stripe customer and update customer with clerk ID into metadata
+		params := &stripe.CustomerParams{
+			Email: stripe.String(body.Data.EmailAddresses[0].EmailAddress),
+		}
+		fmt.Println(stripe.Key)
+
+		cus, _ := customer.New(params)
+
+		updateParams := &stripe.CustomerParams{}
+		updateParams.AddMetadata("clerk_id", body.Data.ID)
+
+		customer.Update(cus.ID, updateParams)
+
+		newUser := user.User{
+			Uuid:       body.Data.ID,
+			CustomerId: cus.ID,
+		}
+
+		// Create user from Clerk data
 		err := user.Create(db.Client, &newUser)
 
 		if err != nil {
@@ -60,4 +94,50 @@ func Webhooks(c *gin.Context) {
 	}
 
 	c.String(202, "success")
+}
+
+func StripeWebhooks(c *gin.Context) {
+	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
+	stripe.Key = stripe_key
+
+	const MaxBodyBytes = int64(65536)
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, MaxBodyBytes)
+	payload, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading request body: %v\n", err)
+		c.String(400, "Bad Request")
+		return
+	}
+
+	event := stripe.Event{}
+
+	if err := json.Unmarshal(payload, &event); err != nil {
+		fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+		c.String(400, "Bad Request")
+		return
+	}
+
+	endpointSecret := utils.GoDotEnvVariable("STRIPE_WH_SECRET")
+	signatureHeader := c.Request.Header.Get("Stripe-Signature")
+	event, err = webhook.ConstructEvent(payload, signatureHeader, endpointSecret)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "⚠️  Webhook signature verification failed. %v\n", err)
+		c.String(400, "Bad Request")
+		return
+	}
+
+	switch event.Type {
+	case "customer.created":
+		var customerData stripe.Customer
+
+		if err := json.Unmarshal(event.Data.Raw, &customerData); err != nil {
+			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+			c.String(400, "Bad Request")
+			return
+		}
+
+		fmt.Println(customerData.ID, customerData.Metadata["user_id"])
+	}
+	c.String(200, "success")
 }

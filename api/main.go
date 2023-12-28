@@ -15,7 +15,6 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/v76"
 )
 
 func main() {
@@ -36,9 +35,6 @@ func main() {
 	if wh_secret == "" {
 		os.Exit(1)
 	}
-
-	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
-	stripe.Key = stripe_key
 
 	// Create new Config to be initialize a Client.
 	cfg := &bunnystorage.Config{
@@ -101,6 +97,7 @@ func main() {
 	user.GET("/me/stripe", routes.GetStripeAccount)
 
 	webhooks.POST("/", routes.Webhooks)
+	webhooks.POST("/stripe", routes.StripeWebhooks)
 
 	r.Run(":8000")
 }

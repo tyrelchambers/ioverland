@@ -3,7 +3,6 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -71,7 +70,7 @@ func GetStripeAccount(c *gin.Context) {
 		c.String(401, "Unauthorized")
 	}
 
-	fmt.Println(user.PrivateMetadata)
+	controllers.GetStripeAccount(user)
 
 	c.JSON(200, "")
 }

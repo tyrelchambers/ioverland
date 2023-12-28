@@ -3,6 +3,8 @@ package controllers
 import (
 	"api/db"
 	"api/domain/user"
+
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 )
 
 func Bookmark(build_id, user_id string) error {
@@ -47,4 +49,6 @@ func GetCurrentUser(id string) (user.User, error) {
 	return user.FindCurrentUser(db.Client, id)
 }
 
-func GetStripeAccount() {}
+func GetStripeAccount(user *clerk.User) {
+
+}

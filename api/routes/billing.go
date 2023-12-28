@@ -3,6 +3,7 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,5 +17,5 @@ func CreateCheckout(c *gin.Context) {
 
 	url := controllers.CreateCheckout(user)
 
-	c.JSON(200, url)
+	c.Redirect(http.StatusTemporaryRedirect, url)
 }

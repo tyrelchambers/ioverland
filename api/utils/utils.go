@@ -8,12 +8,10 @@ import (
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/joho/godotenv"
-	"github.com/stripe/stripe-go/v76/client"
 )
 
 var ClerkClient clerk.Client
 var BunnyClient *bunnystorage.Client
-var StripeClient *client.API
 
 func GoDotEnvVariable(key string) string {
 

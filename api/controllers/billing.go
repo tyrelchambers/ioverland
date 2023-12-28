@@ -12,16 +12,11 @@ import (
 )
 
 func CreateCheckout(u *clerk.User) string {
-	domain_user, err := user.FindCurrentUser(db.Client, u.ID)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
 
 	return_url := utils.GoDotEnvVariable("APP_URL")
 
 	checkout_params := stripe.CheckoutSessionParams{
-		Customer:   &domain_user.CustomerId,
 		Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		SuccessURL: stripe.String(return_url),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -30,6 +25,8 @@ func CreateCheckout(u *clerk.User) string {
 				Quantity: stripe.Int64(1),
 			},
 		},
+
+		Customer: &domainUser.CustomerId,
 	}
 
 	result, err := session.New(&checkout_params)
