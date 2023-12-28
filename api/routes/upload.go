@@ -5,14 +5,14 @@ import (
 	"api/middleware"
 	"io"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
-func Upload(c echo.Context) error {
+func Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
 	user, err := middleware.Authorize(c)
@@ -20,22 +20,22 @@ func Upload(c echo.Context) error {
 	media, err := controllers.Process(file, user.ID, c)
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
-	return c.JSON(200, media)
+	c.JSON(200, media)
 }
 
-func Revert(c echo.Context) error {
-	body, err := io.ReadAll(c.Request().Body)
+func Revert(c *gin.Context) {
+	body, err := io.ReadAll(c.Request.Body)
 
 	requestBody := string(body)
 
 	err = controllers.Revert(c, requestBody)
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }

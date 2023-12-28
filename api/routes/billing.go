@@ -4,17 +4,17 @@ import (
 	"api/controllers"
 	"api/middleware"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
-func CreateCheckout(c echo.Context) error {
+func CreateCheckout(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	url := controllers.CreateCheckout(user)
 
-	return c.JSON(200, url)
+	c.JSON(200, url)
 }

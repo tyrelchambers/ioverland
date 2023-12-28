@@ -8,15 +8,15 @@ import (
 	"io"
 	"log"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 	svix "github.com/svix/svix-webhooks/go"
 )
 
-func Webhooks(c echo.Context) error {
+func Webhooks(c *gin.Context) {
 	var body map[string]interface{}
 
-	payload, err := io.ReadAll(c.Request().Body)
-	headers := c.Request().Header
+	payload, err := io.ReadAll(c.Request.Body)
+	headers := c.Request.Header
 	wh_secret := utils.GoDotEnvVariable("CLERK_WH_SECRET")
 
 	wh, err := svix.NewWebhook(wh_secret)
@@ -33,13 +33,13 @@ func Webhooks(c echo.Context) error {
 	err = wh.Verify(payload, headers)
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(401, "Unauthorized - Could not verify webhook signature")
 	}
 
 	evtType := utils.GetProperty(body, "type")
 
 	if evtType == nil {
-		return echo.NewHTTPError(500, "Event type not found")
+		c.String(202, "success")
 	}
 
 	if evtType == "user.created" {
@@ -53,11 +53,11 @@ func Webhooks(c echo.Context) error {
 		err := user.Create(db.Client, &newUser)
 
 		if err != nil {
-			return echo.NewHTTPError(500, err)
+			c.String(500, err.Error())
 		}
 
-		return c.String(200, "success")
+		c.String(200, "success")
 	}
 
-	return c.String(202, "success")
+	c.String(202, "success")
 }

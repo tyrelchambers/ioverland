@@ -1,7 +1,7 @@
 package routes
 
-import "github.com/labstack/echo/v4"
+import "github.com/gin-gonic/gin"
 
-func Health(c echo.Context) error {
-	return c.String(200, "OK")
+func Health(c *gin.Context) {
+	c.String(200, "OK")
 }

@@ -2,20 +2,19 @@ package middleware
 
 import (
 	"api/utils"
-	"net/http"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
-func Authorize(c echo.Context) (*clerk.User, error) {
-	sessionToken := c.Request().Header.Get("Cookie")
+func Authorize(c *gin.Context) (*clerk.User, error) {
+	sessionToken := c.Request.Header.Get("Cookie")
 	sessionKey := utils.GetHeaderValueFromString(sessionToken, "__session")
 
 	// verify the session
 	sessClaims, err := utils.ClerkClient.VerifyToken(sessionKey)
 	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusUnauthorized, err)
+		return nil, err
 	}
 
 	// get the user, and say welcome!

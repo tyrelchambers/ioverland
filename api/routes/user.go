@@ -5,73 +5,73 @@ import (
 	"api/middleware"
 	"fmt"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
-func Bookmark(c echo.Context) error {
+func Bookmark(c *gin.Context) {
 	var body struct {
 		BuildId string `json:"build_id"`
 	}
 
 	if err := c.Bind(&body); err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	err = controllers.Bookmark(body.BuildId, user.ID)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func Unbookmark(c echo.Context) error {
+func Unbookmark(c *gin.Context) {
 	var body struct {
 		BuildId string `json:"build_id"`
 	}
 
 	if err := c.Bind(&body); err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	err = controllers.Unbookmark(body.BuildId, user.ID)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func GetCurrentUser(c echo.Context) error {
+func GetCurrentUser(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	domainUser, err := controllers.GetCurrentUser(user.ID)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
 	}
 
-	return c.JSON(200, domainUser)
+	c.JSON(200, domainUser)
 }
 
-func GetStripeAccount(c echo.Context) error {
+func GetStripeAccount(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	fmt.Println(user.PrivateMetadata)
 
-	return c.JSON(200, "")
+	c.JSON(200, "")
 }

@@ -7,18 +7,18 @@ import (
 	"mime/multipart"
 	"strings"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 	"github.com/lucsky/cuid"
 )
 
-func Process(file *multipart.FileHeader, user_id string, c echo.Context) (build.Media, error) {
+func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.Media, error) {
 	path := fmt.Sprintf("uploads/%s", user_id)
 	full_url := fmt.Sprintf("https://ioverland.b-cdn.net/%s/%s", path, file.Filename)
-	file_type := c.Request().Header.Get("file-type")
+	file_type := c.Request.Header.Get("file-type")
 
 	openFile, err := file.Open()
 
-	res, err := utils.BunnyClient.Upload(c.Request().Context(), path, file.Filename, "", openFile)
+	res, err := utils.BunnyClient.Upload(c.Request.Context(), path, file.Filename, "", openFile)
 
 	if err != nil {
 		return build.Media{}, err
@@ -39,13 +39,13 @@ func Process(file *multipart.FileHeader, user_id string, c echo.Context) (build.
 	return r, nil
 }
 
-func Revert(c echo.Context, url string) error {
+func Revert(c *gin.Context, url string) error {
 	name_parts := strings.Split(url, "/")
 	filename := name_parts[len(name_parts)-1]
 	user_id := name_parts[len(name_parts)-2]
 	path := fmt.Sprintf("uploads/%s", user_id)
 
-	_, err := utils.BunnyClient.Delete(c.Request().Context(), path, filename)
+	_, err := utils.BunnyClient.Delete(c.Request.Context(), path, filename)
 
 	if err != nil {
 		return err

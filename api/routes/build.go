@@ -6,24 +6,24 @@ import (
 	"api/middleware"
 	"fmt"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
-func CreateBuild(c echo.Context) error {
+func CreateBuild(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	var reqBody build.Build
 
 	if err := c.Bind(&reqBody); err != nil {
 		fmt.Println(err)
-		return err
+		c.JSON(500, err)
 	}
 
 	if reqBody.Name == "" {
-		return echo.NewHTTPError(400, "Build name is required")
+		return
 	}
 
 	reqBody.UserId = user.ID
@@ -34,10 +34,10 @@ func CreateBuild(c echo.Context) error {
 		c.JSON(500, err)
 	}
 
-	return c.JSON(200, newBuild)
+	c.JSON(200, newBuild)
 }
 
-func GetBuilds(c echo.Context) error {
+func GetBuilds(c *gin.Context) {
 	user_id := c.Param("user_id")
 
 	builds, err := controllers.GetUserBuilds(user_id)
@@ -46,95 +46,96 @@ func GetBuilds(c echo.Context) error {
 		c.JSON(500, err)
 	}
 
-	return c.JSON(200, builds)
+	c.JSON(200, builds)
 }
 
-func GetById(c echo.Context) error {
-	id := c.Param("id")
+func GetById(c *gin.Context) {
+	id := c.Param("build_id")
 
 	build, err := controllers.GetById(id)
 
 	if err != nil {
-		return echo.NewHTTPError(404, "Build not found")
+		c.String(500, err.Error())
 	}
 
-	return c.JSON(200, build)
+	c.JSON(200, build)
 }
 
-func Update(c echo.Context) error {
-	id := c.Param("id")
+func Update(c *gin.Context) {
+	id := c.Param("build_id")
 
 	var reqBody build.Build
 
 	if err := c.Bind(&reqBody); err != nil {
-		return err
+		c.String(500, err.Error())
 	}
 
 	updated_build, err := controllers.UpdateBuild(id, reqBody)
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
+
 	}
 
-	return c.JSON(200, updated_build)
+	c.JSON(200, updated_build)
 }
 
-func RemoveImage(c echo.Context) error {
-	id := c.Param("id")
+func RemoveImage(c *gin.Context) {
+	id := c.Param("build_id")
 	build_id := c.Param("build_id")
-	url := c.QueryParam("url")
+	url := c.Query("url")
 
 	err := controllers.RemoveImage(build_id, id)
 	err = controllers.Revert(c, url)
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
-	return c.String(200, "success")
+	c.String(200, "success")
 
 }
 
-func IncrementViews(c echo.Context) error {
-	id := c.Param("id")
+func IncrementViews(c *gin.Context) {
+	id := c.Param("build_id")
 
 	controllers.IncrementViews(id)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func Like(c echo.Context) error {
-	id := c.Param("id")
+func Like(c *gin.Context) {
+	id := c.Param("build_id")
 	user, err := middleware.Authorize(c)
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	err = controllers.Like(id, user.ID)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func Dislike(c echo.Context) error {
-	id := c.Param("id")
+func Dislike(c *gin.Context) {
+	id := c.Param("build_id")
 	user, err := middleware.Authorize(c)
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
 	}
 
 	err = controllers.Dislike(id, user.ID)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func Delete(c echo.Context) error {
-	id := c.Param("id")
+func Delete(c *gin.Context) {
+	id := c.Param("build_id")
 
 	err := controllers.DeleteBuild(id)
 
 	if err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
