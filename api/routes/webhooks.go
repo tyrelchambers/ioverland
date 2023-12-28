@@ -137,7 +137,6 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		fmt.Println(customerData.ID, customerData.Metadata["user_id"])
 	}
 	c.String(200, "success")
 }

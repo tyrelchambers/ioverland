@@ -70,7 +70,7 @@ func GetStripeAccount(c *gin.Context) {
 		c.String(401, "Unauthorized")
 	}
 
-	controllers.GetStripeAccount(user)
+	acc := controllers.GetStripeAccount(user)
 
-	c.JSON(200, "")
+	c.JSON(200, acc)
 }

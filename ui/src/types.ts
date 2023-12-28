@@ -85,3 +85,14 @@ const domainUser = z.object({
 });
 
 export type DomainUser = z.infer<typeof domainUser>;
+
+const account = z.object({
+  hasSubscription: z.boolean(),
+  subscription: z.object({
+    id: z.string(),
+    name: z.string(),
+    price: z.string(),
+  }),
+});
+
+export type Account = z.infer<typeof account>;

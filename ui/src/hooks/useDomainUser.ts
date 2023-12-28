@@ -1,7 +1,6 @@
-import { DomainUser } from "@/types";
+import { Account, DomainUser } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-
 export const useDomainUser = (id?: string) => {
   const context = useQueryClient();
   const query = useQuery({
@@ -49,9 +48,9 @@ export const useDomainUser = (id?: string) => {
     },
   });
 
-  const getStripeAccount = useQuery({
+  const getAccount = useQuery({
     queryKey: ["stripe-account"],
-    queryFn: (): Promise<DomainUser> => {
+    queryFn: (): Promise<Account> => {
       return axios
         .get(`http://localhost:8000/api/user/me/stripe`, {
           withCredentials: true,
@@ -64,6 +63,6 @@ export const useDomainUser = (id?: string) => {
     user: query,
     bookmark,
     removeBookmark,
-    getStripeAccount,
+    getAccount,
   };
 };

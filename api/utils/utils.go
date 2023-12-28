@@ -8,6 +8,7 @@ import (
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/joho/godotenv"
+	"github.com/stripe/stripe-go"
 )
 
 var ClerkClient clerk.Client
@@ -57,4 +58,10 @@ func ConvertToMap(data interface{}) map[string]interface{} {
 		return m
 	}
 	return nil
+}
+
+func StripeClientInit() {
+	stripe_key := GoDotEnvVariable("STRIPE_TEST_KEY")
+	stripe.Key = stripe_key
+
 }
