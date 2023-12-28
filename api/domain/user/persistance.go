@@ -30,8 +30,8 @@ func (u User) Unbookmark(db *gorm.DB, build build.Build) error {
 	return nil
 }
 
-func FindUser(db *gorm.DB, uuid string) (User, error) {
+func FindCurrentUser(db *gorm.DB, uuid string) (User, error) {
 	var user User
-	err := db.Preload("Bookmarks").Preload("Builds").Where("uuid = ?", uuid).First(&user).Error
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }

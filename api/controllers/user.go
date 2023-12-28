@@ -13,7 +13,7 @@ func Bookmark(build_id, user_id string) error {
 		return err
 	}
 
-	user, err := user.FindUser(db.Client, user_id)
+	user, err := user.FindCurrentUser(db.Client, user_id)
 
 	if err != nil {
 		return err
@@ -32,7 +32,7 @@ func Unbookmark(build_id, user_id string) error {
 		return err
 	}
 
-	user, err := user.FindUser(db.Client, user_id)
+	user, err := user.FindCurrentUser(db.Client, user_id)
 
 	if err != nil {
 		return err
@@ -44,5 +44,5 @@ func Unbookmark(build_id, user_id string) error {
 }
 
 func GetCurrentUser(id string) (user.User, error) {
-	return user.FindUser(db.Client, id)
+	return user.FindCurrentUser(db.Client, id)
 }

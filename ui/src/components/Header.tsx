@@ -27,8 +27,8 @@ const Header = ({ on }: Props) => {
     <header className="header sticky top-0 p-4 transition-all flex items-center z-50">
       <h2 className="text-primary font-bold font-serif">iOverland</h2>
       <div className="flex gap-4 items-center ">
-        <Link href={`/builds/me`}>
-          <Button variant="link">My builds</Button>
+        <Link href={`/dashboard`}>
+          <Button variant="link">Dashboard</Button>
         </Link>
         <SignedIn>
           <Link href="/build/new">
