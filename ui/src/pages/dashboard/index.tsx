@@ -6,19 +6,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { Bookmark, CarFront, Heart } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { useRouter } from "next/router";
+import React, { useMemo } from "react";
 
 const Dashboard = () => {
+  const router = useRouter();
   const { user } = useDomainUser();
 
   const builds = user.data?.builds;
   const bookmarks = user.data?.bookmarks;
 
+  const updateUrl = (tab: string) => {
+    router.push({
+      query: {
+        ...router.query,
+        tab,
+      },
+    });
+  };
+
   return (
     <div>
       <Header />
 
-      <Tabs defaultValue="builds" className="w-full" onChange={console.log}>
+      <Tabs
+        className="w-full"
+        value={router.query.tab as string}
+        onValueChange={updateUrl}
+      >
         <header className="w-full bg-muted flex flex-row p-4">
           <div className="max-w-screen-2xl mx-auto w-full flex items-center gap-6">
             <H1 className="!text-xl text-muted-foreground">Dashboard</H1>
