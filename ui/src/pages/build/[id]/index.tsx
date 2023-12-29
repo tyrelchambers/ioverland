@@ -127,7 +127,7 @@ const Build = () => {
     <section>
       <Header />
 
-      <section className="relative z-10 max-w-screen-xl w-full mx-auto my-20">
+      <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">
         <header className="flex flex-col">
           <span className="flex items-center text-muted-foreground gap-1 mb-4">
             {liked !== undefined && <LikeButton />}

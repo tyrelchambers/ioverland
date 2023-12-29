@@ -78,24 +78,21 @@ const Dashboard = () => {
         value={router.query.tab as string}
         onValueChange={updateUrl}
       >
-        <header className="w-full bg-muted flex flex-row p-4">
-          <div className="max-w-screen-2xl mx-auto w-full flex items-center gap-6">
-            <H1 className="!text-xl text-muted-foreground">Dashboard</H1>
-            <TabsList>
-              <TabsTrigger value="builds">
-                <CarFront size={18} className="mr-2" />
-                Builds
-              </TabsTrigger>
-              <TabsTrigger value="bookmarks">
-                <Bookmark size={18} className="mr-2" />
-                Bookmarks
-              </TabsTrigger>
-              <TabsTrigger value="account">
-                <Fingerprint size={18} className="mr-2" />
-                Account
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        <header className="w-full bg-muted">
+          <TabsList className="w-full mx-auto">
+            <TabsTrigger value="builds">
+              <CarFront size={18} className="mr-2" />
+              Builds
+            </TabsTrigger>
+            <TabsTrigger value="bookmarks">
+              <Bookmark size={18} className="mr-2" />
+              Bookmarks
+            </TabsTrigger>
+            <TabsTrigger value="account">
+              <Fingerprint size={18} className="mr-2" />
+              Account
+            </TabsTrigger>
+          </TabsList>
         </header>
         <section className="max-w-screen-2xl mx-auto my-10">
           <section className="mt-10">

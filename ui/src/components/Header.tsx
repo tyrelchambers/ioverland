@@ -24,8 +24,8 @@ const Header = ({ on }: Props) => {
   }, []);
 
   return (
-    <header className="header sticky top-0 p-4 bg-background transition-all flex items-center z-50">
-      <h2 className="text-primary font-bold font-serif">iOverland</h2>
+    <header className="header sticky top-0 p-4 bg-background transition-all flex items-center z-50 border-b border-border">
+      <h2 className="text-foreground font-bold font-serif">iOverland</h2>
       <div className="flex gap-4 items-center ">
         <SignedIn>
           <Link href={`/dashboard`}>
