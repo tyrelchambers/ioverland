@@ -17,18 +17,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import {
   Bookmark,
+  Calendar,
   CarFront,
   Check,
   Fingerprint,
   Heart,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
+import { format } from "date-fns";
+import { ToastAction } from "@radix-ui/react-toast";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const router = useRouter();
-  const { user, getAccount } = useDomainUser();
+
+  const { user, getAccount, createPortal, deleteUser, restoreUser } =
+    useDomainUser();
 
   const builds = user.data?.builds;
   const bookmarks = user.data?.bookmarks;
@@ -41,6 +48,20 @@ const Dashboard = () => {
         tab,
       },
     });
+  };
+
+  const getPortalLink = async () => {
+    const data = await createPortal.mutateAsync();
+
+    window.location.href = data.url;
+  };
+
+  const deleteHandler = () => {
+    deleteUser.mutate();
+  };
+
+  const restoreHandler = () => {
+    restoreUser.mutate();
   };
 
   return (
@@ -106,8 +127,26 @@ const Dashboard = () => {
                 Your subscription is managed by Stripe.
               </p>
 
-              <div className="mt-10 bg-card p-4 rounded-xl w-fit">
-                {!account?.hasSubscription ? (
+              <div className="mt-10 bg-card p-4 rounded-xl w-[500px]">
+                {account?.has_subscription ? (
+                  <div>
+                    <Zap className="text-muted-foreground" />
+                    <p className="font-bold mt-6 ">
+                      You are currently subscribed to the Pro plan!
+                    </p>
+                    <p className="mt-2 text-muted-foreground">
+                      ${account.subscription.price / 100}/month
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="mt-6"
+                      onClick={getPortalLink}
+                    >
+                      Manage subscription
+                    </Button>
+                  </div>
+                ) : (
                   <div>
                     <Zap className="text-muted-foreground" />
                     <p className="font-bold mt-6">
@@ -118,7 +157,7 @@ const Dashboard = () => {
                       offer, please purchase a plan.
                     </p>
                     <Drawer>
-                      <DrawerTrigger>
+                      <DrawerTrigger asChild>
                         <Button className="mt-4">Subscribe to Pro</Button>
                       </DrawerTrigger>
                       <DrawerContent>
@@ -150,7 +189,14 @@ const Dashboard = () => {
                             </ul>
                           </div>
                           <DrawerFooter>
-                            <Button>Submit</Button>
+                            <a
+                              className="block"
+                              href="http://localhost:8000/api/billing/checkout?redirect_to=http://localhost:3000/dashboard?tab=account"
+                            >
+                              <Button type="button" className="w-full">
+                                Submit
+                              </Button>
+                            </a>
                             <DrawerClose>
                               <Button variant="outline">Cancel</Button>
                             </DrawerClose>
@@ -159,10 +205,50 @@ const Dashboard = () => {
                       </DrawerContent>
                     </Drawer>
                   </div>
-                ) : (
-                  <div></div>
                 )}
               </div>
+
+              <Separator className="my-10" />
+              <H3>Delete account</H3>
+              <p className="max-w-3xl text-muted-foreground">
+                Tread lightly here. Delete your account forever. If you are
+                subscribed to a plan, it will delete at the end of the billing
+                cycle.
+              </p>
+
+              {account?.delete_on && (
+                <div className="bg-yellow-100 rounded-xl text-yellow-700 flex flex-col gap-2 overflow-hidden max-w-2xl w-full my-6 shadow-lg">
+                  <div className="flex flex-col gap-2 p-4">
+                    <p>Plan and account are set to delete on: </p>
+                    <p className="font-bold flex items-center">
+                      <Calendar className="mr-2" size={18} />
+                      {format(new Date(account.delete_on), "MMMM dd, yyyy")}
+                    </p>
+                  </div>
+
+                  <footer className="bg-yellow-400 p-4 flex items-center justify-between">
+                    <p className="text-yellow-900">
+                      Want to cancel the deletion and keep your account and your
+                      plan?
+                    </p>
+
+                    <Button variant="secondary" onClick={restoreHandler}>
+                      {restoreUser.isPending ? "Restoring..." : "Restore"}
+                    </Button>
+                  </footer>
+                </div>
+              )}
+
+              {!account?.delete_on && (
+                <Button
+                  variant="destructiveMuted"
+                  className="mt-6"
+                  onClick={deleteHandler}
+                  type="button"
+                >
+                  {deleteUser.isPending ? "Deleting..." : "Delete account"}
+                </Button>
+              )}
             </TabsContent>
           </section>
         </section>

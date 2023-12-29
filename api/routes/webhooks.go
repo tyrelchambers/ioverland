@@ -44,12 +44,14 @@ func Webhooks(c *gin.Context) {
 
 	if err != nil {
 		c.String(401, "Unauthorized - Could not verify webhook signature")
+		return
 	}
 
 	evtType := utils.GetProperty(body, "type")
 
 	if evtType == nil {
-		c.String(202, "success")
+		c.String(202, "No event")
+		return
 	}
 
 	if evtType == "user.created" {
@@ -60,7 +62,6 @@ func Webhooks(c *gin.Context) {
 		}
 
 		if err := json.Unmarshal(payload, &body); err != nil {
-			fmt.Println(err)
 			c.String(400, "Bad Request")
 			return
 		}
@@ -69,7 +70,6 @@ func Webhooks(c *gin.Context) {
 		params := &stripe.CustomerParams{
 			Email: stripe.String(body.Data.EmailAddresses[0].EmailAddress),
 		}
-		fmt.Println(stripe.Key)
 
 		cus, _ := customer.New(params)
 
@@ -88,6 +88,7 @@ func Webhooks(c *gin.Context) {
 
 		if err != nil {
 			c.String(500, err.Error())
+			return
 		}
 
 		c.String(200, "success")
@@ -121,6 +122,8 @@ func StripeWebhooks(c *gin.Context) {
 	signatureHeader := c.Request.Header.Get("Stripe-Signature")
 	event, err = webhook.ConstructEvent(payload, signatureHeader, endpointSecret)
 
+	fmt.Println("err -----> ", err)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "⚠️  Webhook signature verification failed. %v\n", err)
 		c.String(400, "Bad Request")
@@ -137,6 +140,25 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
+	case "customer.subscription.deleted":
+		var subscriptionData stripe.Subscription
+
+		if err := json.Unmarshal(event.Data.Raw, &subscriptionData); err != nil {
+			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+			c.String(400, "Bad Request")
+			return
+		}
+
+		usr, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request for event: %v. %v\n", event.Type, err.Error())
+			c.String(400, "Bad Request")
+			return
+		}
+
+		utils.ClerkClient.Users().Delete(usr.Uuid)
+		usr.Delete(db.Client)
 	}
 	c.String(200, "success")
 }

@@ -13,6 +13,7 @@ func Authorize(c *gin.Context) (*clerk.User, error) {
 
 	// verify the session
 	sessClaims, err := utils.ClerkClient.VerifyToken(sessionKey)
+
 	if err != nil {
 		return nil, err
 	}

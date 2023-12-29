@@ -13,6 +13,7 @@ func CreateBuild(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
 	var reqBody build.Build
@@ -32,6 +33,7 @@ func CreateBuild(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, err)
+		return
 	}
 
 	c.JSON(200, newBuild)
@@ -44,6 +46,7 @@ func GetBuilds(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(500, err)
+		return
 	}
 
 	c.JSON(200, builds)
@@ -56,6 +59,7 @@ func GetById(c *gin.Context) {
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	c.JSON(200, build)
@@ -68,13 +72,14 @@ func Update(c *gin.Context) {
 
 	if err := c.Bind(&reqBody); err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	updated_build, err := controllers.UpdateBuild(id, reqBody)
 
 	if err != nil {
 		c.String(500, err.Error())
-
+		return
 	}
 
 	c.JSON(200, updated_build)
@@ -90,10 +95,10 @@ func RemoveImage(c *gin.Context) {
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	c.String(200, "success")
-
 }
 
 func IncrementViews(c *gin.Context) {
@@ -109,6 +114,7 @@ func Like(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
 	err = controllers.Like(id, user.ID)
@@ -121,6 +127,7 @@ func Dislike(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
 	err = controllers.Dislike(id, user.ID)
@@ -135,6 +142,7 @@ func Delete(c *gin.Context) {
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	c.String(200, "success")

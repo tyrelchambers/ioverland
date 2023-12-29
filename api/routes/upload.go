@@ -13,6 +13,7 @@ func Upload(c *gin.Context) {
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	user, err := middleware.Authorize(c)
@@ -21,6 +22,7 @@ func Upload(c *gin.Context) {
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	c.JSON(200, media)
@@ -35,6 +37,7 @@ func Revert(c *gin.Context) {
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	c.String(200, "success")

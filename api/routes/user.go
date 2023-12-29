@@ -20,6 +20,7 @@ func Bookmark(c *gin.Context) {
 
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
 	err = controllers.Bookmark(body.BuildId, user.ID)
@@ -34,12 +35,14 @@ func Unbookmark(c *gin.Context) {
 
 	if err := c.Bind(&body); err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
 	err = controllers.Unbookmark(body.BuildId, user.ID)
@@ -52,6 +55,7 @@ func GetCurrentUser(c *gin.Context) {
 
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
 	domainUser, err := controllers.GetCurrentUser(user.ID)
@@ -63,14 +67,51 @@ func GetCurrentUser(c *gin.Context) {
 	c.JSON(200, domainUser)
 }
 
-func GetStripeAccount(c *gin.Context) {
+func GetAccount(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
 		c.String(401, "Unauthorized")
+		return
 	}
 
-	acc := controllers.GetStripeAccount(user)
+	acc := controllers.GetAccount(user)
 
 	c.JSON(200, acc)
+}
+
+func DeleteUser(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	err = controllers.DeleteUser(user)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	c.String(200, "success")
+}
+
+func RestoreUser(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	err = controllers.RestoreUser(user)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	c.String(200, "success")
 }

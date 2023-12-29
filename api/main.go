@@ -87,6 +87,7 @@ func main() {
 	builds.GET("/user/:user_id", routes.GetBuilds)
 
 	billing.GET("/checkout", routes.CreateCheckout)
+	billing.POST("/portal", routes.CreateCustomerPortal)
 
 	upload.POST("/process", routes.Upload)
 	upload.POST("/revert", routes.Revert)
@@ -94,7 +95,9 @@ func main() {
 	user.POST("/:build_id/bookmark", routes.Bookmark)
 	user.POST("/:build_id/remove-bookmark", routes.Unbookmark)
 	user.GET("/me", routes.GetCurrentUser)
-	user.GET("/me/stripe", routes.GetStripeAccount)
+	user.GET("/me/account", routes.GetAccount)
+	user.DELETE("/me", routes.DeleteUser)
+	user.POST("/me/restore", routes.RestoreUser)
 
 	webhooks.POST("/", routes.Webhooks)
 	webhooks.POST("/stripe", routes.StripeWebhooks)

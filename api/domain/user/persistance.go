@@ -35,3 +35,17 @@ func FindCurrentUser(db *gorm.DB, uuid string) (User, error) {
 	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }
+
+func (u User) Update(db *gorm.DB) error {
+	return db.Save(u).Error
+}
+
+func FindUserByCustomerId(db *gorm.DB, customerId string) (User, error) {
+	var user User
+	err := db.Where("customer_id = ?", customerId).First(&user).Error
+	return user, err
+}
+
+func (u User) Delete(db *gorm.DB) error {
+	return db.Delete(u).Error
+}
