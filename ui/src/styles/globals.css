@@ -69,11 +69,11 @@
   }
 }
 
-.filepond--panel-root {
+.dark .filepond--panel-root {
   background-color: hsl(0 0% 14.9%) !important;
 }
 
-.filepond--drop-label {
+.dark .filepond--drop-label {
   color: hsl(10 40% 98%) !important;
 }
 @layer base {
@@ -94,11 +94,7 @@
   .header-scrolled {
     backdrop-filter: blur(10px);
 
-    @apply shadow-xl fixed inset-0 z-10 bg-white bg-opacity-80;
-  }
-
-  .header-scrolled h2 {
-    @apply text-slate-900;
+    @apply shadow-xl fixed  inset-0 z-10 bg-white bg-opacity-80;
   }
 
   .builds-item * {
