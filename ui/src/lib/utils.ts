@@ -40,3 +40,18 @@ export const hasLiked = (
   if (!likes) return false;
   return likes.some((like) => like === user_id);
 };
+
+export const acceptedFiletypes = (has_subscription: boolean | undefined) => {
+  if (has_subscription) {
+    return [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "video/mp4",
+      "video/webm",
+      "video/quicktime",
+    ];
+  }
+
+  return ["image/jpeg", "image/png", "image/jpg"];
+};

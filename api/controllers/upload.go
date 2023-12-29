@@ -4,7 +4,9 @@ import (
 	"api/domain/build"
 	"api/utils"
 	"fmt"
+	"io"
 	"mime/multipart"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -15,10 +17,37 @@ func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.
 	path := fmt.Sprintf("uploads/%s", user_id)
 	full_url := fmt.Sprintf("https://ioverland.b-cdn.net/%s/%s", path, file.Filename)
 	file_type := c.Request.Header.Get("file-type")
-
+	mimeType := file.Header.Get("Content-Type")
 	openFile, err := file.Open()
 
-	res, err := utils.BunnyClient.Upload(c.Request.Context(), path, file.Filename, "", openFile)
+	uploadDir := fmt.Sprintf("temp-uploads")
+	filename := fmt.Sprintf("%s/%s", uploadDir, file.Filename)
+	new_file, err := os.Create(filename)
+
+	if err != nil {
+		fmt.Println(err)
+		return build.Media{}, err
+	}
+
+	defer new_file.Close()
+
+	fileContent, err := io.ReadAll(openFile)
+
+	if err != nil {
+		fmt.Println(err)
+		return build.Media{}, err
+	}
+
+	_, err = new_file.Write(fileContent)
+
+	if err != nil {
+		fmt.Println(err)
+		return build.Media{}, err
+	}
+
+	openNewFile, err := os.Open(filename)
+
+	res, err := utils.BunnyClient.Upload(c.Request.Context(), path, file.Filename, "", openNewFile)
 
 	if err != nil {
 		return build.Media{}, err
@@ -31,10 +60,12 @@ func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.
 	r := build.Media{
 		Name:     file.Filename,
 		Type:     file_type,
-		MimeType: file.Header.Get("Content-Type"),
+		MimeType: mimeType,
 		Url:      full_url,
 		Uuid:     cuid.New(),
 	}
+
+	defer os.Remove(filename)
 
 	return r, nil
 }

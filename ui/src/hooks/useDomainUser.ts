@@ -116,7 +116,7 @@ export const useDomainUser = (id?: string) => {
     user: query,
     bookmark,
     removeBookmark,
-    getAccount,
+    account: getAccount,
     createPortal,
     deleteUser,
     restoreUser,

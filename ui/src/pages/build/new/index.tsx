@@ -48,7 +48,7 @@ import { isValid } from "zod";
 import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
-import { findCategorySubcategories } from "@/lib/utils";
+import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { toast } from "sonner";
 
@@ -178,21 +178,6 @@ const Index = () => {
     });
   };
 
-  const acceptedFiletypes = () => {
-    if (account.data?.has_subscription) {
-      return [
-        "image/jpeg",
-        "image/png",
-        "image/jpg",
-        "video/mp4",
-        "video/webm",
-        "video/quicktime",
-      ];
-    }
-
-    return ["image/jpeg", "image/png", "image/jpg"];
-  };
-
   return (
     <section className="flex">
       <div className="sticky top-0 h-screen w-[400px] ">
@@ -310,7 +295,9 @@ const Index = () => {
               <Label className="mb-2">Banner</Label>
               <Uploader
                 onUpdate={setBanner}
-                acceptedFileTypes={acceptedFiletypes()}
+                acceptedFileTypes={acceptedFiletypes(
+                  account.data?.has_subscription
+                )}
                 allowMultiple={false}
                 maxFiles={1}
                 type="banner"
@@ -531,7 +518,9 @@ const Index = () => {
               <Label className="mb-2">Photos</Label>
               <Uploader
                 onUpdate={setPhotos}
-                acceptedFileTypes={acceptedFiletypes()}
+                acceptedFileTypes={acceptedFiletypes(
+                  account.data?.has_subscription
+                )}
                 allowMultiple={true}
                 maxFiles={6}
                 type="photos"

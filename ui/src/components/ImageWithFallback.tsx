@@ -1,6 +1,7 @@
 import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import StyledBlock from "./StyledBlock";
 
 interface Props {
   url?: string;
@@ -9,9 +10,7 @@ const ImageWithFallback = ({ url }: Props) => {
   return url ? (
     <Image src={url} alt="" fill objectFit="cover" priority />
   ) : (
-    <div className="w-full h-full bg-gradient-to-tr from-gray-300 to-muted  text-muted-foreground flex justify-center items-center">
-      <ImageIcon />
-    </div>
+    <StyledBlock icon={<ImageIcon />} />
   );
 };
 
