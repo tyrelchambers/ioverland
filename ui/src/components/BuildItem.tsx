@@ -19,7 +19,7 @@ const BuildItem = ({
         {build.banner?.mime_type.includes("image") ? (
           <ImageWithFallback url={build.banner?.url} />
         ) : (
-          <div className="w-full h-full bg-gradient-to-tr from-gray-300 to-muted  text-muted-foreground flex flex-col p-8 justify-center items-center">
+          <div className="w-full h-full bg-gradient-to-tr from-gray-300 to-muted  text-muted-foreground flex flex-col p-8 justify-center items-center dark:text-background">
             <Video />
             <p className="text-balance text-center mt-4">
               Banner is a video. To save space, it won&apos;t be displayed here.

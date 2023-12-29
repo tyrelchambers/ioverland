@@ -63,7 +63,7 @@ export function Combobox({
         <Command>
           <CommandInput placeholder={`Search ${searchLabel}...`} />
           <CommandEmpty>{notFoundLabel}</CommandEmpty>
-          <CommandGroup>
+          <CommandGroup className="border-border">
             <ScrollArea className="h-[200px]">
               {data.map((item) => (
                 <CommandItem
