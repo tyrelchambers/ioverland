@@ -82,6 +82,19 @@ const domainUser = z.object({
   uuid: z.string(),
   builds: z.array(buildSchema),
   bookmarks: z.array(buildSchema),
+  delete_on: z.date(),
 });
 
 export type DomainUser = z.infer<typeof domainUser>;
+
+const account = z.object({
+  has_subscription: z.boolean(),
+  subscription: z.object({
+    id: z.string(),
+    name: z.string(),
+    price: z.number(),
+  }),
+  delete_on: z.date(),
+});
+
+export type Account = z.infer<typeof account>;

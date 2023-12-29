@@ -25,7 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ClerkProvider>
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
-        <Toaster />
+        <Toaster richColors />
 
         <style jsx global>
           {`

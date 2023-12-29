@@ -4,61 +4,114 @@ import (
 	"api/controllers"
 	"api/middleware"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
-func Bookmark(c echo.Context) error {
+func Bookmark(c *gin.Context) {
 	var body struct {
 		BuildId string `json:"build_id"`
 	}
 
 	if err := c.Bind(&body); err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
 	}
 
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
+		return
 	}
 
 	err = controllers.Bookmark(body.BuildId, user.ID)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func Unbookmark(c echo.Context) error {
+func Unbookmark(c *gin.Context) {
 	var body struct {
 		BuildId string `json:"build_id"`
 	}
 
 	if err := c.Bind(&body); err != nil {
-		return echo.NewHTTPError(500, err)
+		c.String(500, err.Error())
+		return
 	}
 
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
+		return
 	}
 
 	err = controllers.Unbookmark(body.BuildId, user.ID)
 
-	return c.String(200, "success")
+	c.String(200, "success")
 }
 
-func GetCurrentUser(c echo.Context) error {
+func GetCurrentUser(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
-		return err
+		c.String(401, "Unauthorized")
+		return
 	}
 
 	domainUser, err := controllers.GetCurrentUser(user.ID)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
 	}
 
-	return c.JSON(200, domainUser)
+	c.JSON(200, domainUser)
+}
+
+func GetAccount(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	acc := controllers.GetAccount(user)
+
+	c.JSON(200, acc)
+}
+
+func DeleteUser(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	err = controllers.DeleteUser(user)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	c.String(200, "success")
+}
+
+func RestoreUser(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	err = controllers.RestoreUser(user)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	c.String(200, "success")
 }

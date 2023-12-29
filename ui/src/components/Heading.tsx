@@ -23,3 +23,15 @@ export const H2 = ({
     {children}
   </h2>
 );
+
+export const H3 = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <h3 className={cn("text-xl font-black font-serif mb-1", className)}>
+    {children}
+  </h3>
+);

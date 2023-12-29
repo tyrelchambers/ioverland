@@ -13,8 +13,8 @@ import (
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -58,15 +58,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	r := echo.New()
+	r := gin.Default()
 
-	r.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAccessControlAllowCredentials, "file-type"},
+	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
-		ExposeHeaders:    []string{echo.HeaderContentType, echo.HeaderAccept, echo.HeaderCookie, echo.HeaderAccessControlAllowCredentials},
-	}))
+		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
 
 	api := r.Group("/api")
 	build := api.Group("/build")
@@ -74,27 +72,35 @@ func main() {
 	upload := api.Group("/upload")
 	webhooks := api.Group("/webhooks")
 	user := api.Group("/user")
+	billing := api.Group("/billing")
 
 	build.POST("/", routes.CreateBuild)
-	build.GET("/:id", routes.GetById)
-	build.PUT("/:id", routes.Update)
-	build.POST("/:id/view", routes.IncrementViews)
-	build.POST("/:id/like", routes.Like)
-	build.POST("/:id/dislike", routes.Dislike)
-	build.DELETE("/:id/delete", routes.Delete)
+	build.GET("/:build_id", routes.GetById)
+	build.PUT("/:build_id", routes.Update)
+	build.POST("/:build_id/view", routes.IncrementViews)
+	build.POST("/:build_id/like", routes.Like)
+	build.POST("/:build_id/dislike", routes.Dislike)
+	build.DELETE("/:build_id/delete", routes.Delete)
 
 	build.DELETE("/:build_id/image/:id", routes.RemoveImage)
 
 	builds.GET("/user/:user_id", routes.GetBuilds)
 
+	billing.GET("/checkout", routes.CreateCheckout)
+	billing.POST("/portal", routes.CreateCustomerPortal)
+
 	upload.POST("/process", routes.Upload)
 	upload.POST("/revert", routes.Revert)
-
-	webhooks.POST("/", routes.Webhooks)
 
 	user.POST("/:build_id/bookmark", routes.Bookmark)
 	user.POST("/:build_id/remove-bookmark", routes.Unbookmark)
 	user.GET("/me", routes.GetCurrentUser)
+	user.GET("/me/account", routes.GetAccount)
+	user.DELETE("/me", routes.DeleteUser)
+	user.POST("/me/restore", routes.RestoreUser)
 
-	http.ListenAndServe(":8000", r)
+	webhooks.POST("/", routes.Webhooks)
+	webhooks.POST("/stripe", routes.StripeWebhooks)
+
+	r.Run(":8000")
 }
