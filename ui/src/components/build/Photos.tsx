@@ -2,9 +2,10 @@ import { cn } from "@/lib/utils";
 import { Media } from "@/types";
 import Image from "next/image";
 import React from "react";
+import EmptyListText from "../EmptyListText";
 
 const Photos = ({ photos }: { photos: Media[] | undefined }) => {
-  if (!photos || photos.length === 0) return <div>No photos</div>;
+  if (!photos || photos.length === 0) return <EmptyListText text="No photos" />;
 
   return (
     <div className="grid grid-cols-2 gap-8">

@@ -1,8 +1,9 @@
 import { ExternalLink } from "lucide-react";
 import React from "react";
+import EmptyListText from "../EmptyListText";
 
 const Links = ({ links }: { links: (string | undefined)[] | undefined }) => {
-  if (!links || links.length === 0) return <div>No links</div>;
+  if (!links || links.length === 0) return <EmptyListText text="No links" />;
 
   return (
     <div className="flex flex-col gap-3">

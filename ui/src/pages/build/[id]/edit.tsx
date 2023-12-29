@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import {
+  MAX_FILE_SIZE,
   carModels,
   modificationCategories,
   popularCarBrands,
@@ -304,6 +305,7 @@ const Edit = () => {
             <H1>Editing &quot;{build?.name}&quot;</H1>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
+              <FormDescription>Max file size: {MAX_FILE_SIZE}</FormDescription>
               {build?.banner?.url && build?.banner?.uuid ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
                   <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
@@ -342,6 +344,7 @@ const Edit = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
+                  maxFileSize={MAX_FILE_SIZE}
                 />
               )}
             </div>
@@ -640,6 +643,9 @@ const Edit = () => {
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
+              <FormDescription>
+                Max size per file: {MAX_FILE_SIZE}
+              </FormDescription>
               {build?.photos && build?.photos.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4">
                   {build?.photos?.map((photo, index) => {
@@ -698,6 +704,7 @@ const Edit = () => {
                   allowMultiple={true}
                   maxFiles={6 - (build?.photos?.length || 0)}
                   type="photos"
+                  maxFileSize={MAX_FILE_SIZE}
                 />
               </div>
             </div>

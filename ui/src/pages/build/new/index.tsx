@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  MAX_FILE_SIZE,
   carModels,
   modificationCategories,
   popularCarBrands,
@@ -44,7 +45,6 @@ import {
   removeModification,
   removeLink,
 } from "@/lib/form/helpers";
-import { isValid } from "zod";
 import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
@@ -55,7 +55,7 @@ import { toast } from "sonner";
 const Index = () => {
   const { createBuild } = useBuild();
   const { user } = useUser();
-  const { getAccount: account } = useDomainUser();
+  const { account } = useDomainUser();
   const [tripsInput, setTripsInput] = useState<{
     [key: string]: Trip;
   }>({});
@@ -293,6 +293,7 @@ const Index = () => {
             </div>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
+              <FormDescription>Max file size: {MAX_FILE_SIZE}</FormDescription>
               <Uploader
                 onUpdate={setBanner}
                 acceptedFileTypes={acceptedFiletypes(
@@ -301,6 +302,7 @@ const Index = () => {
                 allowMultiple={false}
                 maxFiles={1}
                 type="banner"
+                maxFileSize={MAX_FILE_SIZE}
               />
             </div>
             <Separator className="my-4" />
@@ -516,6 +518,10 @@ const Index = () => {
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
+              <FormDescription>
+                Max size per file: {MAX_FILE_SIZE}
+              </FormDescription>
+
               <Uploader
                 onUpdate={setPhotos}
                 acceptedFileTypes={acceptedFiletypes(
@@ -524,6 +530,7 @@ const Index = () => {
                 allowMultiple={true}
                 maxFiles={6}
                 type="photos"
+                maxFileSize={MAX_FILE_SIZE}
               />
             </div>
 

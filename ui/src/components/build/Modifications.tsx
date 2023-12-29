@@ -1,6 +1,7 @@
 import { findCategory, groupModificationsByCategory } from "@/lib/utils";
 import { Modification } from "@/types";
 import React from "react";
+import EmptyListText from "../EmptyListText";
 
 const Modifications = ({
   modifications,
@@ -8,7 +9,7 @@ const Modifications = ({
   modifications: Modification[] | undefined;
 }) => {
   if (!modifications || modifications.length === 0)
-    return <div>No modifications</div>;
+    return <EmptyListText text="No modifications" />;
   return (
     <div className="grid grid-cols-3 gap-6">
       {Object.entries(groupModificationsByCategory(modifications)).map(

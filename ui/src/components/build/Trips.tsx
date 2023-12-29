@@ -1,8 +1,9 @@
 import { Trip } from "@/types";
 import React from "react";
+import EmptyListText from "../EmptyListText";
 
 const Trips = ({ trips }: { trips: Trip[] | undefined }) => {
-  if (!trips || trips.length === 0) return <div>No trips</div>;
+  if (!trips || trips.length === 0) return <EmptyListText text="No trips" />;
 
   return (
     <div className="flex flex-col gap-3">

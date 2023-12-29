@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import VideoWithLoader from "@/components/VideoWithLoader";
 import Links from "@/components/build/Links";
 import Modifications from "@/components/build/Modifications";
 import Photos from "@/components/build/Photos";
@@ -179,12 +180,11 @@ const Build = () => {
                 />
               </div>
             ) : (
-              <video autoPlay muted loop>
-                <source src={build.banner.url} type={build.banner.mime_type} />
-              </video>
+              <VideoWithLoader media={build.banner} autoPlay loop />
             )}
           </>
         )}
+
         <div className="flex gap-10 items-center mt-2">
           <Vehicle {...build.vehicle} />
         </div>
