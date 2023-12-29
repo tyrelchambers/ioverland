@@ -127,15 +127,22 @@ const Dashboard = () => {
                 Your subscription is managed by Stripe.
               </p>
 
-              <div className="mt-10 bg-card p-4 rounded-xl w-[500px]">
+              <div className="mt-10 bg-muted p-4 rounded-xl w-[500px]">
                 {account?.has_subscription ? (
                   <div>
-                    <Zap className="text-muted-foreground" />
-                    <p className="font-bold mt-6 ">
+                    <p className="font-bold flex gap-4">
+                      <Zap className="text-muted-foreground" />
                       You are currently subscribed to the Pro plan!
                     </p>
-                    <p className="mt-2 text-muted-foreground">
+                    <p className="mt-4 text-muted-foreground">
                       ${account.subscription.price / 100}/month
+                    </p>
+                    <p className="mt-4 text-sm text-muted-foreground">
+                      Next invoice date:{" "}
+                      {format(
+                        new Date(account.subscription.next_invoice_date),
+                        "MMMM dd, yyyy"
+                      )}
                     </p>
                     <Button
                       type="button"

@@ -93,6 +93,7 @@ const account = z.object({
     id: z.string(),
     name: z.string(),
     price: z.number(),
+    next_invoice_date: z.date(),
   }),
   delete_on: z.date(),
 });

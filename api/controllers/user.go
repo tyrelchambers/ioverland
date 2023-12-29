@@ -16,10 +16,11 @@ import (
 type AccountResponse struct {
 	HasSubscription bool `json:"has_subscription"`
 	Subscription    struct {
-		ID       string    `json:"id"`
-		Name     string    `json:"name"`
-		Price    int64     `json:"price"`
-		DeleteOn time.Time `json:"delete_on"`
+		ID              string    `json:"id"`
+		Name            string    `json:"name"`
+		Price           int64     `json:"price"`
+		DeleteOn        time.Time `json:"delete_on"`
+		NextInvoiceDate time.Time `json:"next_invoice_date"`
 	} `json:"subscription"`
 	DeleteOn *time.Time `json:"delete_on"`
 }
@@ -92,6 +93,7 @@ func GetAccount(u *clerk.User) AccountResponse {
 		resp.Subscription.Name = cus.Subscriptions.Data[0].Plan.Product.Name
 		resp.Subscription.Price = cus.Subscriptions.Data[0].Plan.Amount
 		resp.Subscription.DeleteOn = time.Unix(cus.Subscriptions.Data[0].CancelAt, 0)
+		resp.Subscription.NextInvoiceDate = time.Unix(cus.Subscriptions.Data[0].CurrentPeriodEnd, 0)
 	}
 
 	if !domainUser.DeleteOn.IsZero() {
