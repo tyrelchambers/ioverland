@@ -49,12 +49,13 @@ import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
 import { findCategorySubcategories } from "@/lib/utils";
+import { useDomainUser } from "@/hooks/useDomainUser";
+import { toast } from "sonner";
 
 const Index = () => {
-  const { toast } = useToast();
-
   const { createBuild } = useBuild();
   const { user } = useUser();
+  const { getAccount: account } = useDomainUser();
   const [tripsInput, setTripsInput] = useState<{
     [key: string]: Trip;
   }>({});
@@ -152,7 +153,7 @@ const Index = () => {
       photos?: Media[];
     }
 
-    const payload: Payload = {
+    const payload: Omit<Payload, "likes"> = {
       ...data,
       trips: tripsToArray,
       links: linksToArray,
@@ -170,13 +171,26 @@ const Index = () => {
 
     createBuild.mutate(payload, {
       onSuccess: () => {
-        toast({
-          variant: "success",
-          title: "Build created",
+        toast.success("Build created", {
           description: "Your build has been created. Nice!",
         });
       },
     });
+  };
+
+  const acceptedFiletypes = () => {
+    if (account.data?.has_subscription) {
+      return [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "video/mp4",
+        "video/webm",
+        "video/quicktime",
+      ];
+    }
+
+    return ["image/jpeg", "image/png", "image/jpg"];
   };
 
   return (
@@ -296,7 +310,7 @@ const Index = () => {
               <Label className="mb-2">Banner</Label>
               <Uploader
                 onUpdate={setBanner}
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                acceptedFileTypes={acceptedFiletypes()}
                 allowMultiple={false}
                 maxFiles={1}
                 type="banner"
@@ -517,7 +531,7 @@ const Index = () => {
               <Label className="mb-2">Photos</Label>
               <Uploader
                 onUpdate={setPhotos}
-                acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                acceptedFileTypes={acceptedFiletypes()}
                 allowMultiple={true}
                 maxFiles={6}
                 type="photos"
