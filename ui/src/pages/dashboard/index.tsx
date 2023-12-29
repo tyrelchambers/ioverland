@@ -34,12 +34,16 @@ import { toast } from "sonner";
 const Dashboard = () => {
   const router = useRouter();
 
-  const { user, getAccount, createPortal, deleteUser, restoreUser } =
-    useDomainUser();
+  const {
+    user,
+    account: { data: account },
+    createPortal,
+    deleteUser,
+    restoreUser,
+  } = useDomainUser();
 
   const builds = user.data?.builds;
   const bookmarks = user.data?.bookmarks;
-  const account = getAccount.data;
 
   const updateUrl = (tab: string) => {
     router.push({

@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,11 +19,13 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import {
+  MAX_FILE_SIZE,
   carModels,
   modificationCategories,
   popularCarBrands,
 } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
+import { useDomainUser } from "@/hooks/useDomainUser";
 import {
   formattedLinks,
   formattedModifications,
@@ -31,6 +34,7 @@ import {
   removeModification,
   removeTrip,
 } from "@/lib/form/helpers";
+import { acceptedFiletypes } from "@/lib/utils";
 import {
   Build,
   Media,
@@ -44,7 +48,7 @@ import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
-import { PlusCircle } from "lucide-react";
+import { ImageIcon, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -55,6 +59,9 @@ const Edit = () => {
   const { id } = router.query;
   const { getById, update, removeImage, deleteBuild } = useBuild(id as string);
   const { user } = useUser();
+  const {
+    account: { data: account },
+  } = useDomainUser();
   const [tripsInput, setTripsInput] = useState<{
     [key: string]: Trip;
   }>({});
@@ -298,15 +305,25 @@ const Edit = () => {
             <H1>Editing &quot;{build?.name}&quot;</H1>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
+              <FormDescription>Max file size: {MAX_FILE_SIZE}</FormDescription>
               {build?.banner?.url && build?.banner?.uuid ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
                   <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
-                    <Image
-                      src={build?.banner.url}
-                      alt=""
-                      className=" object-cover"
-                      fill
-                    />
+                    {build.banner?.mime_type.includes("image") ? (
+                      <Image
+                        src={build?.banner.url}
+                        alt=""
+                        className=" object-cover"
+                        fill
+                      />
+                    ) : (
+                      <video controls>
+                        <source
+                          src={build?.banner.url}
+                          type={build?.banner.mime_type}
+                        />
+                      </video>
+                    )}
                   </div>
                   <Button
                     variant="destructive"
@@ -321,10 +338,13 @@ const Edit = () => {
               ) : (
                 <Uploader
                   onUpdate={setBanner}
-                  acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                  acceptedFileTypes={acceptedFiletypes(
+                    account?.has_subscription
+                  )}
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
+                  maxFileSize={MAX_FILE_SIZE}
                 />
               )}
             </div>
@@ -623,25 +643,34 @@ const Edit = () => {
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
-              {build?.photos && (
+              <FormDescription>
+                Max size per file: {MAX_FILE_SIZE}
+              </FormDescription>
+              {build?.photos && build?.photos.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4">
                   {build?.photos?.map((photo, index) => {
                     return (
                       <div
-                        className="bg-card rounded-xl p-4 relative flex flex-col items-center gap-4"
+                        className="border-border border rounded-xl p-4 relative flex flex-col items-center gap-4"
                         key={photo.id}
                       >
-                        <div className="relative aspect-square h-[200px]">
-                          <Image
-                            src={photo.url}
-                            alt=""
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
+                        {photo.mime_type.includes("image") ? (
+                          <div className="relative aspect-square h-[200px]">
+                            <Image
+                              src={photo.url}
+                              alt=""
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <video controls>
+                            <source src={photo.url} type={photo.mime_type} />
+                          </video>
+                        )}
                         <Button
                           type="button"
-                          variant="destructive"
+                          variant="destructiveMuted"
                           onClick={() =>
                             removeImageHandler(photo.uuid, photo.url)
                           }
@@ -652,6 +681,11 @@ const Edit = () => {
                     );
                   })}
                 </div>
+              ) : (
+                <StyledBlock
+                  text="No uploaded photos for this build."
+                  icon={<ImageIcon />}
+                />
               )}
 
               <div className="mt-8">
@@ -664,10 +698,13 @@ const Edit = () => {
                 <Uploader
                   files={photos as any}
                   onUpdate={setPhotos}
-                  acceptedFileTypes={["image/jpg", "image/jpeg", "image/png"]}
+                  acceptedFileTypes={acceptedFiletypes(
+                    account?.has_subscription
+                  )}
                   allowMultiple={true}
                   maxFiles={6 - (build?.photos?.length || 0)}
                   type="photos"
+                  maxFileSize={MAX_FILE_SIZE}
                 />
               </div>
             </div>

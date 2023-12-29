@@ -4,12 +4,14 @@ import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orien
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePondInitialFile } from "filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 
 // Register the plugins
 registerPlugin(
   FilePondPluginImageExifOrientation,
   FilePondPluginImagePreview,
-  FilePondPluginFileValidateType
+  FilePondPluginFileValidateType,
+  FilePondPluginFileValidateSize
 );
 
 interface Props {
@@ -19,6 +21,7 @@ interface Props {
   acceptedFileTypes?: string[];
   type: string;
   files?: (string | FilePondInitialFile | Blob | File)[];
+  maxFileSize?: string;
 }
 const Uploader = ({
   onUpdate,
@@ -27,6 +30,7 @@ const Uploader = ({
   acceptedFileTypes,
   type,
   files,
+  maxFileSize,
 }: Props) => {
   const url = "http://localhost:8000/api/upload";
   return (
@@ -35,6 +39,7 @@ const Uploader = ({
       onupdatefiles={onUpdate}
       allowMultiple={allowMultiple}
       maxFiles={maxFiles}
+      maxFileSize={maxFileSize}
       server={{
         url,
         process: {
