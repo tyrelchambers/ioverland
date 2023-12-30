@@ -2,12 +2,12 @@ import "@/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Lora, Mulish } from "next/font/google";
+import { Playfair_Display, Mulish } from "next/font/google";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { Toaster } from "@/components/ui/sonner";
 
-export const headingFont = Lora({
+export const headingFont = Playfair_Display({
   weight: ["400", "700"],
   subsets: ["latin"],
   variable: "--font-heading",
