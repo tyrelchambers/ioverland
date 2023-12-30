@@ -14,8 +14,6 @@ const BuildItem = ({
   playVideo?: boolean;
 }) => {
   const getImageOrVideo = () => {
-    console.log(build.banner?.url);
-
     if (build.banner?.mime_type.includes("video")) {
       if (!playVideo) {
         return (
