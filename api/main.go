@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+
 	db.Init()
 	err := db.Client.AutoMigrate(&build.Build{}, &build.Trip{}, &build.Vehicle{}, &build.Modification{}, &build.Media{}, &user.User{})
 

@@ -3,10 +3,25 @@ package controllers
 import (
 	"api/db"
 	"api/domain/build"
+	"errors"
 	"fmt"
+
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 )
 
-func Build(newBuild build.Build) (build.Build, error) {
+func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
+
+	acc := GetAccount(clerk_user)
+
+	fmt.Println("builds remaining: ", acc.BuildsRemaining)
+	if acc.BuildsRemaining == 0 {
+		return build.Build{}, errors.New("You have reached your build limit")
+	}
+
+	if newBuild.Name == "" {
+		return build.Build{}, errors.New("Name is required")
+	}
+
 	modifications := []build.Modification{}
 	links := []string{}
 	trips := []build.Trip{}

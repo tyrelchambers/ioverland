@@ -49,3 +49,9 @@ func FindUserByCustomerId(db *gorm.DB, customerId string) (User, error) {
 func (u User) Delete(db *gorm.DB) error {
 	return db.Delete(u).Error
 }
+
+func (u User) BuildCount(db *gorm.DB) (int64, error) {
+	var builds int64
+	err := db.Table("builds").Where("user_id = ?", u.Uuid).Count(&builds).Error
+	return builds, err
+}

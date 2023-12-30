@@ -96,6 +96,8 @@ const account = z.object({
     next_invoice_date: z.date(),
   }),
   delete_on: z.date(),
+  total_builds: z.number(),
+  builds_remaining: z.number(),
 });
 
 export type Account = z.infer<typeof account>;

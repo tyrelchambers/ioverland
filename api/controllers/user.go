@@ -22,7 +22,9 @@ type AccountResponse struct {
 		DeleteOn        time.Time `json:"delete_on"`
 		NextInvoiceDate time.Time `json:"next_invoice_date"`
 	} `json:"subscription"`
-	DeleteOn *time.Time `json:"delete_on"`
+	DeleteOn        *time.Time `json:"delete_on"`
+	TotalBuilds     int64      `json:"total_builds"`
+	BuildsRemaining int64      `json:"builds_remaining"`
 }
 
 func Bookmark(build_id, user_id string) error {
@@ -76,6 +78,12 @@ func GetAccount(u *clerk.User) AccountResponse {
 		log.Fatal(err)
 	}
 
+	userBuilds, err := domainUser.BuildCount(db.Client)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	params := &stripe.CustomerParams{}
 	params.AddExpand("subscriptions.data.plan.product")
 
@@ -98,6 +106,14 @@ func GetAccount(u *clerk.User) AccountResponse {
 
 	if !domainUser.DeleteOn.IsZero() {
 		resp.DeleteOn = &domainUser.DeleteOn
+	}
+
+	resp.TotalBuilds = userBuilds
+
+	if resp.HasSubscription {
+		resp.BuildsRemaining = 5 - userBuilds
+	} else {
+		resp.BuildsRemaining = 1 - userBuilds
 	}
 
 	return resp

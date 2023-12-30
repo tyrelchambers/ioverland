@@ -22,6 +22,7 @@ interface Props {
   type: string;
   files?: (string | FilePondInitialFile | Blob | File)[];
   maxFileSize?: string;
+  disabled?: boolean;
 }
 const Uploader = ({
   onUpdate,
@@ -31,6 +32,7 @@ const Uploader = ({
   type,
   files,
   maxFileSize,
+  disabled,
 }: Props) => {
   const url = "http://localhost:8000/api/upload";
   return (
@@ -62,6 +64,7 @@ const Uploader = ({
       name="file"
       labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
       acceptedFileTypes={acceptedFileTypes}
+      disabled={disabled}
     />
   );
 };

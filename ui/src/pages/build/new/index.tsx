@@ -32,7 +32,6 @@ import {
   Media,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
-import { useToast } from "@/components/ui/use-toast";
 
 import { Label } from "@/components/ui/label";
 import { FilePondFile, FileStatus } from "filepond";
@@ -51,6 +50,7 @@ import { PlusCircle } from "lucide-react";
 import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { toast } from "sonner";
+import { isAxiosError } from "axios";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -84,6 +84,7 @@ const Index = () => {
       modifications: {},
       private: false,
     },
+    disabled: account?.data?.builds_remaining === 0,
   });
 
   const watchMake = form.watch("vehicle.make");
@@ -169,13 +170,7 @@ const Index = () => {
       payload.photos = photos.map((d) => JSON.parse(d.serverId));
     }
 
-    createBuild.mutate(payload, {
-      onSuccess: () => {
-        toast.success("Build created", {
-          description: "Your build has been created. Nice!",
-        });
-      },
-    });
+    createBuild.mutate(payload);
   };
 
   return (
@@ -303,6 +298,7 @@ const Index = () => {
                 maxFiles={1}
                 type="banner"
                 maxFileSize={MAX_FILE_SIZE}
+                disabled={form.formState.disabled}
               />
             </div>
             <Separator className="my-4" />
@@ -531,6 +527,7 @@ const Index = () => {
                 maxFiles={6}
                 type="photos"
                 maxFileSize={MAX_FILE_SIZE}
+                disabled={form.formState.disabled}
               />
             </div>
 
@@ -556,7 +553,11 @@ const Index = () => {
                 </FormItem>
               )}
             />
-            <Button disabled={!form.formState.isValid}>Save build</Button>
+            <Button
+              disabled={!form.formState.isValid || form.formState.disabled}
+            >
+              Save build
+            </Button>
           </form>
         </Form>
       </div>

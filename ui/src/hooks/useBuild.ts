@@ -1,7 +1,7 @@
-import { toast } from "@/components/ui/use-toast";
 import { Build } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosResponse, isAxiosError } from "axios";
+import { toast } from "sonner";
 
 export const useBuild = (id?: string) => {
   const context = useQueryClient();
@@ -25,15 +25,13 @@ export const useBuild = (id?: string) => {
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.response?.data.message,
+        console.log(error);
+
+        toast.error("Error", {
+          description: error.response?.data.message || error.response?.data,
         });
       } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
+        toast.error("Error", {
           description: "Something went wrong",
         });
       }

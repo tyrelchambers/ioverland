@@ -20,19 +20,18 @@ func CreateBuild(c *gin.Context) {
 
 	if err := c.Bind(&reqBody); err != nil {
 		fmt.Println(err)
-		c.JSON(500, err)
-	}
-
-	if reqBody.Name == "" {
+		c.String(500, err.Error())
 		return
 	}
 
 	reqBody.UserId = user.ID
 
-	newBuild, err := controllers.Build(reqBody)
+	newBuild, err := controllers.Build(reqBody, user)
+
+	fmt.Println("error --->", err)
 
 	if err != nil {
-		c.JSON(500, err)
+		c.String(500, err.Error())
 		return
 	}
 
