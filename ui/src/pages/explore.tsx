@@ -1,7 +1,6 @@
 import BuildItem from "@/components/BuildItem";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
-import ImageWithFallback from "@/components/ImageWithFallback";
 import RenderMedia from "@/components/RenderMedia";
 import {
   Carousel,
@@ -35,7 +34,12 @@ const Explore = () => {
                   <div className="relative">
                     <header className="relative h-[600px] shadow-md">
                       {build.banner && (
-                        <RenderMedia media={build.banner} autoPlay loop />
+                        <RenderMedia
+                          media={build.banner}
+                          autoPlay
+                          showVideo
+                          loop
+                        />
                       )}
                     </header>
                     <div className="absolute bottom-0 left-0 right-0 backdrop-blur-md bg-white/10 p-6">
@@ -61,6 +65,7 @@ const Explore = () => {
               <BuildItem
                 build={build}
                 key={build.uuid + "_" + index}
+                showVideo
                 playVideo
               />
             ))}
