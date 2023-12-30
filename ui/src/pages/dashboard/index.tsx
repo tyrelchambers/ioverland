@@ -106,20 +106,22 @@ const Dashboard = () => {
           <section className="mt-10">
             <TabsContent value="builds">
               <ul className="grid grid-cols-3 gap-6">
-                {builds?.map((build) => (
-                  <BuildItem
-                    build={build}
-                    key={build.uuid}
-                    footer={
-                      <footer className="flex mt-2">
-                        <div className="flex text-muted-foreground items-center">
-                          <Heart size={16} className="mr-1" />
-                          <p className="text-sm">{build.likes?.length}</p>
-                        </div>
-                      </footer>
-                    }
-                  />
-                ))}
+                {builds
+                  ?.toSorted((a, b) => (a.name > b.name ? 1 : -1))
+                  ?.map((build) => (
+                    <BuildItem
+                      build={build}
+                      key={build.uuid}
+                      footer={
+                        <footer className="flex mt-2">
+                          <div className="flex text-muted-foreground items-center">
+                            <Heart size={16} className="mr-1" />
+                            <p className="text-sm">{build.likes?.length}</p>
+                          </div>
+                        </footer>
+                      }
+                    />
+                  ))}
               </ul>
             </TabsContent>
             <TabsContent value="bookmarks">

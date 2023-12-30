@@ -45,7 +45,15 @@ export const useBuild = (id?: string) => {
       });
     },
     onSuccess: () => {
+      toast.success("Build updated");
       context.invalidateQueries({ queryKey: ["build", id] });
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast.error("Error", {
+          description: error.response?.data.message || error.response?.data,
+        });
+      }
     },
   });
 
@@ -119,7 +127,13 @@ export const useBuild = (id?: string) => {
       );
     },
     onSuccess: () => {
+      toast.success("Build deleted");
       context.invalidateQueries({ queryKey: ["user_builds", id] });
+    },
+    onError: () => {
+      toast.error("Error", {
+        description: "Something went wrong",
+      });
     },
   });
 
