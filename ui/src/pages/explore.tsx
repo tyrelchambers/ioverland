@@ -34,12 +34,7 @@ const Explore = () => {
                   <div className="relative">
                     <header className="relative h-[600px] shadow-md">
                       {build.banner && (
-                        <RenderMedia
-                          media={build.banner}
-                          autoPlay
-                          showVideo
-                          loop
-                        />
+                        <RenderMedia media={build.banner} autoPlay loop />
                       )}
                     </header>
                     <div className="absolute bottom-0 left-0 right-0 backdrop-blur-md bg-white/10 p-6">

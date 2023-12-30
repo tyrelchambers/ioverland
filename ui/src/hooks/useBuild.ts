@@ -23,10 +23,11 @@ export const useBuild = (id?: string) => {
         withCredentials: true,
       });
     },
+    onSuccess: () => {
+      toast.success("Build created");
+    },
     onError: (error) => {
       if (isAxiosError(error)) {
-        console.log(error);
-
         toast.error("Error", {
           description: error.response?.data.message || error.response?.data,
         });

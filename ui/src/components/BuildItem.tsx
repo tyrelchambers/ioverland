@@ -1,7 +1,6 @@
 import { Build } from "@/types";
 import Link from "next/link";
 import React from "react";
-import { Video } from "lucide-react";
 import RenderMedia from "./RenderMedia";
 
 const BuildItem = ({
@@ -18,11 +17,7 @@ const BuildItem = ({
   return (
     <Link href={`/build/${build.uuid}`} key={build.uuid}>
       <header className="relative w-full aspect-video shadow-md">
-        <RenderMedia
-          media={build.banner}
-          showVideo={showVideo}
-          autoPlay={playVideo}
-        />
+        <RenderMedia media={build.banner} autoPlay={playVideo} />
       </header>
       <p className="mt-3 font-bold text-xl font-serif text-foreground">
         {build.name}
