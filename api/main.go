@@ -10,11 +10,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron/v2"
 )
 
 func main() {
@@ -74,6 +76,7 @@ func main() {
 	webhooks := api.Group("/webhooks")
 	user := api.Group("/user")
 	billing := api.Group("/billing")
+	explore := api.Group("/explore")
 
 	build.POST("/", routes.CreateBuild)
 	build.GET("/:build_id", routes.GetById)
@@ -102,6 +105,33 @@ func main() {
 
 	webhooks.POST("/", routes.Webhooks)
 	webhooks.POST("/stripe", routes.StripeWebhooks)
+
+	explore.GET("/", routes.Explore)
+
+	// cron jobs
+
+	s, err := gocron.NewScheduler()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = s.NewJob(
+		gocron.DurationJob(
+			1*time.Second,
+		),
+		gocron.NewTask(
+			func(a string, b int) {
+				// fmt.Println("hi")
+			},
+			"hello",
+			1,
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	s.Start()
 
 	r.Run(":8000")
 }

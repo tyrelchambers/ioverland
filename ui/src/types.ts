@@ -101,3 +101,10 @@ const account = z.object({
 });
 
 export type Account = z.infer<typeof account>;
+
+const explore = z.object({
+  featured: z.array(buildSchema),
+  top_10: z.array(buildSchema),
+});
+
+export type Explore = z.infer<typeof explore>;

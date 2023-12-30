@@ -1,6 +1,8 @@
 package build
 
 import (
+	"time"
+
 	"github.com/lib/pq"
 )
 
@@ -20,6 +22,7 @@ type Build struct {
 	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"photos"`
 	Views         int            `gorm:"default:0" json:"views"`
 	Likes         pq.StringArray `gorm:"type:text[]" json:"likes"`
+	FeaturedOn    time.Time      `json:"featured_on"`
 }
 
 type Trip struct {
