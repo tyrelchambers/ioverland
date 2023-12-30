@@ -28,8 +28,6 @@ func CreateBuild(c *gin.Context) {
 
 	newBuild, err := controllers.Build(reqBody, user)
 
-	fmt.Println("error --->", err)
-
 	if err != nil {
 		c.String(500, err.Error())
 		return

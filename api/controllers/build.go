@@ -13,7 +13,6 @@ func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 
 	acc := GetAccount(clerk_user)
 
-	fmt.Println("builds remaining: ", acc.BuildsRemaining)
 	if acc.BuildsRemaining == 0 {
 		return build.Build{}, errors.New("You have reached your build limit")
 	}

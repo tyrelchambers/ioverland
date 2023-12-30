@@ -168,7 +168,7 @@ const Build = () => {
           </div>
         </header>
 
-        {build.banner && (
+        {build.banner?.url && (
           <>
             {build.banner.mime_type.includes("image") ? (
               <div className="relative w-full h-[700px]  overflow-hidden shadow-xl">
