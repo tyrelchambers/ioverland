@@ -3,7 +3,7 @@ services:
   web:
     container_name: web
     build:
-      context: ./client
+      context: ./ui
       secrets:
         - env
     expose:
@@ -15,7 +15,7 @@ services:
       LETSENCRYPT_HOST: iover.land
       VIRTUAL_PATH: "/"
     env_file:
-      - ./client/.env
+      - ./ui/.env
 
     command: npm run start
     depends_on:
@@ -57,7 +57,7 @@ services:
 
 secrets:
   env:
-    file: ./client/.env
+    file: ./ui/.env
 networks:
   default:
     name: ioverland
