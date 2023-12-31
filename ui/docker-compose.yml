@@ -5,7 +5,6 @@ services:
     build:
       context: .
       secrets:
-        - npmrc
         - env
     expose:
       - "3000"
@@ -48,8 +47,5 @@ networks:
 volumes:
   postgres_data:
   test_postgres_data:
-secrets:
-  npmrc:
-    file: $HOME/.npmrc
   env:
     file: .env
