@@ -16,8 +16,6 @@ services:
       # VIRTUAL_PATH: "/"
 
     command: npm run start
-    depends_on:
-      - db
     restart: unless-stopped
 networks:
   default:
