@@ -47,5 +47,6 @@ networks:
 volumes:
   postgres_data:
   test_postgres_data:
+secrets:
   env:
     file: .env
