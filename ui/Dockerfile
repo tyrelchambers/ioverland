@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-COPY prisma ./
+# COPY prisma ./
 # RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=env,target=/app/.env npm install
 
 # Rebuild the source code only when needed
@@ -38,8 +38,8 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-RUN mkdir ./uploads
-RUN chmod 777 ./uploads
+# RUN mkdir ./uploads
+# RUN chmod 777 ./uploads
 
 USER nextjs
 
