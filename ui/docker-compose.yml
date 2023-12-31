@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      secrets:
+        - npmrc
+        - env
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      VIRTUAL_HOST: reddex.app,www.reddex.app
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: reddex.app,www.reddex.app
+      VIRTUAL_PATH: "/"
+
+    command: npm run start
+    depends_on:
+      - db
+    restart: unless-stopped
+  db:
+    container_name: reddex_db
+    image: postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+  db_test:
+    container_name: reddex_db_test
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "6432:5432"
+networks:
+  default:
+    name: reddex_v3
+volumes:
+  postgres_data:
+  test_postgres_data:
+secrets:
+  npmrc:
+    file: $HOME/.npmrc
+  env:
+    file: .env
