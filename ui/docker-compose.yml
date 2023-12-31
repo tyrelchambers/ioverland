@@ -3,25 +3,73 @@ services:
   web:
     container_name: web
     build:
-      context: .
+      context: ./client
       secrets:
         - env
     expose:
       - "3000"
     environment:
       NODE_ENV: production
-      # VIRTUAL_HOST: reddex.app,www.reddex.app
-      # VIRTUAL_PORT: 3000
-      # LETSENCRYPT_HOST: reddex.app,www.reddex.app
-      # VIRTUAL_PATH: "/"
+      VIRTUAL_HOST: iover.land
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: iover.land
+      VIRTUAL_PATH: "/"
+    env_file:
+      - ./client/.env
 
     command: npm run start
+    depends_on:
+      - nginx
     restart: unless-stopped
-networks:
-  default:
-    name: ioverland_v3
-volumes:
-  postgres_data:
+  nginx:
+    container_name: nginx
+    image: nginxproxy/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+      - nginx-proxy:/etc/nginx/conf.d
+    environment:
+      DEFAULT_EMAIL: tychambers3@gmail.com
+    depends_on:
+      - nginx
+    volumes_from:
+      - nginx
+  # certbot:
+  #   image: certbot/dns-digitalocean
+  #   depends_on:
+  #     - web
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot
+  #     - ~/.secrets:/.secrets
+  #   command: certonly --dns-digitalocean --dns-digitalocean-credentials /.secrets/digitalocean.ini --non-interactive --email tychambers3@gmail.com --agree-tos --no-eff-email -d *.reddex.app
+
 secrets:
   env:
-    file: .env
+    file: ./client/.env
+networks:
+  default:
+    name: ioverland
+volumes:
+  certs:
+  vhost:
+  html:
+  acme:
+  nginx-proxy:
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /root/apps/ioverland/dhparam
+      o: bindroot@ioverland-v3:~/ioverland#
