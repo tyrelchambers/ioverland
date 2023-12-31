@@ -116,7 +116,9 @@ const Dashboard = () => {
                         <footer className="flex mt-2">
                           <div className="flex text-muted-foreground items-center">
                             <Heart size={16} className="mr-1" />
-                            <p className="text-sm">{build.likes?.length}</p>
+                            <p className="text-sm">
+                              {build.likes?.length ?? 0}
+                            </p>
                           </div>
                         </footer>
                       }

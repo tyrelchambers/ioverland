@@ -11,5 +11,3 @@
 - implement build visibility functionality
 - explore page
 - seeding the db with stuff
-- builds should have a count for how many times thye've been saved
-- video support
