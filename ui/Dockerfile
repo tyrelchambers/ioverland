@@ -10,7 +10,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 # COPY prisma ./
 # RUN --mount=type=secret,id=npmrc,target=/root/.npmrc --mount=type=secret,id=env,target=/app/.env npm install
-
+RUN npm i
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
@@ -26,7 +26,7 @@ COPY . .
 
 # If using npm comment out above and use below instead
 # RUN --mount=type=secret,id=env,target=/app/.env npm run build
-
+RUN npm run build
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
