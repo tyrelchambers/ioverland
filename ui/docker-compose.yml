@@ -16,7 +16,6 @@ services:
       VIRTUAL_PATH: "/"
     env_file:
       - ./ui/.env
-
     command: npm run start
     depends_on:
       - nginx
