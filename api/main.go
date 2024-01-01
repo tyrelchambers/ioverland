@@ -135,5 +135,13 @@ func main() {
 
 	s.Start()
 
-	r.Run(":8000")
+	var port string
+
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	} else {
+		port = "8000"
+	}
+
+	r.Run(port)
 }
