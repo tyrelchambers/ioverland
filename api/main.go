@@ -108,6 +108,8 @@ func main() {
 
 	explore.GET("/", routes.Explore)
 
+	r.GET("/health", routes.Health)
+
 	// cron jobs
 
 	s, err := gocron.NewScheduler()
