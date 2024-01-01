@@ -1,14 +1,14 @@
+import { request } from "@/lib/axios";
 import { Account, DomainUser } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "sonner";
 export const useDomainUser = (id?: string) => {
   const context = useQueryClient();
   const query = useQuery({
     queryKey: ["me"],
     queryFn: (): Promise<DomainUser> => {
-      return axios
-        .get(`http://localhost:8000/api/user/me`, {
+      return request
+        .get(`/api/user/me`, {
           withCredentials: true,
         })
         .then((res) => res.data);
@@ -17,8 +17,8 @@ export const useDomainUser = (id?: string) => {
 
   const bookmark = useMutation({
     mutationFn: ({ build_id }: { build_id: string }) => {
-      return axios.post(
-        `http://localhost:8000/api/user/me/bookmark`,
+      return request.post(
+        `/api/user/me/bookmark`,
         {
           build_id,
         },
@@ -34,8 +34,8 @@ export const useDomainUser = (id?: string) => {
 
   const removeBookmark = useMutation({
     mutationFn: ({ build_id }: { build_id: string }) => {
-      return axios.post(
-        `http://localhost:8000/api/user/me/remove-bookmark`,
+      return request.post(
+        `/api/user/me/remove-bookmark`,
         {
           build_id,
         },
@@ -52,8 +52,8 @@ export const useDomainUser = (id?: string) => {
   const getAccount = useQuery({
     queryKey: ["account"],
     queryFn: (): Promise<Account> => {
-      return axios
-        .get(`http://localhost:8000/api/user/me/account`, {
+      return request
+        .get(`/api/user/me/account`, {
           withCredentials: true,
         })
         .then((res) => res.data);
@@ -62,9 +62,9 @@ export const useDomainUser = (id?: string) => {
 
   const createPortal = useMutation({
     mutationFn: (): Promise<{ url: string }> => {
-      return axios
+      return request
         .post(
-          `http://localhost:8000/api/billing/portal`,
+          `/api/billing/portal`,
           {},
           {
             withCredentials: true,
@@ -76,8 +76,8 @@ export const useDomainUser = (id?: string) => {
 
   const deleteUser = useMutation({
     mutationFn: () => {
-      return axios
-        .delete(`http://localhost:8000/api/user/me`, {
+      return request
+        .delete(`/api/user/me`, {
           withCredentials: true,
         })
         .then((res) => res.data);
@@ -93,9 +93,9 @@ export const useDomainUser = (id?: string) => {
 
   const restoreUser = useMutation({
     mutationFn: () => {
-      return axios
+      return request
         .post(
-          `http://localhost:8000/api/user/me/restore`,
+          `/api/user/me/restore`,
           {},
           {
             withCredentials: true,

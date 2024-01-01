@@ -1,6 +1,7 @@
+import { request } from "@/lib/axios";
 import { Build } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosResponse, isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { toast } from "sonner";
 
 export const useBuild = (id?: string) => {
@@ -8,8 +9,8 @@ export const useBuild = (id?: string) => {
   const getById = useQuery({
     queryKey: ["build", id],
     queryFn: (): Promise<Build> => {
-      return axios
-        .get(`http://localhost:8000/api/build/${id}`, {
+      return request
+        .get(`/api/build/${id}`, {
           withCredentials: true,
         })
         .then((res) => res.data as Build);
@@ -19,7 +20,7 @@ export const useBuild = (id?: string) => {
 
   const createBuild = useMutation({
     mutationFn: (data: Build) => {
-      return axios.post("http://localhost:8000/api/build/", data, {
+      return request.post("/api/build/", data, {
         withCredentials: true,
       });
     },
@@ -41,7 +42,7 @@ export const useBuild = (id?: string) => {
 
   const updateBuild = useMutation({
     mutationFn: (data: Build) => {
-      return axios.put(`http://localhost:8000/api/build/${id}`, data, {
+      return request.put(`/api/build/${id}`, data, {
         withCredentials: true,
       });
     },
@@ -60,8 +61,8 @@ export const useBuild = (id?: string) => {
 
   const removeImage = useMutation({
     mutationFn: (data: { build_id: string; image_id: string; url: string }) => {
-      return axios.delete(
-        `http://localhost:8000/api/build/${data.build_id}/image/${data.image_id}?url=${data.url}`,
+      return request.delete(
+        `/api/build/${data.build_id}/image/${data.image_id}?url=${data.url}`,
         {
           withCredentials: true,
         }
@@ -74,8 +75,8 @@ export const useBuild = (id?: string) => {
 
   const incrementView = useMutation({
     mutationFn: (data: { build_id: string }) => {
-      return axios.post(
-        `http://localhost:8000/api/build/${data.build_id}/view`,
+      return request.post(
+        `/api/build/${data.build_id}/view`,
         {},
         {
           withCredentials: true,
@@ -90,8 +91,8 @@ export const useBuild = (id?: string) => {
 
   const likeBuild = useMutation({
     mutationFn: (data: { build_id: string }) => {
-      return axios.post(
-        `http://localhost:8000/api/build/${data.build_id}/like`,
+      return request.post(
+        `/api/build/${data.build_id}/like`,
         {},
         {
           withCredentials: true,
@@ -105,8 +106,8 @@ export const useBuild = (id?: string) => {
 
   const dislikeBuild = useMutation({
     mutationFn: (data: { build_id: string }) => {
-      return axios.post(
-        `http://localhost:8000/api/build/${data.build_id}/dislike`,
+      return request.post(
+        `/api/build/${data.build_id}/dislike`,
         {},
         {
           withCredentials: true,
@@ -120,12 +121,9 @@ export const useBuild = (id?: string) => {
 
   const deleteBuild = useMutation({
     mutationFn: (data: { build_id: string }) => {
-      return axios.delete(
-        `http://localhost:8000/api/build/${data.build_id}/delete`,
-        {
-          withCredentials: true,
-        }
-      );
+      return request.delete(`/api/build/${data.build_id}/delete`, {
+        withCredentials: true,
+      });
     },
     onSuccess: () => {
       toast.success("Build deleted");
