@@ -21,6 +21,8 @@ export const paragraphFont = Mulish({
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  console.log(process.env);
+
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
