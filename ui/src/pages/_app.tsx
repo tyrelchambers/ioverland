@@ -22,14 +22,11 @@ export const paragraphFont = Mulish({
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
-  console.log("backend: ", process.env);
-
   return (
     <ClerkProvider publishableKey={config.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
         <Toaster richColors />
-
         <style jsx global>
           {`
             :root {

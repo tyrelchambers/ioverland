@@ -1,5 +1,6 @@
 import axios from "axios";
+import { env } from "next-runtime-env";
 
 export const request = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL: env("NEXT_PUBLIC_BACKEND_URL"),
 });
