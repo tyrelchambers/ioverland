@@ -63,7 +63,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000"},
+	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://iover.land"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
