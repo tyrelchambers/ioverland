@@ -16,6 +16,10 @@ var BunnyClient *bunnystorage.Client
 
 func GoDotEnvVariable(key string) string {
 
+	if os.Getenv(key) != "" {
+		return os.Getenv(key)
+	}
+
 	// load .env file
 	err := godotenv.Load(".env")
 
