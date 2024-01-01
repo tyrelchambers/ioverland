@@ -22,6 +22,8 @@ export const paragraphFont = Mulish({
 const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
+  console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
+
   return (
     <ClerkProvider publishableKey={config.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
