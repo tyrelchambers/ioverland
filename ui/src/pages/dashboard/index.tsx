@@ -38,6 +38,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { env } from "next-runtime-env";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -227,7 +228,11 @@ const Dashboard = () => {
                             <DrawerFooter>
                               <a
                                 className="block"
-                                href="http://localhost:8000/api/billing/checkout?redirect_to=http://localhost:3000/dashboard?tab=account"
+                                href={`${env(
+                                  "NEXT_PUBLIC_BACKEND_URL"
+                                )}/api/billing/checkout?redirect_to=${env(
+                                  "NEXT_PUBLIC_FRONTEND_URL"
+                                )}/dashboard?tab=account`}
                               >
                                 <Button type="button" className="w-full">
                                   Submit
