@@ -143,5 +143,7 @@ func main() {
 		port = "8000"
 	}
 
-	r.Run(port)
+	fmt.Println("Listening on port " + port)
+
+	r.Run(":" + port)
 }
