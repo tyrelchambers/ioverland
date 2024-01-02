@@ -1,9 +1,12 @@
 import { request } from "@/lib/axios";
 import { Account, DomainUser } from "@/types";
+import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 export const useDomainUser = (id?: string) => {
+  const { getToken } = useAuth();
+
   const context = useQueryClient();
   const query = useQuery({
     queryKey: ["me"],
@@ -52,11 +55,12 @@ export const useDomainUser = (id?: string) => {
 
   const getAccount = useQuery({
     queryKey: ["account"],
-    queryFn: (): Promise<Account> => {
+    queryFn: async (): Promise<Account> => {
       return axios
         .get(`https://api.iover.land/api/user/me/account`, {
-          withCredentials: true,
-          withXSRFToken: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         })
         .then((res) => res.data);
     },
