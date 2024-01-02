@@ -3,6 +3,7 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +20,7 @@ func Bookmark(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
+		fmt.Println("Error authenticating with middleware: ", err)
 		c.String(401, "Unauthorized")
 		return
 	}
@@ -41,6 +43,7 @@ func Unbookmark(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
+		fmt.Println("Error authenticating with middleware: ", err)
 		c.String(401, "Unauthorized")
 		return
 	}
@@ -54,6 +57,7 @@ func GetCurrentUser(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
+		fmt.Println("Error authenticating with middleware: ", err)
 		c.String(401, "Unauthorized")
 		return
 	}
@@ -71,6 +75,7 @@ func GetAccount(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
+		fmt.Println("Error authenticating with middleware: ", err)
 		c.String(401, "Unauthorized")
 		return
 	}
@@ -84,6 +89,7 @@ func DeleteUser(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
+		fmt.Println("Error authenticating with middleware: ", err)
 		c.String(401, "Unauthorized")
 		return
 	}
@@ -102,6 +108,7 @@ func RestoreUser(c *gin.Context) {
 	user, err := middleware.Authorize(c)
 
 	if err != nil {
+		fmt.Println("Error authenticating with middleware: ", err)
 		c.String(401, "Unauthorized")
 		return
 	}
