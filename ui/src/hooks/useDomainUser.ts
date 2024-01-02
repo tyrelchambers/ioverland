@@ -1,6 +1,7 @@
 import { request } from "@/lib/axios";
 import { Account, DomainUser } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { toast } from "sonner";
 export const useDomainUser = (id?: string) => {
   const context = useQueryClient();
@@ -63,9 +64,9 @@ export const useDomainUser = (id?: string) => {
 
   const createPortal = useMutation({
     mutationFn: (): Promise<{ url: string }> => {
-      return request
+      return axios
         .post(
-          `/api/billing/portal`,
+          `https://api.iover.land/api/billing/portal`,
           {},
           {
             withCredentials: true,
