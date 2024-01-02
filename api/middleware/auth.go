@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"api/utils"
+	"fmt"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,8 @@ func Authorize(c *gin.Context) (*clerk.User, error) {
 	sessClaims, err := utils.ClerkClient.VerifyToken(sessionKey)
 
 	if err != nil {
+		fmt.Printf("session cookie: %s\n", sessionToken)
+		fmt.Printf("session key: %s\n", sessionKey)
 		return nil, err
 	}
 
