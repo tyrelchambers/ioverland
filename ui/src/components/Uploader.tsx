@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FilePond, registerPlugin } from "react-filepond";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
@@ -6,6 +6,7 @@ import { FilePondInitialFile } from "filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
 import { env } from "next-runtime-env";
+import { useAuth } from "@clerk/nextjs";
 
 // Register the plugins
 registerPlugin(
@@ -35,7 +36,21 @@ const Uploader = ({
   maxFileSize,
   disabled,
 }: Props) => {
+  const [token, setToken] = React.useState<string | null>("");
+  const { getToken } = useAuth();
   const url = `${env("NEXT_PUBLIC_BACKEND_URL")}/api/upload`;
+
+  useEffect(() => {
+    const fn = async () => {
+      const token = await getToken();
+      setToken(token);
+    };
+
+    fn();
+  }, []);
+
+  if (!token) return null;
+
   return (
     <FilePond
       {...(files && { files })}
@@ -48,17 +63,17 @@ const Uploader = ({
         process: {
           url: "/process",
           method: "POST",
-          withCredentials: true,
           headers: {
             "file-type": type,
+            Authorization: `Bearer ${token}`,
           },
         },
         revert: {
           url: "/revert",
           method: "POST",
-          withCredentials: true,
           headers: {
             "file-type": type,
+            Authorization: `Bearer ${token}`,
           },
         },
       }}
