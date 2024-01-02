@@ -55,6 +55,7 @@ export const useDomainUser = (id?: string) => {
       return request
         .get(`/api/user/me/account`, {
           withCredentials: true,
+          withXSRFToken: true,
         })
         .then((res) => res.data);
     },
