@@ -53,8 +53,8 @@ export const useDomainUser = (id?: string) => {
   const getAccount = useQuery({
     queryKey: ["account"],
     queryFn: (): Promise<Account> => {
-      return request
-        .get(`/api/user/me/account`, {
+      return axios
+        .get(`https://api.iover.land/api/user/me/account`, {
           withCredentials: true,
           withXSRFToken: true,
         })
@@ -64,9 +64,9 @@ export const useDomainUser = (id?: string) => {
 
   const createPortal = useMutation({
     mutationFn: (): Promise<{ url: string }> => {
-      return axios
+      return request
         .post(
-          `https://api.iover.land/api/billing/portal`,
+          `/api/billing/portal`,
           {},
           {
             withCredentials: true,
