@@ -5,6 +5,7 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import { FilePondInitialFile } from "filepond";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginFileValidateSize from "filepond-plugin-file-validate-size";
+import { env } from "next-runtime-env";
 
 // Register the plugins
 registerPlugin(
@@ -34,7 +35,7 @@ const Uploader = ({
   maxFileSize,
   disabled,
 }: Props) => {
-  const url = "http://localhost:8000/api/upload";
+  const url = `${env("NEXT_PUBLIC_BACKEND_URL")}/api/upload`;
   return (
     <FilePond
       {...(files && { files })}
