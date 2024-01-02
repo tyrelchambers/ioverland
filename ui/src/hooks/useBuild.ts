@@ -1,10 +1,12 @@
 import { request } from "@/lib/axios";
 import { Build } from "@/types";
+import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
 
 export const useBuild = (id?: string) => {
+  const { getToken } = useAuth();
   const context = useQueryClient();
   const getById = useQuery({
     queryKey: ["build", id],
@@ -19,9 +21,11 @@ export const useBuild = (id?: string) => {
   });
 
   const createBuild = useMutation({
-    mutationFn: (data: Build) => {
+    mutationFn: async (data: Build) => {
       return request.post("/api/build/", data, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
       });
     },
     onSuccess: () => {
@@ -41,9 +45,11 @@ export const useBuild = (id?: string) => {
   });
 
   const updateBuild = useMutation({
-    mutationFn: (data: Build) => {
+    mutationFn: async (data: Build) => {
       return request.put(`/api/build/${id}`, data, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
       });
     },
     onSuccess: () => {
@@ -60,11 +66,17 @@ export const useBuild = (id?: string) => {
   });
 
   const removeImage = useMutation({
-    mutationFn: (data: { build_id: string; image_id: string; url: string }) => {
+    mutationFn: async (data: {
+      build_id: string;
+      image_id: string;
+      url: string;
+    }) => {
       return request.delete(
         `/api/build/${data.build_id}/image/${data.image_id}?url=${data.url}`,
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         }
       );
     },
@@ -74,12 +86,14 @@ export const useBuild = (id?: string) => {
   });
 
   const incrementView = useMutation({
-    mutationFn: (data: { build_id: string }) => {
+    mutationFn: async (data: { build_id: string }) => {
       return request.post(
         `/api/build/${data.build_id}/view`,
         {},
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         }
       );
     },
@@ -90,12 +104,14 @@ export const useBuild = (id?: string) => {
   });
 
   const likeBuild = useMutation({
-    mutationFn: (data: { build_id: string }) => {
+    mutationFn: async (data: { build_id: string }) => {
       return request.post(
         `/api/build/${data.build_id}/like`,
         {},
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         }
       );
     },
@@ -105,12 +121,14 @@ export const useBuild = (id?: string) => {
   });
 
   const dislikeBuild = useMutation({
-    mutationFn: (data: { build_id: string }) => {
+    mutationFn: async (data: { build_id: string }) => {
       return request.post(
         `/api/build/${data.build_id}/dislike`,
         {},
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         }
       );
     },
@@ -120,9 +138,11 @@ export const useBuild = (id?: string) => {
   });
 
   const deleteBuild = useMutation({
-    mutationFn: (data: { build_id: string }) => {
+    mutationFn: async (data: { build_id: string }) => {
       return request.delete(`/api/build/${data.build_id}/delete`, {
-        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
       });
     },
     onSuccess: () => {

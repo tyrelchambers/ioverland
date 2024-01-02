@@ -10,24 +10,28 @@ export const useDomainUser = (id?: string) => {
   const context = useQueryClient();
   const query = useQuery({
     queryKey: ["me"],
-    queryFn: (): Promise<DomainUser> => {
+    queryFn: async (): Promise<DomainUser> => {
       return request
         .get(`/api/user/me`, {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         })
         .then((res) => res.data);
     },
   });
 
   const bookmark = useMutation({
-    mutationFn: ({ build_id }: { build_id: string }) => {
+    mutationFn: async ({ build_id }: { build_id: string }) => {
       return request.post(
         `/api/user/me/bookmark`,
         {
           build_id,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         }
       );
     },
@@ -37,14 +41,16 @@ export const useDomainUser = (id?: string) => {
   });
 
   const removeBookmark = useMutation({
-    mutationFn: ({ build_id }: { build_id: string }) => {
+    mutationFn: async ({ build_id }: { build_id: string }) => {
       return request.post(
         `/api/user/me/remove-bookmark`,
         {
           build_id,
         },
         {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         }
       );
     },
@@ -56,8 +62,8 @@ export const useDomainUser = (id?: string) => {
   const getAccount = useQuery({
     queryKey: ["account"],
     queryFn: async (): Promise<Account> => {
-      return axios
-        .get(`https://api.iover.land/api/user/me/account`, {
+      return request
+        .get(`/api/user/me/account`, {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
@@ -67,13 +73,15 @@ export const useDomainUser = (id?: string) => {
   });
 
   const createPortal = useMutation({
-    mutationFn: (): Promise<{ url: string }> => {
+    mutationFn: async (): Promise<{ url: string }> => {
       return request
         .post(
           `/api/billing/portal`,
           {},
           {
-            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
           }
         )
         .then((res) => res.data);
@@ -81,10 +89,12 @@ export const useDomainUser = (id?: string) => {
   });
 
   const deleteUser = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       return request
         .delete(`/api/user/me`, {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         })
         .then((res) => res.data);
     },
@@ -98,13 +108,15 @@ export const useDomainUser = (id?: string) => {
   });
 
   const restoreUser = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       return request
         .post(
           `/api/user/me/restore`,
           {},
           {
-            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
           }
         )
         .then((res) => res.data);

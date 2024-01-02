@@ -6,8 +6,7 @@ import { Playfair_Display, Mulish } from "next/font/google";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { Toaster } from "@/components/ui/sonner";
-import { config } from "@/config";
-import { PublicEnvScript } from "next-runtime-env";
+import { PublicEnvScript, env } from "next-runtime-env";
 
 export const headingFont = Playfair_Display({
   weight: ["400", "700"],
@@ -24,7 +23,7 @@ const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ClerkProvider publishableKey={config.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+    <ClerkProvider publishableKey={env("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")}>
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
         <Toaster richColors />

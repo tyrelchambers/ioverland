@@ -1,14 +1,18 @@
 import { request } from "@/lib/axios";
 import { Explore } from "@/types";
+import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 
 export const useExplore = () => {
+  const { getToken } = useAuth();
   const explore = useQuery({
     queryKey: ["explore"],
-    queryFn: (): Promise<Explore> => {
+    queryFn: async (): Promise<Explore> => {
       return request
         .get(`/api/explore/`, {
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
         })
         .then((res) => res.data);
     },
