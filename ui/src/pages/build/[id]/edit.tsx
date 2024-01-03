@@ -281,7 +281,7 @@ const Edit = () => {
             title: "Build deleted",
             description: "Your build has been deleted!",
           });
-          router.push("/builds/me");
+          router.push("/dashboard");
         },
         onError: () => {
           toast({

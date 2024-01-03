@@ -140,10 +140,14 @@ func DeleteBuild(id string) error {
 	banner := build.Banner
 	photos := build.Photos
 
-	DeleteImageFromStorage(banner.Url)
+	if banner.Url != "" {
+		DeleteImageFromStorage(banner.Url)
+	}
 
-	for _, v := range photos {
-		DeleteImageFromStorage(v.Url)
+	if len(photos) > 0 {
+		for _, v := range photos {
+			DeleteImageFromStorage(v.Url)
+		}
 	}
 
 	if err != nil {
