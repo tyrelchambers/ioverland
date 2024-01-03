@@ -3,20 +3,27 @@ package routes
 import (
 	"api/controllers"
 	"api/middleware"
+	"fmt"
 	"io"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Upload(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		fmt.Println(err)
+		c.String(401, "Unauthorized")
+		return
+	}
+
 	file, err := c.FormFile("file")
 
 	if err != nil {
 		c.String(500, err.Error())
 		return
 	}
-
-	user, err := middleware.Authorize(c)
 
 	media, err := controllers.Process(file, user.ID, c)
 
