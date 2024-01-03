@@ -130,6 +130,22 @@ export const useDomainUser = (id?: string) => {
     },
   });
 
+  const createCheckoutLink = useMutation({
+    mutationFn: async ({ redirect_to }: { redirect_to?: string }) => {
+      return request
+        .post(
+          `/api/billing/checkout?redirect_to=${redirect_to}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res) => res.data);
+    },
+  });
+
   return {
     user: query,
     bookmark,
@@ -138,5 +154,6 @@ export const useDomainUser = (id?: string) => {
     createPortal,
     deleteUser,
     restoreUser,
+    createCheckoutLink,
   };
 };

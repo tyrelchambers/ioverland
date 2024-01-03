@@ -3,9 +3,11 @@ import { Build } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useRouter } from "next/router";
 import { toast } from "sonner";
 
 export const useBuild = (id?: string) => {
+  const router = useRouter();
   const { getToken } = useAuth();
   const context = useQueryClient();
   const getById = useQuery({
@@ -30,6 +32,7 @@ export const useBuild = (id?: string) => {
     },
     onSuccess: () => {
       toast.success("Build created");
+      router.push("/dashboard");
     },
     onError: (error) => {
       if (isAxiosError(error)) {

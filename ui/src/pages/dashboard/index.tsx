@@ -49,6 +49,7 @@ const Dashboard = () => {
     createPortal,
     deleteUser,
     restoreUser,
+    createCheckoutLink,
   } = useDomainUser();
 
   const builds = user.data?.builds;
@@ -75,6 +76,16 @@ const Dashboard = () => {
 
   const restoreHandler = () => {
     restoreUser.mutate();
+  };
+
+  const getCheckoutLink = async () => {
+    const data = await createCheckoutLink.mutateAsync({
+      redirect_to: `${env("NEXT_PUBLIC_FRONTEND_URL")}/dashboard?tab=account`,
+    });
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
   };
 
   return (
@@ -226,21 +237,14 @@ const Dashboard = () => {
                               </ul>
                             </div>
                             <DrawerFooter>
-                              <a
-                                className="block"
-                                href={`${env(
-                                  "NEXT_PUBLIC_BACKEND_URL"
-                                )}/api/billing/checkout?redirect_to=${env(
-                                  "NEXT_PUBLIC_FRONTEND_URL"
-                                )}/dashboard?tab=account`}
+                              <Button
+                                type="button"
+                                onClick={getCheckoutLink}
+                                className="w-full"
                               >
-                                <Button type="button" className="w-full">
-                                  Submit
-                                </Button>
-                              </a>
-                              <DrawerClose>
-                                <Button variant="outline">Cancel</Button>
-                              </DrawerClose>
+                                Submit
+                              </Button>
+                              <DrawerClose>Cancel</DrawerClose>
                             </DrawerFooter>
                           </div>
                         </DrawerContent>

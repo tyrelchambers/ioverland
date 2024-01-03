@@ -90,7 +90,7 @@ func main() {
 
 	builds.GET("/user/:user_id", routes.GetBuilds)
 
-	billing.GET("/checkout", routes.CreateCheckout)
+	billing.POST("/checkout", routes.CreateCheckout)
 	billing.POST("/portal", routes.CreateCustomerPortal)
 
 	upload.POST("/process", routes.Upload)

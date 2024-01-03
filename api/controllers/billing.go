@@ -5,6 +5,7 @@ import (
 	"api/domain/user"
 	"api/utils"
 	"log"
+	"os"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/stripe/stripe-go/v76"
@@ -16,6 +17,14 @@ func CreateCheckout(u *clerk.User, redirect_to string) string {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
+	var priceItem string
+
+	if os.Getenv("NODE_ENV") == "production" {
+		priceItem = "price_1OUISIEPapIiG0WqIF1qgli1"
+	} else {
+		priceItem = "price_1OSKyeEPapIiG0WqjUGqdonV"
+	}
+
 	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
 
 	checkout_params := stripe.CheckoutSessionParams{
@@ -23,7 +32,7 @@ func CreateCheckout(u *clerk.User, redirect_to string) string {
 		SuccessURL: stripe.String(redirect_to),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String("price_1OSKyeEPapIiG0WqjUGqdonV"),
+				Price:    stripe.String(priceItem),
 				Quantity: stripe.Int64(1),
 			},
 		},

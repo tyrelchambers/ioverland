@@ -49,8 +49,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
 import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { toast } from "sonner";
-import { isAxiosError } from "axios";
+import BuildQuotaMet from "@/components/BuildQuotaMet";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -68,6 +67,8 @@ const Index = () => {
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
+  console.log(account);
+
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
     defaultValues: {
@@ -84,7 +85,10 @@ const Index = () => {
       modifications: {},
       private: false,
     },
-    disabled: account?.data?.builds_remaining === 0,
+    disabled:
+      account.data?.builds_remaining && account.data?.builds_remaining <= 0
+        ? true
+        : false,
   });
 
   const watchMake = form.watch("vehicle.make");
@@ -200,6 +204,8 @@ const Index = () => {
             className="w-full mt-10 flex flex-col gap-4"
             onSubmit={form.handleSubmit(submitHandler, console.log)}
           >
+            {account?.data?.builds_remaining &&
+              account?.data?.builds_remaining <= 0 && <BuildQuotaMet />}
             <H2>The Basics</H2>
 
             <FormField
