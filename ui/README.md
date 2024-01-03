@@ -11,3 +11,4 @@
 - implement build visibility functionality
 - explore page
 - seeding the db with stuff
+- instragram feed for a build?
