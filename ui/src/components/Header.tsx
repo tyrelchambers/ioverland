@@ -68,26 +68,45 @@ const Header = ({ on, className }: Props) => {
             </div>
           </SheetTrigger>
           <SheetContent>
-            <div className="flex flex-col gap-8 mt-10">
-              {routes.map((route) => (
-                <Link
-                  href={route.href}
-                  key={route.label}
-                  className="flex gap-6 items-center underline hover:text-primary"
-                >
-                  {route.icon} {route.label}
+            <section className="mt-4">
+              <UserButton afterSignOutUrl="/" />
+              <div className="flex flex-col gap-8 mt-10">
+                {routes.map((route) => (
+                  <Link
+                    href={route.href}
+                    key={route.label}
+                    className="flex gap-6 items-center underline hover:text-primary"
+                  >
+                    {route.icon} {route.label}
+                  </Link>
+                ))}
+                {authRoutes.map((route) => (
+                  <Link
+                    href={route.href}
+                    key={route.label}
+                    className="flex gap-6 items-center underline hover:text-primary"
+                  >
+                    {route.icon} {route.label}
+                  </Link>
+                ))}
+              </div>
+              <SignedIn>
+                <Link href="/build/new" className="w-full block mt-6">
+                  <Button
+                    className={cn("w-full", {
+                      "text-primary-foreground bg-primary": on === "dark",
+                    })}
+                  >
+                    New build
+                  </Button>
                 </Link>
-              ))}
-              {authRoutes.map((route) => (
-                <Link
-                  href={route.href}
-                  key={route.label}
-                  className="flex gap-6 items-center underline hover:text-primary"
-                >
-                  {route.icon} {route.label}
+              </SignedIn>
+              <SignedOut>
+                <Link href="/sign-up">
+                  <Button>Sign up</Button>
                 </Link>
-              ))}
-            </div>
+              </SignedOut>
+            </section>
           </SheetContent>
         </Sheet>
       ) : (
@@ -96,7 +115,7 @@ const Header = ({ on, className }: Props) => {
             <Link
               href={`/explore`}
               key={route.label}
-              className="flex gap-3 items-center  hover:text-primary text-foreground/50 hover:text-foreground"
+              className="flex gap-3 items-center  hover:text-primary text-foreground/50"
             >
               {route.label}
             </Link>
@@ -105,7 +124,7 @@ const Header = ({ on, className }: Props) => {
             <Link
               href={route.href}
               key={route.label}
-              className="flex gap-3 items-center  hover:text-primary text-foreground/50 hover:text-foreground"
+              className="flex gap-3 items-center  hover:text-primary text-foreground/50"
             >
               {route.label}
             </Link>

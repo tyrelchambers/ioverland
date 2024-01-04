@@ -128,12 +128,12 @@ const Build = () => {
       <Header />
 
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">
-        <header className="flex flex-col">
+        <header className="flex flex-col lg:items-start items-center my-6 lg:my-0 px-4">
           <span className="flex items-center text-muted-foreground gap-1 mb-4">
             {liked !== undefined && <LikeButton />}
           </span>
-          <div className="flex justify-between items-center w-full">
-            <H1 className="text-7xl font-serif font-light mb-8 ">
+          <div className="flex justify-between items-center w-full flex-col lg:flex-row">
+            <H1 className="lg:text-7xl font-serif font-light mb-8 ">
               {build?.name}
             </H1>
 
@@ -169,7 +169,7 @@ const Build = () => {
         </header>
 
         {build.banner?.url && (
-          <>
+          <div className="px-4">
             {build.banner.mime_type.includes("image") ? (
               <div className="relative w-full h-[700px]  overflow-hidden shadow-xl">
                 <Image
@@ -182,15 +182,15 @@ const Build = () => {
             ) : (
               <VideoWithLoader media={build.banner} autoPlay loop />
             )}
-          </>
+          </div>
         )}
 
-        <div className="flex gap-10 items-center mt-2">
+        <div className="flex gap-10 items-center mt-2 px-4 ">
           <Vehicle {...build.vehicle} />
         </div>
-        <section>
+        <section className="px-4 ">
           <div className="flex flex-col py-10">
-            <p className="mb-8 max-w-3xl whitespace-pre-wrap leading-relaxed">
+            <p className="mb-8 max-w-3xl whitespace-pre-wrap leading-relaxed ">
               {build?.description}
             </p>
             {user && (
@@ -216,7 +216,7 @@ const Build = () => {
             <Modifications modifications={build?.modifications} />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="flex flex-col my-10">
               <H2 className="mb-6">Trips</H2>
               <Trips trips={build?.trips} />

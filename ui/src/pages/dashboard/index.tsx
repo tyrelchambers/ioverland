@@ -117,7 +117,7 @@ const Dashboard = () => {
         <section className="max-w-screen-2xl mx-auto my-10">
           <section className="mt-10">
             <TabsContent value="builds">
-              <ul className="grid grid-cols-3 gap-6">
+              <ul className="grid grid-cols-1 lg:grid-cols-3 p-4 gap-6">
                 {builds
                   ?.toSorted((a, b) => (a.name > b.name ? 1 : -1))
                   ?.map((build) => (
@@ -139,14 +139,14 @@ const Dashboard = () => {
               </ul>
             </TabsContent>
             <TabsContent value="bookmarks">
-              <ul className="grid grid-cols-3 gap-6">
+              <ul className="grid grid-cols-1 lg:grid-cols-3 p-4 gap-6">
                 {bookmarks?.map((build) => (
                   <BuildItem build={build} key={build.uuid} />
                 ))}
               </ul>
             </TabsContent>
 
-            <TabsContent value="account">
+            <TabsContent value="account" className="p-4">
               <section className="mb-10">
                 <H3>Builds</H3>
                 <p className="text-muted-foreground max-w-3xl">
@@ -168,7 +168,7 @@ const Dashboard = () => {
                   Your subscription is managed by Stripe.
                 </p>
 
-                <div className="mt-10 bg-card p-4 rounded-xl w-[500px]">
+                <div className="mt-10 bg-card p-4 rounded-xl w-full max-w-[500px]">
                   {account?.has_subscription ? (
                     <div>
                       <p className="font-bold flex gap-4">
@@ -209,7 +209,7 @@ const Dashboard = () => {
                           <Button className="mt-4">Subscribe to Pro</Button>
                         </DrawerTrigger>
                         <DrawerContent>
-                          <div className="w-[400px] mx-auto">
+                          <div className="max-w-[400px] w-full mx-auto">
                             <DrawerHeader>
                               <DrawerTitle>Choose a plan</DrawerTitle>
                               <DrawerDescription>

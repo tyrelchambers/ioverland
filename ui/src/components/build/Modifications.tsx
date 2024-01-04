@@ -11,7 +11,7 @@ const Modifications = ({
   if (!modifications || modifications.length === 0)
     return <EmptyListText text="No modifications" />;
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {Object.entries(groupModificationsByCategory(modifications)).map(
         ([i, mod]) => {
           const category = findCategory(i);
