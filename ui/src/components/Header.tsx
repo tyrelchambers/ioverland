@@ -102,8 +102,10 @@ const Header = ({ on, className }: Props) => {
                 </Link>
               </SignedIn>
               <SignedOut>
-                <Link href="/sign-up">
-                  <Button>Sign up</Button>
+                <Link href="/sign-up" className="w-full block mt-6">
+                  <Button className="w-full" type="button">
+                    Sign up
+                  </Button>
                 </Link>
               </SignedOut>
             </section>
