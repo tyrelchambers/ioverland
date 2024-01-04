@@ -296,7 +296,7 @@ const Edit = () => {
   return (
     <section>
       <Header />
-      <div className="py-10  max-w-2xl mx-auto">
+      <div className="py-10 p-4  max-w-2xl mx-auto">
         <Form {...form}>
           <form
             className="flex flex-col gap-4"
@@ -378,7 +378,7 @@ const Edit = () => {
               )}
             />
 
-            <div className="grid grid-cols-3 items-end gap-4 ">
+            <div className="grid grid-cols-1 lg:grid-cols-3 items-end gap-4 ">
               <FormField
                 name="vehicle.make"
                 render={({ field }) => (
@@ -456,7 +456,7 @@ const Edit = () => {
                           Remove
                         </Button>
                       </header>
-                      <div className="flex flex-1 gap-4">
+                      <div className="flex flex-1 flex-col lg:flex-row gap-4">
                         <FormField
                           name={`trips[${input}].name`}
                           render={({ field }) => (
@@ -509,7 +509,7 @@ const Edit = () => {
                     item?.category && findCategorySubcategories(item.category);
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
-                      <header className="flex flex-row justify-between">
+                      <header className="flex items-center justify-between">
                         <p className="font-serif">Modification #{index + 1}</p>
                         <Button
                           type="button"
@@ -542,11 +542,11 @@ const Edit = () => {
                           name={`modifications[${input}].subcategory`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Category</FormLabel>
+                              <FormLabel>Sub-category</FormLabel>
                               <Combobox
-                                defaultLabel="Select a make..."
-                                searchLabel="makes"
-                                notFoundLabel="No makes found"
+                                defaultLabel="Select a sub-category..."
+                                searchLabel="sub-categories"
+                                notFoundLabel="No sub-categories found"
                                 data={subcategories}
                                 {...field}
                               />
@@ -555,7 +555,7 @@ const Edit = () => {
                         />
                       )}
 
-                      <div className="flex gap-3">
+                      <div className="flex flex-col lg:flex-row gap-3">
                         <FormField
                           name={`modifications[${input}].name`}
                           render={({ field }) => (
@@ -643,11 +643,11 @@ const Edit = () => {
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
-              <FormDescription>
+              <FormDescription className="mb-4">
                 Max size per file: {MAX_FILE_SIZE}
               </FormDescription>
               {build?.photos && build?.photos.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {build?.photos?.map((photo, index) => {
                     return (
                       <div

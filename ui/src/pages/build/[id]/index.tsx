@@ -133,7 +133,7 @@ const Build = () => {
             {liked !== undefined && <LikeButton />}
           </span>
           <div className="flex justify-between items-center w-full flex-col lg:flex-row">
-            <H1 className="lg:text-7xl font-serif font-light mb-8 ">
+            <H1 className="lg:text-7xl font-serif font-light mb-8 text-center lg:text-left">
               {build?.name}
             </H1>
 
