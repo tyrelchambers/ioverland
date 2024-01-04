@@ -168,6 +168,11 @@ const Dashboard = () => {
                 <p className="text-muted-foreground">
                   Your subscription is managed by Stripe.
                 </p>
+                <p className="text-muted-foreground max-w-2xl mt-2 italic">
+                  Please keep in mind if you cancel your subscription, your
+                  builds will be made private except for the first one you
+                  created.
+                </p>
 
                 <div className="mt-10 bg-card p-4 rounded-xl w-full max-w-[500px]">
                   {account?.has_subscription ? (

@@ -122,8 +122,6 @@ func StripeWebhooks(c *gin.Context) {
 	signatureHeader := c.Request.Header.Get("Stripe-Signature")
 	event, err = webhook.ConstructEvent(payload, signatureHeader, endpointSecret)
 
-	fmt.Println("err -----> ", err)
-
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "⚠️  Webhook signature verification failed. %v\n", err)
 		c.String(400, "Bad Request")
@@ -140,6 +138,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
+		// we do this because if they cancel their plan we need to delete their user at the end of the billing cycle
 	case "customer.subscription.deleted":
 		var subscriptionData stripe.Subscription
 
@@ -149,7 +148,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		usr, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
+		_, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request for event: %v. %v\n", event.Type, err.Error())
@@ -157,8 +156,8 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		utils.ClerkClient.Users().Delete(usr.Uuid)
-		usr.Delete(db.Client)
+		// utils.ClerkClient.Users().Delete(usr.Uuid)
+		// usr.Delete(db.Client)
 	}
 	c.String(200, "success")
 }

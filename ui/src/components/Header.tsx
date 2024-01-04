@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Home, LayoutDashboard, Mountain } from "lucide-react";
 
 const routes = [

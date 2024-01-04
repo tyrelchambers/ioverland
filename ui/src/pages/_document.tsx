@@ -6,6 +6,11 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <PublicEnvScript />
+        <script
+          defer
+          data-domain="iover.land"
+          src="https://plausible.io/js/script.js"
+        ></script>
       </Head>
       <body className="font-sans bg-background">
         <Main />
