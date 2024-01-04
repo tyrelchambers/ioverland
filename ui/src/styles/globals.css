@@ -97,7 +97,7 @@
   .header-scrolled {
     backdrop-filter: blur(10px);
 
-    @apply shadow-xl fixed  inset-0 z-10 bg-white bg-opacity-80;
+    @apply shadow-xl !fixed  inset-0 z-10 !bg-white bg-opacity-80;
   }
 
   .builds-item * {

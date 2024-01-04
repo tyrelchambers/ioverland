@@ -50,6 +50,7 @@ import { PlusCircle } from "lucide-react";
 import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
+import Header from "@/components/Header";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -179,7 +180,7 @@ const Index = () => {
 
   return (
     <section className="flex">
-      <div className="sticky top-0 h-screen w-[400px] ">
+      <div className="sticky top-0 h-screen w-[400px] hidden lg:block">
         <div
           className=" absolute z-10 inset-0"
           style={{
@@ -193,7 +194,9 @@ const Index = () => {
           objectFit="cover"
         />
       </div>
-      <div className=" p-10 w-full max-w-2xl flex-1">
+      <div className="p-4 lg:p-10 w-full max-w-2xl flex-1">
+        <Header />
+
         <H1>Let&apos;s build</H1>
         <p className="text-muted-foreground">
           Create your first build here. Include as many or as little details as
@@ -245,7 +248,7 @@ const Index = () => {
               )}
             />
 
-            <div className="grid grid-cols-3 items-end gap-4 ">
+            <div className="grid grid-cols-1 lg:grid-cols-3 items-end gap-4 ">
               <FormField
                 name="vehicle.make"
                 render={({ field }) => (
@@ -336,7 +339,7 @@ const Index = () => {
                           Remove
                         </Button>
                       </header>
-                      <div className="flex flex-1 gap-4">
+                      <div className="flex flex-col lg:flex-row flex-1 gap-4">
                         <FormField
                           name={`trips[${input}].name`}
                           render={({ field }) => (
@@ -421,11 +424,11 @@ const Index = () => {
                         name={`modifications[${input}].subcategory`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Category</FormLabel>
+                            <FormLabel>Sub-category</FormLabel>
                             <Combobox
-                              defaultLabel="Select a make..."
-                              searchLabel="makes"
-                              notFoundLabel="No makes found"
+                              defaultLabel="Select a sub-category..."
+                              searchLabel="sub-categories"
+                              notFoundLabel="No sub-categories found"
                               data={subcategories}
                               {...field}
                             />
@@ -434,7 +437,7 @@ const Index = () => {
                       />
                     )}
 
-                    <div className="flex gap-3">
+                    <div className="flex flex-col lg:flex-row gap-3">
                       <FormField
                         name={`modifications[${input}].name`}
                         render={({ field }) => (

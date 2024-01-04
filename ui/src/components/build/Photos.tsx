@@ -8,7 +8,7 @@ const Photos = ({ photos }: { photos: Media[] | undefined }) => {
   if (!photos || photos.length === 0) return <EmptyListText text="No photos" />;
 
   return (
-    <div className="grid grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {photos?.map((photo, i) =>
         photo.mime_type.includes("image") ? (
           <a

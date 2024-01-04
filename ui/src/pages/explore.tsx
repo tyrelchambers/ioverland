@@ -10,11 +10,13 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useExplore } from "@/hooks/useExplore";
+import { useViewportWidth } from "@/hooks/useViewportWidth";
 import Link from "next/link";
 import React from "react";
 
 const Explore = () => {
   const { explore } = useExplore();
+  const { width } = useViewportWidth();
   return (
     <div>
       <Header />
@@ -22,7 +24,7 @@ const Explore = () => {
       <div className="max-w-screen-xl mx-auto my-10">
         <H1>Find inspiration for your next build.</H1>
         <Carousel
-          className="mt-6"
+          className="mt-6 lg:mx-4"
           opts={{
             loop: true,
           }}
@@ -32,7 +34,7 @@ const Explore = () => {
               <CarouselItem key={build.id + "_" + index}>
                 <Link href={`/build/${build.uuid}`}>
                   <div className="relative">
-                    <header className="relative h-[600px] shadow-md">
+                    <header className="relative h-[200px] lg:h-[600px] shadow-md">
                       {build.banner && (
                         <RenderMedia media={build.banner} autoPlay loop />
                       )}
@@ -47,15 +49,19 @@ const Explore = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          {width > 768 && (
+            <>
+              <CarouselPrevious />
+              <CarouselNext />
+            </>
+          )}
         </Carousel>
       </div>
       <section className="bg-card w-full">
         <div className="max-w-screen-xl mx-auto my-10 p-10">
           <H2>Top 10 Builds</H2>
 
-          <div className="grid grid-cols-2 gap-6 mt-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-12">
             {explore.data?.top_10?.map((build, index) => (
               <BuildItem
                 build={build}
