@@ -18,6 +18,7 @@ import {
   BookmarkCheck,
   BookmarkMinus,
   Eye,
+  EyeOff,
   Heart,
   HeartOff,
   PencilRuler,
@@ -122,6 +123,24 @@ const Build = () => {
         <span className="font-bold">{build?.likes?.length || 0}</span>
       </Button>
     );
+
+  if (build.private) {
+    return (
+      <section>
+        <Header />
+        <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">
+          <div className="flex flex-col items-center ">
+            <EyeOff size={40} className="mb-8" />
+            <H1 className="mb-2">This build has been made private</H1>
+            <p className="text-muted-foreground">
+              The owner of this build has made it private so it cannot be viewed
+              by anyone.
+            </p>
+          </div>
+        </section>
+      </section>
+    );
+  }
 
   return (
     <section>

@@ -38,13 +38,15 @@ const Header = ({ on, className }: Props) => {
 
   useEffect(() => {
     const header = document.querySelector(".header");
-
-    if (header) {
+    const body = document.querySelector("body");
+    if (header && body) {
       document.addEventListener("scroll", () => {
         if (window.scrollY > 0) {
           header.classList.add("header-scrolled");
+          body.style.paddingTop = "69px";
         } else {
           header.classList.remove("header-scrolled");
+          body.style.paddingTop = "0px";
         }
       });
     }
