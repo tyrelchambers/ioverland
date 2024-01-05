@@ -113,11 +113,12 @@ func main() {
 	// create a scheduler
 	s, err := gocron.NewScheduler()
 	if err != nil {
-		// handle error
+		log.Fatal("Something went wrong with the scheduler: ", err)
+
 	}
 
 	// add a job to the scheduler
-	j, err := s.NewJob(
+	_, err = s.NewJob(
 		gocron.DailyJob(
 			1,
 			gocron.NewAtTimes(
@@ -138,10 +139,8 @@ func main() {
 		),
 	)
 	if err != nil {
-		// handle error
+		log.Fatal("Something went wrong with starting the deletion task: ", err)
 	}
-	// each job has a unique id
-	fmt.Println(j.ID())
 
 	// start the scheduler
 	s.Start()
