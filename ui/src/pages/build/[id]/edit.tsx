@@ -45,7 +45,7 @@ import {
   newBuildSchema,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
-import { auth, getAuth } from "@clerk/nextjs/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";

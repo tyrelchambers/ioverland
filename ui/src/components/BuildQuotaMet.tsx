@@ -7,7 +7,7 @@ const BuildQuotaMet = () => {
     <div className="flex flex-col lg:flex-row bg-warning text-warning-foreground p-6 rounded-xl gap-4 shadow-lg mx-10 my-4">
       <AlertTriangle />
       <div className="flex flex-col gap-2">
-        <p className="font-bold">Too many builds</p>
+        <p className="font-bold">Build quota has been met</p>
         <p className="text-warning-foreground/70 text-sm">
           It looks like you have too many builds associated with your account.
           Please delete one to create a new build.

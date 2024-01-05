@@ -86,10 +86,7 @@ const Index = () => {
       modifications: {},
       private: false,
     },
-    disabled:
-      account.data?.builds_remaining && account.data?.builds_remaining <= 0
-        ? true
-        : false,
+    disabled: account.data?.builds_remaining === 0 ? true : false,
   });
 
   const watchMake = form.watch("vehicle.make");
@@ -196,10 +193,7 @@ const Index = () => {
       </div>
       <div className="flex flex-col w-full">
         <Header />
-        {account?.data?.builds_remaining &&
-        account?.data?.builds_remaining <= 0 ? (
-          <BuildQuotaMet />
-        ) : null}
+        {account?.data?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
         <div className="p-4 lg:p-10 w-full max-w-2xl flex-1">
           <H1>Let&apos;s build</H1>
           <p className="text-muted-foreground">
