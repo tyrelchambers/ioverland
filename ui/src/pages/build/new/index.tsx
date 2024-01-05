@@ -68,8 +68,6 @@ const Index = () => {
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
-  console.log(account);
-
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
     defaultValues: {
