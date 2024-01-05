@@ -134,7 +134,9 @@ func main() {
 					return
 				}
 
-				db.Client.Delete(&usersToDelete)
+				if len(usersToDelete) > 0 {
+					db.Client.Unscoped().Delete(&usersToDelete)
+				}
 			},
 		),
 	)

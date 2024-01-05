@@ -59,7 +59,7 @@ func (u User) BuildCount(db *gorm.DB) (int64, error) {
 
 func GetUsersToDelete(db *gorm.DB, time time.Time) ([]User, error) {
 	var users []User
-	err := db.Where("deleted_at IS NOT NULL and deleted_at < ?", time).Find(&users).Error
+	err := db.Unscoped().Where("deleted_at IS NOT NULL and deleted_at < ?", time).Find(&users).Error
 	return users, err
 }
 
