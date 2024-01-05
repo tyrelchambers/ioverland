@@ -2,6 +2,7 @@ package user
 
 import (
 	"api/domain/build"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -56,9 +57,9 @@ func (u User) BuildCount(db *gorm.DB) (int64, error) {
 	return builds, err
 }
 
-func GetUsersToDelete(db *gorm.DB) ([]User, error) {
+func GetUsersToDelete(db *gorm.DB, time time.Time) ([]User, error) {
 	var users []User
-	err := db.Where("deleted_at IS NOT NULL").Find(&users).Error
+	err := db.Where("deleted_at IS NOT NULL and deleted_at < ?", time).Find(&users).Error
 	return users, err
 }
 

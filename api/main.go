@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -125,7 +126,7 @@ func main() {
 		),
 		gocron.NewTask(
 			func() {
-				usersToDelete, err := user.GetUsersToDelete(db.Client)
+				usersToDelete, err := user.GetUsersToDelete(db.Client, time.Now())
 
 				if err != nil {
 					fmt.Println("Error getting users to delete: ", err)
