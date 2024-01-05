@@ -76,88 +76,86 @@ const Account = () => {
           to swap between which one build will be public.
         </p>
 
-        <div className="mt-10 bg-card p-4 rounded-xl w-full max-w-[500px]">
-          {account?.has_subscription ? (
-            <div>
-              <p className="font-bold flex gap-4">
-                <Zap className="text-card-foreground" />
-                You are currently subscribed to the Pro plan!
-              </p>
-              <p className="mt-4 text-card-foreground">
-                ${account.subscription.price / 100}/month
-              </p>
-              <p className="mt-4 text-sm text-card-foreground">
-                Next invoice date:{" "}
-                {format(
-                  new Date(account.subscription.next_invoice_date),
-                  "MMMM dd, yyyy"
-                )}
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-6"
-                onClick={getPortalLink}
-              >
-                Manage subscription
-              </Button>
-            </div>
-          ) : (
-            <div>
-              <Zap className="text-muted-foreground" />
-              <p className="font-bold mt-6">
-                Not currently subscribed to any plan.
-              </p>
-              <p className="text-muted-foreground text-sm">
-                If you&apos;d like to experience all iOverland has to offer,
-                please purchase a plan.
-              </p>
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <Button className="mt-4">Subscribe to Pro</Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                  <div className="max-w-[400px] w-full mx-auto">
-                    <DrawerHeader>
-                      <DrawerTitle>Choose a plan</DrawerTitle>
-                      <DrawerDescription>
-                        Paid on a monthly basis.
-                      </DrawerDescription>
-                    </DrawerHeader>
-                    <div className="p-6 rounded-xl border-2 border-primary  m-4 shadow-lg">
-                      <p className="mb-4 font-bold text-primary">Pro</p>
-                      <p className="text-3xl font-bold">$10</p>
-                      <Separator className="my-6" />
-                      <p className="text-sm">Gives you access to:</p>
-                      <ul className=" flex flex-col gap-4 mt-4 text-sm">
-                        <li className="flex items-center gap-2 text-muted-foreground">
-                          <Check size={16} className="text-primary" />
-                          Multiple builds - up to 5
-                        </li>
-                        <li className="flex items-center gap-2 text-muted-foreground">
-                          <Check size={16} className="text-primary" />
-                          Video support for your builds
-                        </li>
-                      </ul>
-                    </div>
-                    <DrawerFooter>
-                      <Button
-                        type="button"
-                        onClick={getCheckoutLink}
-                        className="w-full"
-                      >
-                        Continue
-                      </Button>
-                      <DrawerClose className="text-muted-foreground">
-                        Cancel
-                      </DrawerClose>
-                    </DrawerFooter>
+        {account?.has_subscription ? (
+          <div className="mt-10 flex flex-col p-6 rounded-xl w-full max-w-[500px] bg-gradient-to-tr from-blue-900 to-blue-500 shadow-lg">
+            <Zap className="text-white mb-4" />
+            <p className="text-white text-xl">
+              You are currently subscribed to the Pro plan!
+            </p>
+            <p className="text-white text-2xl my-4 font-black">
+              ${account.subscription.price / 100}/month
+            </p>
+            <Badge variant="outline" className="text-sm  text-background w-fit">
+              Next invoice date:{" "}
+              {format(
+                new Date(account.subscription.next_invoice_date),
+                "MMMM dd, yyyy"
+              )}
+            </Badge>
+            <Button
+              type="button"
+              variant="secondary"
+              className="mt-3"
+              onClick={getPortalLink}
+            >
+              Manage subscription
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-10 flex flex-col p-6 rounded-xl w-full max-w-[500px] bg-card ">
+            <Zap className="text-muted-foreground" />
+            <p className="font-bold mt-6">
+              Not currently subscribed to any plan.
+            </p>
+            <p className="text-muted-foreground text-sm">
+              If you&apos;d like to experience all iOverland has to offer,
+              please purchase a plan.
+            </p>
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button className="mt-4">Subscribe to Pro</Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <div className="max-w-[400px] w-full mx-auto">
+                  <DrawerHeader>
+                    <DrawerTitle>Choose a plan</DrawerTitle>
+                    <DrawerDescription>
+                      Paid on a monthly basis.
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <div className="p-6 rounded-xl border-2 border-primary  m-4 shadow-lg">
+                    <p className="mb-4 font-bold text-primary">Pro</p>
+                    <p className="text-3xl font-bold">$10</p>
+                    <Separator className="my-6" />
+                    <p className="text-sm">Gives you access to:</p>
+                    <ul className=" flex flex-col gap-4 mt-4 text-sm">
+                      <li className="flex items-center gap-2 text-muted-foreground">
+                        <Check size={16} className="text-primary" />
+                        Multiple builds - up to 5
+                      </li>
+                      <li className="flex items-center gap-2 text-muted-foreground">
+                        <Check size={16} className="text-primary" />
+                        Video support for your builds
+                      </li>
+                    </ul>
                   </div>
-                </DrawerContent>
-              </Drawer>
-            </div>
-          )}
-        </div>
+                  <DrawerFooter>
+                    <Button
+                      type="button"
+                      onClick={getCheckoutLink}
+                      className="w-full"
+                    >
+                      Continue
+                    </Button>
+                    <DrawerClose className="text-muted-foreground">
+                      Cancel
+                    </DrawerClose>
+                  </DrawerFooter>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        )}
       </section>
       <Separator className="my-10" />
       <H3>Delete account</H3>

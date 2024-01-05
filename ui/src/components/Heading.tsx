@@ -43,7 +43,7 @@ export const H3 = ({
 }) => (
   <h3
     className={cn(
-      "text-xl font-black font-serif mb-1 text-foreground",
+      "text-2xl font-black font-serif mb-1 text-foreground",
       className
     )}
   >
