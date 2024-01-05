@@ -134,6 +134,14 @@ func main() {
 					return
 				}
 
+				for _, user := range usersToDelete {
+					_, err := utils.ClerkClient.Users().Delete(user.Uuid)
+
+					if err != nil {
+						fmt.Println("Error deleting user: ", err)
+					}
+				}
+
 				if len(usersToDelete) > 0 {
 					db.Client.Unscoped().Delete(&usersToDelete)
 				}
