@@ -142,8 +142,8 @@ func StripeWebhooks(c *gin.Context) {
 		usr, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
 
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request for event: %v. %v\n", event.Type, err.Error())
-			c.String(400, "Bad Request")
+			fmt.Println("Error getting user in Stripe webhook event: ", err)
+			c.String(500, "Something wen wrong")
 			return
 		}
 

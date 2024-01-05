@@ -115,7 +115,13 @@ func GetAccount(u *clerk.User) AccountResponse {
 	if resp.HasSubscription {
 		resp.BuildsRemaining = 5 - userBuilds
 	} else {
-		resp.BuildsRemaining = 1 - userBuilds
+		remainingBuilds := 5 - userBuilds
+
+		if remainingBuilds < 0 {
+			remainingBuilds = 0
+		} else {
+			resp.BuildsRemaining = remainingBuilds
+		}
 	}
 
 	return resp
