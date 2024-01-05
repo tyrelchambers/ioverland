@@ -84,7 +84,8 @@ export const useBuild = (id?: string) => {
       );
     },
     onSuccess: () => {
-      context.invalidateQueries({ queryKey: ["build", id] });
+      toast.success("Image removed");
+      context.invalidateQueries({ queryKey: ["build_settings", id] });
     },
   });
 

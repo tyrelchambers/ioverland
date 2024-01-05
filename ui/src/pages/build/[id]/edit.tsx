@@ -292,6 +292,7 @@ const Edit = () => {
       }
     );
   };
+
   return (
     <section>
       <Header />
@@ -311,6 +312,7 @@ const Edit = () => {
                     <RenderMedia media={build?.banner} />
                   </div>
                   <Button
+                    type="button"
                     variant="destructive"
                     className="mt-3"
                     onClick={() =>

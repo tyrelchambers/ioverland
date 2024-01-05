@@ -83,11 +83,11 @@ func Update(c *gin.Context) {
 }
 
 func RemoveImage(c *gin.Context) {
-	id := c.Param("build_id")
+	media_id := c.Param("media_id")
 	build_id := c.Param("build_id")
 	url := c.Query("url")
 
-	err := controllers.RemoveImage(build_id, id)
+	err := controllers.RemoveImage(build_id, media_id)
 	err = controllers.Revert(c, url)
 
 	if err != nil {

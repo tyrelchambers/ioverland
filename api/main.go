@@ -87,7 +87,7 @@ func main() {
 	buildG.POST("/:build_id/dislike", routes.Dislike)
 	buildG.DELETE("/:build_id/delete", routes.Delete)
 
-	buildG.DELETE("/:build_id/image/:id", routes.RemoveImage)
+	buildG.DELETE("/:build_id/image/:media_id", routes.RemoveImage)
 
 	buildsG.GET("/user/:user_id", routes.GetBuilds)
 
