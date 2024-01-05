@@ -31,15 +31,16 @@ const authRoutes = [
 interface Props {
   on?: "dark" | "light";
   className?: string;
+  stickyOnScroll?: boolean;
 }
 
-const Header = ({ on, className }: Props) => {
+const Header = ({ on, className, stickyOnScroll }: Props) => {
   const { width } = useViewportWidth();
 
   useEffect(() => {
     const header = document.querySelector(".header");
     const body = document.querySelector("body");
-    if (header && body) {
+    if (header && body && stickyOnScroll) {
       document.addEventListener("scroll", () => {
         if (window.scrollY > 0) {
           header.classList.add("header-scrolled");

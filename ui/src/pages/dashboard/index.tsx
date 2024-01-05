@@ -27,7 +27,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Header />
+      <Header stickyOnScroll={false} />
 
       <Tabs
         defaultValue="builds"
