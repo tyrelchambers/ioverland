@@ -9,6 +9,11 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 )
 
+type EditResponse struct {
+	Build         build.Build `json:"build"`
+	Can_be_public bool        `json:"can_be_public"`
+}
+
 func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 
 	acc := GetAccount(clerk_user)
@@ -155,4 +160,49 @@ func DeleteBuild(id string) error {
 	}
 
 	return build.Delete(db.Client)
+}
+
+func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
+	var resp EditResponse
+
+	build, err := GetById(id)
+
+	if err != nil {
+		fmt.Println("Error getting build in edit settings: ", err)
+		return EditResponse{}, err
+	}
+
+	account, err := GetCurrentUserWithStripe(build.UserId)
+
+	if err != nil {
+		fmt.Println("[BUILD CONTROLLER] [BUILD EDIT SETTINGS] [ACCOUNT] Error getting account in edit settings: ", err)
+		return EditResponse{}, err
+	}
+
+	if len(account.Customer.Subscriptions.Data) != 0 && account.Customer.Subscriptions.Data[0].Plan.Product.Name == "Pro" || build.Private != true {
+		resp.Can_be_public = true
+	} else {
+		var numOfPublicBuilds int
+		builds, err := GetUserBuilds(build.UserId)
+
+		if err != nil {
+			fmt.Println("[BUILD CONTROLLER] [BUILD EDIT SETTINGS] [ACCOUNT] Error getting builds in edit settings: ", err)
+			return EditResponse{}, err
+		}
+
+		for _, v := range builds {
+			if v.Private == false {
+				numOfPublicBuilds++
+			}
+		}
+
+		if numOfPublicBuilds == 0 {
+			resp.Can_be_public = true
+		}
+
+	}
+
+	resp.Build = build
+
+	return resp, nil
 }

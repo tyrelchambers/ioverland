@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/db"
+	"api/domain/build"
 	"api/domain/user"
 	"api/utils"
 	"log"
@@ -28,9 +29,14 @@ type AccountResponse struct {
 	BuildsRemaining int64           `json:"builds_remaining"`
 }
 
+type GetCurrentUserWithStripeResponse struct {
+	User     user.User       `json:"user"`
+	Customer stripe.Customer `json:"customer"`
+}
+
 func Bookmark(build_id, user_id string) error {
 
-	build, err := GetById(build_id)
+	build, err := build.GetById(db.Client, build_id)
 
 	if err != nil {
 		return err
@@ -49,7 +55,7 @@ func Bookmark(build_id, user_id string) error {
 
 func Unbookmark(build_id, user_id string) error {
 
-	build, err := GetById(build_id)
+	build, err := build.GetById(db.Client, build_id)
 
 	if err != nil {
 		return err
@@ -68,6 +74,37 @@ func Unbookmark(build_id, user_id string) error {
 
 func GetCurrentUser(id string) (user.User, error) {
 	return user.FindCurrentUser(db.Client, id)
+}
+
+func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, error) {
+
+	var resp GetCurrentUserWithStripeResponse
+
+	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
+
+	stripe.Key = stripe_key
+
+	domainUser, err := GetCurrentUser(id)
+
+	if err != nil {
+		return resp, err
+	}
+
+	resp.User = domainUser
+
+	params := &stripe.CustomerParams{}
+	params.AddExpand("subscriptions.data.plan.product")
+
+	cus, err := customer.Get(domainUser.CustomerId, params)
+
+	if err != nil {
+		return resp, err
+	}
+
+	resp.Customer = *cus
+
+	return resp, nil
+
 }
 
 func GetAccount(u *clerk.User) AccountResponse {

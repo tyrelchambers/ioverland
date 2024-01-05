@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import RenderMedia from "@/components/RenderMedia";
 import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,7 @@ import {
 import { acceptedFiletypes } from "@/lib/utils";
 import {
   Build,
+  EditBuildResponse,
   Media,
   Modification,
   NewBuildSchema,
@@ -60,7 +62,9 @@ import { toast } from "sonner";
 const Edit = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { getById, update, removeImage, deleteBuild } = useBuild(id as string);
+  const { editSettings, update, removeImage, deleteBuild } = useBuild(
+    id as string
+  );
   const { user } = useUser();
   const {
     account: { data: account },
@@ -77,7 +81,7 @@ const Edit = () => {
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
-  const build = getById.data;
+  const build = editSettings.data?.build;
 
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
@@ -229,8 +233,6 @@ const Edit = () => {
       links: linksToArray,
       modifications: modificationsToArray,
       user_id: user.id,
-      views: build?.views,
-      likes: build?.likes,
     };
 
     if (banner[0]) {
@@ -293,7 +295,7 @@ const Edit = () => {
   return (
     <section>
       <Header />
-      <div className="py-10 p-4  max-w-2xl mx-auto">
+      <div className="py-10 p-4  max-w-screen-md mx-auto">
         <Form {...form}>
           <form
             className="flex flex-col gap-4"
@@ -305,22 +307,8 @@ const Edit = () => {
               <FormDescription>Max file size: {MAX_FILE_SIZE}</FormDescription>
               {build?.banner?.url && build?.banner?.uuid ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
-                  <div className="relative h-[300px] flex items-center rounded-md overflow-hidden">
-                    {build.banner?.mime_type.includes("image") ? (
-                      <Image
-                        src={build?.banner.url}
-                        alt=""
-                        className=" object-cover"
-                        fill
-                      />
-                    ) : (
-                      <video controls>
-                        <source
-                          src={build?.banner.url}
-                          type={build?.banner.mime_type}
-                        />
-                      </video>
-                    )}
+                  <div className="relative h-fit flex items-center rounded-md overflow-hidden min-h-[400px]">
+                    <RenderMedia media={build?.banner} />
                   </div>
                   <Button
                     variant="destructive"
@@ -716,13 +704,14 @@ const Edit = () => {
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={editSettings.data?.can_be_public == false}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Make this build private?</FormLabel>
                     <FormDescription>
                       Making this build private will hide it from other users so
-                      no one can see it.
+                      no one can see it. Builds are public by default.
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -754,11 +743,11 @@ const Edit = () => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { userId } = getAuth(ctx.req);
-  const build = await request
-    .get<Build>(`/api/build/${ctx.query.id}`)
+  const data = await request
+    .get<EditBuildResponse>(`/api/build/${ctx.query.id}/edit`)
     .then((res) => res.data);
 
-  if (!userId || !build) {
+  if (!userId || !data.build) {
     return {
       redirect: {
         permanent: false,
@@ -767,7 +756,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  if (build.user_id !== userId) {
+  if (data.build.user_id !== userId) {
     return {
       redirect: {
         permanent: false,

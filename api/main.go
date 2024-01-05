@@ -81,6 +81,7 @@ func main() {
 	buildG.POST("/", routes.CreateBuild)
 	buildG.GET("/:build_id", routes.GetById)
 	buildG.PUT("/:build_id", routes.Update)
+	buildG.GET("/:build_id/edit", routes.BuildEditSettings)
 	buildG.POST("/:build_id/view", routes.IncrementViews)
 	buildG.POST("/:build_id/like", routes.Like)
 	buildG.POST("/:build_id/dislike", routes.Dislike)

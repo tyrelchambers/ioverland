@@ -73,7 +73,7 @@ export const buildSchema = z.object({
   id: z.string().optional(),
   uuid: z.string().optional(),
   views: z.number().optional(),
-  likes: z.array(z.string()).optional(),
+  likes: z.array(z.string()).optional().nullable(),
 });
 
 export type Build = z.infer<typeof buildSchema>;
@@ -109,3 +109,8 @@ const explore = z.object({
 });
 
 export type Explore = z.infer<typeof explore>;
+
+export interface EditBuildResponse {
+  build: Build;
+  can_be_public: boolean;
+}

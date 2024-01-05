@@ -1,5 +1,5 @@
 import { request } from "@/lib/axios";
-import { Build } from "@/types";
+import { Build, EditBuildResponse } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -17,7 +17,7 @@ export const useBuild = (id?: string) => {
         .get(`/api/build/${id}`, {
           withCredentials: true,
         })
-        .then((res) => res.data as Build);
+        .then((res) => res.data);
     },
     enabled: !!id,
   });
@@ -159,6 +159,20 @@ export const useBuild = (id?: string) => {
     },
   });
 
+  const editSettings = useQuery({
+    queryKey: ["build_settings", id],
+    queryFn: async (): Promise<EditBuildResponse> => {
+      return request
+        .get(`/api/build/${id}/edit`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+    enabled: !!id,
+  });
+
   return {
     createBuild,
     getById,
@@ -168,5 +182,6 @@ export const useBuild = (id?: string) => {
     likeBuild,
     dislikeBuild,
     deleteBuild,
+    editSettings,
   };
 };

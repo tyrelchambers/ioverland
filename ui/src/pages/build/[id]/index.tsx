@@ -34,13 +34,10 @@ const Build = () => {
   const { user: domainUser, bookmark, removeBookmark } = useDomainUser();
 
   const paramId = router.query.id as string;
-  const {
-    getById: { data: build },
-    incrementView,
-    likeBuild,
-    dislikeBuild,
-  } = useBuild(paramId);
+  const { getById, incrementView, likeBuild, dislikeBuild } = useBuild(paramId);
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
+
+  const build = getById.data;
 
   useEffect(() => {
     if (paramId) {

@@ -144,3 +144,18 @@ func Delete(c *gin.Context) {
 
 	c.String(200, "success")
 }
+
+func BuildEditSettings(c *gin.Context) {
+	id := c.Param("build_id")
+
+	build, err := controllers.GetById(id)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	settings, err := controllers.BuildEditSettings(id, build)
+
+	c.JSON(200, settings)
+}
