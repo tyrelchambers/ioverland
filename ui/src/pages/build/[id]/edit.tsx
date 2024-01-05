@@ -3,6 +3,17 @@ import { H1, H2 } from "@/components/Heading";
 import RenderMedia from "@/components/RenderMedia";
 import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox } from "@/components/ui/combobox";
@@ -730,13 +741,34 @@ const Edit = () => {
             build?
           </p>
 
-          <Button
-            variant="destructiveMuted"
-            className="mt-6"
-            onClick={deleteBuildHandler}
-          >
-            Delete build
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructiveMuted" className="mt-6">
+                Delete build
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction asChild>
+                  <Button
+                    type="button"
+                    className="!bg-red-500"
+                    onClick={deleteBuildHandler}
+                  >
+                    Delete
+                  </Button>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </section>
       </div>
     </section>
