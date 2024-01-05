@@ -155,9 +155,11 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		for _, build := range builds[1:] {
-			build.Private = true
-			build.Update(db.Client)
+		if len(builds) > 1 {
+			for _, build := range builds[1:] {
+				build.Private = true
+				build.Update(db.Client)
+			}
 		}
 	}
 	c.String(200, "success")
