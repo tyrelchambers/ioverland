@@ -93,9 +93,11 @@ func Webhooks(c *gin.Context) {
 		}
 
 		c.String(200, "success")
+		return
 	}
 
 	c.String(202, "success")
+	return
 }
 
 func StripeWebhooks(c *gin.Context) {
