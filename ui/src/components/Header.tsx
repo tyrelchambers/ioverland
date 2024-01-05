@@ -83,6 +83,8 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
                     {route.icon} {route.label}
                   </Link>
                 ))}
+              </div>
+              <SignedIn>
                 {authRoutes.map((route) => (
                   <Link
                     href={route.href}
@@ -92,8 +94,6 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
                     {route.icon} {route.label}
                   </Link>
                 ))}
-              </div>
-              <SignedIn>
                 <Link href="/build/new" className="w-full block mt-6">
                   <Button
                     className={cn("w-full", {
@@ -125,16 +125,16 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
               {route.label}
             </Link>
           ))}
-          {authRoutes.map((route) => (
-            <Link
-              href={route.href}
-              key={route.label}
-              className="flex gap-3 items-center  hover:text-primary text-foreground/50"
-            >
-              {route.label}
-            </Link>
-          ))}
           <SignedIn>
+            {authRoutes.map((route) => (
+              <Link
+                href={route.href}
+                key={route.label}
+                className="flex gap-3 items-center  hover:text-primary text-foreground/50"
+              >
+                {route.label}
+              </Link>
+            ))}
             <Link href="/build/new">
               <Button
                 size="sm"
