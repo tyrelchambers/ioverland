@@ -146,6 +146,14 @@ const Build = () => {
       <Header />
 
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">
+        {build.private && (
+          <div className="bg-warning p-4 rounded-md flex items-center gap-4 mb-10">
+            <EyeOff />
+            <p className="text-warning-foreground">
+              This build is private. No one can see this.
+            </p>
+          </div>
+        )}
         <header className="flex flex-col lg:items-start items-center my-6 lg:my-0 px-4">
           <span className="flex items-center text-muted-foreground gap-1 mb-4">
             {liked !== undefined && <LikeButton />}
