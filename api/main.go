@@ -125,22 +125,14 @@ func main() {
 		),
 		gocron.NewTask(
 			func() {
-				// usersToDelete, err := user.GetUsersToDelete(db.Client)
+				usersToDelete, err := user.GetUsersToDelete(db.Client)
 
-				// if err != nil {
-				// 	fmt.Println("Error getting users to delete: ", err)
-				// }
+				if err != nil {
+					fmt.Println("Error getting users to delete: ", err)
+					return
+				}
 
-				// for _, user := range usersToDelete {
-
-				// 	_, err := utils.ClerkClient.Users().Delete(user.Uuid)
-
-				// 	if err != nil {
-				// 		fmt.Printf("Error deleting user from clerk: %v. With User ID: %s", err, user.Uuid)
-				// 	}
-				// 	user.PermanentlyDelete(db.Client)
-
-				// }
+				db.Client.Delete(&usersToDelete)
 			},
 		),
 	)
