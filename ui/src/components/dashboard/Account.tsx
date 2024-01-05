@@ -1,4 +1,3 @@
-import { Separator } from "@radix-ui/react-separator";
 import { format } from "date-fns";
 import { Zap, Check, Calendar } from "lucide-react";
 import React from "react";
@@ -17,6 +16,7 @@ import {
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { env } from "next-runtime-env";
 import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
 
 const Account = () => {
   const {
@@ -70,9 +70,10 @@ const Account = () => {
         <p className="text-muted-foreground">
           Your subscription is managed by Stripe.
         </p>
-        <p className="text-muted-foreground max-w-2xl mt-2 italic">
+        <p className="text-muted-foreground max-w-2xl mt-2 bg-card p-2 rounded-md">
           Please keep in mind if you cancel your subscription, your builds will
-          be made private except for the first one you created.
+          be made private except for the first one you created. You will be able
+          to swap between which one build will be public.
         </p>
 
         <div className="mt-10 bg-card p-4 rounded-xl w-full max-w-[500px]">
