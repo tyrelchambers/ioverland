@@ -117,7 +117,7 @@ const Header = ({ on, className }: Props) => {
         <div className="flex gap-8 items-center ">
           {routes.map((route) => (
             <Link
-              href={`/explore`}
+              href={route.href}
               key={route.label}
               className="flex gap-3 items-center  hover:text-primary text-foreground/50"
             >

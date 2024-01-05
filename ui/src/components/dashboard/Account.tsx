@@ -1,0 +1,202 @@
+import { Separator } from "@radix-ui/react-separator";
+import { format } from "date-fns";
+import { Zap, Check, Calendar } from "lucide-react";
+import React from "react";
+import { H3 } from "../Heading";
+import { Button } from "../ui/button";
+import {
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
+  Drawer,
+} from "../ui/drawer";
+import { useDomainUser } from "@/hooks/useDomainUser";
+import { env } from "next-runtime-env";
+import { Badge } from "../ui/badge";
+
+const Account = () => {
+  const {
+    account: { data: account },
+    createPortal,
+    deleteUser,
+    restoreUser,
+    createCheckoutLink,
+  } = useDomainUser();
+  const getPortalLink = async () => {
+    const data = await createPortal.mutateAsync();
+
+    window.location.href = data.url;
+  };
+
+  const deleteHandler = () => {
+    deleteUser.mutate();
+  };
+
+  const restoreHandler = () => {
+    restoreUser.mutate();
+  };
+
+  const getCheckoutLink = async () => {
+    const data = await createCheckoutLink.mutateAsync({
+      redirect_to: `${env("NEXT_PUBLIC_FRONTEND_URL")}/dashboard?tab=account`,
+    });
+
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  };
+  return (
+    <>
+      <section className="mb-10">
+        <H3>Builds</H3>
+        <p className="text-muted-foreground max-w-3xl">
+          This is the number of builds you&apos;ve created according to your
+          plan type.{" "}
+          {account?.has_subscription &&
+            "You have can have up to 5 builds since you are on the Pro plan."}
+        </p>
+
+        <Badge className="mt-4">
+          {account?.total_builds} builds / {account?.builds_remaining} remaining
+        </Badge>
+      </section>
+      <Separator className="my-10" />
+      <section>
+        <H3>Subscription</H3>
+        <p className="text-muted-foreground">
+          Your subscription is managed by Stripe.
+        </p>
+        <p className="text-muted-foreground max-w-2xl mt-2 italic">
+          Please keep in mind if you cancel your subscription, your builds will
+          be made private except for the first one you created.
+        </p>
+
+        <div className="mt-10 bg-card p-4 rounded-xl w-full max-w-[500px]">
+          {account?.has_subscription ? (
+            <div>
+              <p className="font-bold flex gap-4">
+                <Zap className="text-card-foreground" />
+                You are currently subscribed to the Pro plan!
+              </p>
+              <p className="mt-4 text-card-foreground">
+                ${account.subscription.price / 100}/month
+              </p>
+              <p className="mt-4 text-sm text-card-foreground">
+                Next invoice date:{" "}
+                {format(
+                  new Date(account.subscription.next_invoice_date),
+                  "MMMM dd, yyyy"
+                )}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-6"
+                onClick={getPortalLink}
+              >
+                Manage subscription
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <Zap className="text-muted-foreground" />
+              <p className="font-bold mt-6">
+                Not currently subscribed to any plan.
+              </p>
+              <p className="text-muted-foreground text-sm">
+                If you&apos;d like to experience all iOverland has to offer,
+                please purchase a plan.
+              </p>
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <Button className="mt-4">Subscribe to Pro</Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <div className="max-w-[400px] w-full mx-auto">
+                    <DrawerHeader>
+                      <DrawerTitle>Choose a plan</DrawerTitle>
+                      <DrawerDescription>
+                        Paid on a monthly basis.
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <div className="p-6 rounded-xl border-2 border-primary  m-4 shadow-lg">
+                      <p className="mb-4 font-bold text-primary">Pro</p>
+                      <p className="text-3xl font-bold">$10</p>
+                      <Separator className="my-6" />
+                      <p className="text-sm">Gives you access to:</p>
+                      <ul className=" flex flex-col gap-4 mt-4 text-sm">
+                        <li className="flex items-center gap-2 text-muted-foreground">
+                          <Check size={16} className="text-primary" />
+                          Multiple builds - up to 5
+                        </li>
+                        <li className="flex items-center gap-2 text-muted-foreground">
+                          <Check size={16} className="text-primary" />
+                          Video support for your builds
+                        </li>
+                      </ul>
+                    </div>
+                    <DrawerFooter>
+                      <Button
+                        type="button"
+                        onClick={getCheckoutLink}
+                        className="w-full"
+                      >
+                        Continue
+                      </Button>
+                      <DrawerClose className="text-muted-foreground">
+                        Cancel
+                      </DrawerClose>
+                    </DrawerFooter>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            </div>
+          )}
+        </div>
+      </section>
+      <Separator className="my-10" />
+      <H3>Delete account</H3>
+      <p className="max-w-3xl text-muted-foreground">
+        Tread lightly here. Delete your account forever. If you are subscribed
+        to a plan, it will delete at the end of the billing cycle.
+      </p>
+      {account?.deleted_at && (
+        <div className="bg-yellow-100 rounded-xl text-yellow-700 flex flex-col gap-2 overflow-hidden max-w-2xl w-full my-6 shadow-lg">
+          <div className="flex flex-col gap-2 p-4">
+            <p>Plan and account are set to delete on: </p>
+            <p className="font-bold flex items-center">
+              <Calendar className="mr-2" size={18} />
+              {format(new Date(account.deleted_at), "MMMM dd, yyyy")}
+            </p>
+          </div>
+
+          <footer className="bg-yellow-400 p-4 flex items-center justify-between">
+            <p className="text-yellow-900">
+              Want to cancel the deletion and keep your account and your plan?
+            </p>
+
+            <Button variant="secondary" onClick={restoreHandler}>
+              {restoreUser.isPending ? "Restoring..." : "Restore"}
+            </Button>
+          </footer>
+        </div>
+      )}
+      {!account?.deleted_at && (
+        <Button
+          variant="destructiveMuted"
+          className="mt-6"
+          onClick={deleteHandler}
+          type="button"
+        >
+          {deleteUser.isPending ? "Deleting..." : "Delete account"}
+        </Button>
+      )}
+    </>
+  );
+};
+
+export default Account;
