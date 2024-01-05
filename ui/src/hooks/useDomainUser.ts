@@ -99,7 +99,7 @@ export const useDomainUser = (id?: string) => {
         .then((res) => res.data);
     },
     onSuccess: () => {
-      toast.error("Account set to delete", {
+      toast.success("Account set to delete", {
         description: "Your account has been scheduled for deletion.",
       });
       context.invalidateQueries({ queryKey: ["me"] });
