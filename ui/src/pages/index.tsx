@@ -1,11 +1,13 @@
 import Header from "@/components/Header";
 import { H2 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@clerk/nextjs";
 import { Lightbulb, Video, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+  const { isSignedIn } = useAuth();
   return (
     <main>
       <section className="h-screen flex relative">
@@ -21,7 +23,7 @@ export default function Home() {
               Show everyone your offroad builds from trucks, to SxS and ATVs.
             </p>
             <div className="flex items-center mt-10 gap-6 flex-col lg:flex-row">
-              <Link href="/sign-up">
+              <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
                 <Button type="button" className="w-full">
                   Create your build
                 </Button>
