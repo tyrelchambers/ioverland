@@ -32,7 +32,7 @@ func (u User) Unbookmark(db *gorm.DB, build build.Build) error {
 
 func FindCurrentUser(db *gorm.DB, uuid string) (User, error) {
 	var user User
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Where("uuid = ?", uuid).First(&user).Error
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Unscoped().Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }
 
@@ -54,4 +54,18 @@ func (u User) BuildCount(db *gorm.DB) (int64, error) {
 	var builds int64
 	err := db.Table("builds").Where("user_id = ?", u.Uuid).Count(&builds).Error
 	return builds, err
+}
+
+func GetUsersToDelete(db *gorm.DB) ([]User, error) {
+	var users []User
+	err := db.Where("deleted_at IS NOT NULL").Find(&users).Error
+	return users, err
+}
+
+func (u User) PermanentlyDelete(db *gorm.DB) error {
+	return db.Unscoped().Delete(&u).Error
+}
+
+func (u User) ResetDeletedAt(db *gorm.DB) error {
+	return db.Model(&u).Update("deleted_at", nil).Error
 }

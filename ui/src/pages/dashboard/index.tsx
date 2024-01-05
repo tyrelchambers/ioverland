@@ -268,13 +268,13 @@ const Dashboard = () => {
                 cycle.
               </p>
 
-              {account?.delete_on && (
+              {account?.deleted_at && (
                 <div className="bg-yellow-100 rounded-xl text-yellow-700 flex flex-col gap-2 overflow-hidden max-w-2xl w-full my-6 shadow-lg">
                   <div className="flex flex-col gap-2 p-4">
                     <p>Plan and account are set to delete on: </p>
                     <p className="font-bold flex items-center">
                       <Calendar className="mr-2" size={18} />
-                      {format(new Date(account.delete_on), "MMMM dd, yyyy")}
+                      {format(new Date(account.deleted_at), "MMMM dd, yyyy")}
                     </p>
                   </div>
 
@@ -291,7 +291,7 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {!account?.delete_on && (
+              {!account?.deleted_at && (
                 <Button
                   variant="destructiveMuted"
                   className="mt-6"

@@ -82,7 +82,7 @@ const domainUser = z.object({
   uuid: z.string(),
   builds: z.array(buildSchema),
   bookmarks: z.array(buildSchema),
-  delete_on: z.date(),
+  deleted_on: z.date(),
 });
 
 export type DomainUser = z.infer<typeof domainUser>;
@@ -94,8 +94,9 @@ const account = z.object({
     name: z.string(),
     price: z.number(),
     next_invoice_date: z.date(),
+    deleted_at: z.date().optional(),
   }),
-  delete_on: z.date(),
+  deleted_at: z.date().nullable(),
   total_builds: z.number(),
   builds_remaining: z.number(),
 });

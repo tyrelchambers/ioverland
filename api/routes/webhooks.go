@@ -148,7 +148,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		_, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
+		usr, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request for event: %v. %v\n", event.Type, err.Error())
@@ -156,8 +156,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		// utils.ClerkClient.Users().Delete(usr.Uuid)
-		// usr.Delete(db.Client)
+		usr.Delete(db.Client)
 	}
 	c.String(200, "success")
 }

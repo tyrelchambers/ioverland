@@ -11,20 +11,21 @@ import (
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/customer"
 	"github.com/stripe/stripe-go/sub"
+	"gorm.io/gorm"
 )
 
 type AccountResponse struct {
 	HasSubscription bool `json:"has_subscription"`
 	Subscription    struct {
-		ID              string    `json:"id"`
-		Name            string    `json:"name"`
-		Price           int64     `json:"price"`
-		DeleteOn        time.Time `json:"delete_on"`
-		NextInvoiceDate time.Time `json:"next_invoice_date"`
+		ID              string     `json:"id"`
+		Name            string     `json:"name"`
+		Price           int64      `json:"price"`
+		DeletedAt       *time.Time `json:"deleted_at"`
+		NextInvoiceDate time.Time  `json:"next_invoice_date"`
 	} `json:"subscription"`
-	DeleteOn        *time.Time `json:"delete_on"`
-	TotalBuilds     int64      `json:"total_builds"`
-	BuildsRemaining int64      `json:"builds_remaining"`
+	DeletedAt       *gorm.DeletedAt `json:"deleted_at"`
+	TotalBuilds     int64           `json:"total_builds"`
+	BuildsRemaining int64           `json:"builds_remaining"`
 }
 
 func Bookmark(build_id, user_id string) error {
@@ -100,13 +101,14 @@ func GetAccount(u *clerk.User) AccountResponse {
 		resp.Subscription.ID = cus.Subscriptions.Data[0].ID
 		resp.Subscription.Name = cus.Subscriptions.Data[0].Plan.Product.Name
 		resp.Subscription.Price = cus.Subscriptions.Data[0].Plan.Amount
-		resp.Subscription.DeleteOn = time.Unix(cus.Subscriptions.Data[0].CancelAt, 0)
 		resp.Subscription.NextInvoiceDate = time.Unix(cus.Subscriptions.Data[0].CurrentPeriodEnd, 0)
+
+		if cus.Subscriptions.Data[0].CancelAt != 0 {
+			resp.Subscription.DeletedAt = nil
+		}
 	}
 
-	if !domainUser.DeleteOn.IsZero() {
-		resp.DeleteOn = &domainUser.DeleteOn
-	}
+	resp.DeletedAt = &domainUser.DeletedAt
 
 	resp.TotalBuilds = userBuilds
 
@@ -146,7 +148,10 @@ func DeleteUser(u *clerk.User) error {
 		return err
 	}
 
-	domainUser.DeleteOn = time.Unix(sub.CurrentPeriodEnd, 0)
+	domainUser.DeletedAt = gorm.DeletedAt{
+		Valid: true,
+		Time:  time.Unix(sub.CurrentPeriodEnd, 0),
+	}
 
 	domainUser.Update(db.Client)
 
@@ -179,7 +184,10 @@ func RestoreUser(u *clerk.User) error {
 		return err
 	}
 
-	domainUser.DeleteOn = time.Time{}
+	domainUser.DeletedAt = gorm.DeletedAt{
+		Valid: false,
+		Time:  time.Unix(0, 0),
+	}
 
 	domainUser.Update(db.Client)
 

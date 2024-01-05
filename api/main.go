@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -70,69 +69,88 @@ func main() {
 		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
 
 	api := r.Group("/api")
-	build := api.Group("/build")
-	builds := api.Group("/builds")
-	upload := api.Group("/upload")
-	webhooks := api.Group("/webhooks")
-	user := api.Group("/user")
-	billing := api.Group("/billing")
-	explore := api.Group("/explore")
+	buildG := api.Group("/build")
+	buildsG := api.Group("/builds")
+	uploadG := api.Group("/upload")
+	webhooksG := api.Group("/webhooks")
+	userG := api.Group("/user")
+	billingG := api.Group("/billing")
+	exploreG := api.Group("/explore")
 
-	build.POST("/", routes.CreateBuild)
-	build.GET("/:build_id", routes.GetById)
-	build.PUT("/:build_id", routes.Update)
-	build.POST("/:build_id/view", routes.IncrementViews)
-	build.POST("/:build_id/like", routes.Like)
-	build.POST("/:build_id/dislike", routes.Dislike)
-	build.DELETE("/:build_id/delete", routes.Delete)
+	buildG.POST("/", routes.CreateBuild)
+	buildG.GET("/:build_id", routes.GetById)
+	buildG.PUT("/:build_id", routes.Update)
+	buildG.POST("/:build_id/view", routes.IncrementViews)
+	buildG.POST("/:build_id/like", routes.Like)
+	buildG.POST("/:build_id/dislike", routes.Dislike)
+	buildG.DELETE("/:build_id/delete", routes.Delete)
 
-	build.DELETE("/:build_id/image/:id", routes.RemoveImage)
+	buildG.DELETE("/:build_id/image/:id", routes.RemoveImage)
 
-	builds.GET("/user/:user_id", routes.GetBuilds)
+	buildsG.GET("/user/:user_id", routes.GetBuilds)
 
-	billing.POST("/checkout", routes.CreateCheckout)
-	billing.POST("/portal", routes.CreateCustomerPortal)
+	billingG.POST("/checkout", routes.CreateCheckout)
+	billingG.POST("/portal", routes.CreateCustomerPortal)
 
-	upload.POST("/process", routes.Upload)
-	upload.POST("/revert", routes.Revert)
+	uploadG.POST("/process", routes.Upload)
+	uploadG.POST("/revert", routes.Revert)
 
-	user.POST("/:build_id/bookmark", routes.Bookmark)
-	user.POST("/:build_id/remove-bookmark", routes.Unbookmark)
-	user.GET("/me", routes.GetCurrentUser)
-	user.GET("/me/account", routes.GetAccount)
-	user.DELETE("/me", routes.DeleteUser)
-	user.POST("/me/restore", routes.RestoreUser)
+	userG.POST("/:build_id/bookmark", routes.Bookmark)
+	userG.POST("/:build_id/remove-bookmark", routes.Unbookmark)
+	userG.GET("/me", routes.GetCurrentUser)
+	userG.GET("/me/account", routes.GetAccount)
+	userG.DELETE("/me", routes.DeleteUser)
+	userG.POST("/me/restore", routes.RestoreUser)
 
-	webhooks.POST("/", routes.Webhooks)
-	webhooks.POST("/stripe", routes.StripeWebhooks)
+	webhooksG.POST("/", routes.Webhooks)
+	webhooksG.POST("/stripe", routes.StripeWebhooks)
 
-	explore.GET("/", routes.Explore)
+	exploreG.GET("/", routes.Explore)
 
 	r.GET("/health", routes.Health)
 
-	// cron jobs
-
+	// create a scheduler
 	s, err := gocron.NewScheduler()
 	if err != nil {
-		log.Fatal(err)
+		// handle error
 	}
 
-	_, err = s.NewJob(
-		gocron.DurationJob(
-			1*time.Second,
+	// add a job to the scheduler
+	j, err := s.NewJob(
+		gocron.DailyJob(
+			1,
+			gocron.NewAtTimes(
+				gocron.NewAtTime(0, 0, 0),
+			),
 		),
 		gocron.NewTask(
-			func(a string, b int) {
-				// fmt.Println("hi")
+			func() {
+				// usersToDelete, err := user.GetUsersToDelete(db.Client)
+
+				// if err != nil {
+				// 	fmt.Println("Error getting users to delete: ", err)
+				// }
+
+				// for _, user := range usersToDelete {
+
+				// 	_, err := utils.ClerkClient.Users().Delete(user.Uuid)
+
+				// 	if err != nil {
+				// 		fmt.Printf("Error deleting user from clerk: %v. With User ID: %s", err, user.Uuid)
+				// 	}
+				// 	user.PermanentlyDelete(db.Client)
+
+				// }
 			},
-			"hello",
-			1,
 		),
 	)
 	if err != nil {
-		log.Fatal(err)
+		// handle error
 	}
+	// each job has a unique id
+	fmt.Println(j.ID())
 
+	// start the scheduler
 	s.Start()
 
 	var port string
