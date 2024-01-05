@@ -17,7 +17,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
 import {
   MAX_FILE_SIZE,
   carModels,
@@ -26,6 +25,7 @@ import {
 } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
+import { request } from "@/lib/axios";
 import {
   formattedLinks,
   formattedModifications,
@@ -45,14 +45,17 @@ import {
   newBuildSchema,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
+import { auth, getAuth } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
 import { ImageIcon, PlusCircle } from "lucide-react";
+import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const Edit = () => {
   const router = useRouter();
@@ -243,9 +246,7 @@ const Edit = () => {
 
     update.mutateAsync(payload, {
       onSuccess: () => {
-        toast({
-          variant: "success",
-          title: "Build updated",
+        toast.success("Build updated", {
           description: "Your build has been updated!",
         });
       },
@@ -276,17 +277,13 @@ const Edit = () => {
       },
       {
         onSuccess: () => {
-          toast({
-            variant: "success",
-            title: "Build deleted",
+          toast.success("Build deleted", {
             description: "Your build has been deleted!",
           });
           router.push("/dashboard");
         },
         onError: () => {
-          toast({
-            variant: "destructive",
-            title: "Error",
+          toast.error("Error", {
             description: "Something went wrong",
           });
         },
@@ -753,6 +750,35 @@ const Edit = () => {
       </div>
     </section>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { userId } = getAuth(ctx.req);
+  const build = await request
+    .get<Build>(`/api/build/${ctx.query.id}`)
+    .then((res) => res.data);
+
+  if (!userId || !build) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+  }
+
+  if (build.user_id !== userId) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 };
 
 export default Edit;

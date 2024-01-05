@@ -1,12 +1,12 @@
-import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { authMiddleware, redirectToSignUp } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export default authMiddleware({
-  publicRoutes: ["/", "/explore"],
+  publicRoutes: ["/", "/explore", "/build/:id"],
   afterAuth(auth, req, evt) {
     // Handle users who aren't authenticated
     if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignIn({ returnBackUrl: req.url });
+      return redirectToSignUp({ returnBackUrl: req.url });
     }
 
     // If the user is logged in and trying to access a protected route, allow them to access route

@@ -16,7 +16,6 @@ import { useUser } from "@clerk/nextjs";
 import {
   Bookmark,
   BookmarkCheck,
-  BookmarkMinus,
   Eye,
   EyeOff,
   Heart,
@@ -31,7 +30,7 @@ import { toast } from "sonner";
 
 const Build = () => {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { user: domainUser, bookmark, removeBookmark } = useDomainUser();
 
   const paramId = router.query.id as string;
@@ -124,7 +123,7 @@ const Build = () => {
       </Button>
     );
 
-  if (build.private) {
+  if (build.private && build.user_id !== user?.id) {
     return (
       <section>
         <Header />
@@ -162,15 +161,17 @@ const Build = () => {
                 {build.views}
               </p>
 
-              <BookmarkButton
-                isBookmarked={
-                  domainUser.data?.bookmarks.some(
-                    (bookmark) => bookmark.id === build?.id
-                  ) || false
-                }
-                bookmarkHandler={bookmarkHandler}
-                removeBookmarkHandler={removeBookmarkHandler}
-              />
+              {isSignedIn && (
+                <BookmarkButton
+                  isBookmarked={
+                    domainUser.data?.bookmarks.some(
+                      (bookmark) => bookmark.id === build?.id
+                    ) || false
+                  }
+                  bookmarkHandler={bookmarkHandler}
+                  removeBookmarkHandler={removeBookmarkHandler}
+                />
+              )}
 
               {build?.user_id === user?.id && (
                 <Button size="sm" asChild>

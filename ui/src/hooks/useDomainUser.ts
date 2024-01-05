@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 export const useDomainUser = (id?: string) => {
-  const { getToken } = useAuth();
+  const { getToken, userId } = useAuth();
 
   const context = useQueryClient();
   const query = useQuery({
@@ -19,6 +19,7 @@ export const useDomainUser = (id?: string) => {
         })
         .then((res) => res.data);
     },
+    enabled: !!userId,
   });
 
   const bookmark = useMutation({
@@ -70,6 +71,7 @@ export const useDomainUser = (id?: string) => {
         })
         .then((res) => res.data);
     },
+    enabled: !!userId,
   });
 
   const createPortal = useMutation({

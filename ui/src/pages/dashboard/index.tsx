@@ -1,6 +1,6 @@
 import BuildItem from "@/components/BuildItem";
 import Header from "@/components/Header";
-import { H1, H2, H3 } from "@/components/Heading";
+import { H3 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -24,19 +24,9 @@ import {
   Heart,
   Zap,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { format } from "date-fns";
-import { ToastAction } from "@radix-ui/react-toast";
-import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { env } from "next-runtime-env";
 
