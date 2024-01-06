@@ -2,7 +2,17 @@ import Header from "@/components/Header";
 import { H2 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@clerk/nextjs";
-import { Lightbulb, Video, Wrench } from "lucide-react";
+import {
+  Bookmark,
+  Heart,
+  Lightbulb,
+  MapPin,
+  MessageSquare,
+  Trophy,
+  Users,
+  Video,
+  Wrench,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -83,6 +93,91 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="max-w-screen-xl w-full mx-auto mb-20 lg:mb-40 p-6">
+        <header className="max-w-2xl w-full">
+          <H2 className="mb-5 text-4xl">Features</H2>
+          <p className="text-muted-foreground">
+            iOverland is designed and will continue to be improved upon, to
+            provide you with a fun and easy way to showcase your overland
+            builds. We want you to show-off what you&apos;ve built and be able
+            to connect with other like-minded creators.
+          </p>
+        </header>
+
+        <div className="grid lg:grid-cols-3 grid-cols-1 mt-12 gap-10">
+          <div>
+            <Bookmark className="text-primary" size={30} />
+            <p className=" font-bold my-2 text-xl">Bookmarks</p>
+            <p className="text-muted-foreground">
+              Find a build you like and bookmark it
+            </p>
+          </div>
+
+          <div>
+            <Heart className="text-primary" size={30} />
+            <p className=" font-bold my-2 text-xl">Likes</p>
+            <p className="text-muted-foreground">
+              Show your support and love with likes
+            </p>
+          </div>
+
+          <div>
+            <Trophy className="text-primary" size={30} />
+            <p className=" font-bold my-2 text-xl">Featured</p>
+            <p className="text-muted-foreground">
+              Have a chance to be featured on iOverland
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="relative">
+        <Image
+          src="/topographical.jpg"
+          fill
+          alt=""
+          className="object-cover opacity-10"
+        />
+        <section className="max-w-screen-xl w-full mx-auto lg:mb-40 py-20 relative p-6">
+          <header className="max-w-2xl w-full">
+            <H2 className="mb-5 text-4xl">Roadmap</H2>
+            <p className="text-muted-foreground">
+              We&apos;d love to share with you our roadmap of where we would
+              like to take things in the near future. Please keep in mind these
+              items are technically, subject to change, however it is incredibly
+              unlikely as we have a goal that without these features, would not
+              quite be achieved.
+            </p>
+          </header>
+
+          <div className="grid lg:grid-cols-3 grid-cols-1 mt-12 gap-10">
+            <div>
+              <MapPin className="text-primary" size={30} />
+              <p className=" font-bold my-2 text-xl">Trips</p>
+              <p className="text-muted-foreground">
+                Detail your Overlanding trips
+              </p>
+            </div>
+
+            <div>
+              <MessageSquare className="text-primary" size={30} />
+              <p className=" font-bold my-2 text-xl">Comment</p>
+              <p className="text-muted-foreground">
+                Leave comments and let others known what you think of their
+                build
+              </p>
+            </div>
+
+            <div>
+              <Users className="text-primary" size={30} />
+              <p className=" font-bold my-2 text-xl">Meetups</p>
+              <p className="text-muted-foreground">
+                Meet up with other iOverlanders
+              </p>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
   );
