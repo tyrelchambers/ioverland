@@ -60,7 +60,7 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
         className
       )}
     >
-      <div className="max-w-screen-xl mx-auto flex items-center justify-between w-full">
+      <div className="max-w-screen-2xl mx-auto flex items-center justify-between w-full">
         <h2 className="text-foreground font-bold font-serif">iOverland</h2>
         {width <= 768 ? (
           <Sheet>
