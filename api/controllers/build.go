@@ -179,7 +179,7 @@ func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
 		return EditResponse{}, err
 	}
 
-	if len(account.Customer.Subscriptions.Data) != 0 && account.Customer.Subscriptions.Data[0].Plan.Product.Name == "Pro" || build.Private != true {
+	if account.Customer.Subscriptions != nil && account.Customer.Subscriptions.Data[0].Plan.Product.Name == "Pro" || build.Private != true {
 		resp.Can_be_public = true
 	} else {
 		var numOfPublicBuilds int

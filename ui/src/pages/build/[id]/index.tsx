@@ -8,19 +8,29 @@ import Trips from "@/components/build/Trips";
 import Vehicle from "@/components/build/Vehicle";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { hasLiked } from "@/lib/utils";
+import { copyToClipboard, hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import {
   Bookmark,
   BookmarkCheck,
+  Copy,
   Eye,
   EyeOff,
+  Facebook,
   Heart,
   HeartOff,
   PencilRuler,
+  Share,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,6 +48,7 @@ const Build = () => {
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const build = getById.data;
+  const shareLink = `https://iover.land/build/${build?.uuid}`;
 
   useEffect(() => {
     if (paramId) {
@@ -138,6 +149,12 @@ const Build = () => {
     );
   }
 
+  const copyToClipboardHandler = (text: string) => {
+    copyToClipboard(text);
+    toast.info("Copied to clipboard");
+  };
+
+  const twitterShareLink = `https://twitter.com/intent/tweet?text=Check%20out%20this%20build%20on%20iover.land&url=${shareLink}`;
   return (
     <section>
       <Header />
@@ -160,7 +177,7 @@ const Build = () => {
               {build?.name}
             </H1>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <p className=" text-muted-foreground flex items-center">
                 <Eye size={20} className="text-muted-foreground mr-2" />{" "}
                 {build.views}
@@ -177,6 +194,44 @@ const Build = () => {
                   removeBookmarkHandler={removeBookmarkHandler}
                 />
               )}
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <Share size={20} className="text-muted-foreground" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>Share</DialogTitle>
+                  </DialogHeader>
+
+                  <div
+                    className="bg-card p-4 rounded-xl border border-border text-card-foreground flex justify-between items-center hover:cursor-pointer"
+                    onClick={() => copyToClipboardHandler(shareLink)}
+                  >
+                    <p>{shareLink}</p>
+                    <Copy size={18} />
+                  </div>
+
+                  <footer className="flex gap-4 items-center">
+                    <a
+                      href={twitterShareLink}
+                      target="_blank"
+                      className="w-10 h-10 rounded-full bg-card flex items-center justify-center"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="18"
+                        width="18"
+                        viewBox="0 0 512 512"
+                      >
+                        <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+                      </svg>
+                    </a>
+                  </footer>
+                </DialogContent>
+              </Dialog>
 
               {build?.user_id === user?.id && (
                 <Button size="sm" asChild>
@@ -273,7 +328,7 @@ const BookmarkButton = ({
       Bookmarked
     </Button>
   ) : (
-    <Button variant="ghost" onClick={bookmarkHandler}>
+    <Button size="icon" variant="ghost" onClick={bookmarkHandler}>
       <Bookmark size={18} className="text-muted-foreground" />
     </Button>
   );

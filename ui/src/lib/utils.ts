@@ -55,3 +55,7 @@ export const acceptedFiletypes = (has_subscription: boolean | undefined) => {
 
   return ["image/jpeg", "image/png", "image/jpg"];
 };
+
+export const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+};

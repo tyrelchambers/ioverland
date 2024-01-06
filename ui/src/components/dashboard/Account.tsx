@@ -87,7 +87,7 @@ const Account = () => {
         <p className="text-muted-foreground">
           Your subscription is managed by Stripe.
         </p>
-        <p className="text-muted-foreground mt-2 bg-card p-2 rounded-md">
+        <p className="text-muted-foreground mt-2 bg-card p-2 rounded-md italic text-sm">
           Please keep in mind if you cancel your subscription, your builds will
           be made private except for the first one you created. You will be able
           to swap between which one build will be public.
