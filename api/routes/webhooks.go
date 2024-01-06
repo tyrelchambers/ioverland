@@ -14,9 +14,9 @@ import (
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/customer"
-	"github.com/stripe/stripe-go/webhook"
+	"github.com/stripe/stripe-go/v76"
+	"github.com/stripe/stripe-go/v76/customer"
+	"github.com/stripe/stripe-go/v76/webhook"
 	svix "github.com/svix/svix-webhooks/go"
 )
 
@@ -55,13 +55,68 @@ func Webhooks(c *gin.Context) {
 		return
 	}
 
-	if evtType == "user.created" {
-		var body struct {
+	switch evtType {
+	case "session.created":
+		var data struct {
+			Data  clerk.Session `json:"data"`
+			Event string        `json:"event"`
+			Type  string        `json:"type"`
+		}
+
+		if err := json.Unmarshal(payload, &data); err != nil {
+			c.String(400, "Bad Request")
+			return
+		}
+
+		stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
+		stripe.Key = stripe_key
+
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+
+		clerk_user, err := utils.ClerkClient.Users().Read(data.Data.UserID)
+
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		domain_user, err := user.FindCurrentUser(db.Client, data.Data.UserID)
+
+		params := &stripe.CustomerSearchParams{
+			SearchParams: stripe.SearchParams{
+				Query: "metadata['clerk_id']:'user_2aCFV9JDDJwxyLnymOdhlFCgaFJ'",
+			},
+		}
+		result := customer.Search(params)
+		result_data := result.CustomerSearchResult()
+
+		if len(result_data.Data) == 0 {
+			fmt.Println("Couldn't find customer in Stripe - creating.")
+
+			params := &stripe.CustomerParams{
+				Email: stripe.String(clerk_user.EmailAddresses[0].EmailAddress),
+			}
+
+			cus, _ := customer.New(params)
+
+			updateParams := &stripe.CustomerParams{}
+			updateParams.AddMetadata("clerk_id", data.Data.UserID)
+
+			customer.Update(cus.ID, updateParams)
+
+			domain_user.CustomerId = cus.ID
+
+			domain_user.Update(db.Client)
+		}
+
+	case "user.created":
+		var data struct {
 			Data  clerk.User `json:"data"`
 			Event string     `json:"event"`
 			Type  string     `json:"type"`
 		}
-
 		if err := json.Unmarshal(payload, &body); err != nil {
 			c.String(400, "Bad Request")
 			return
@@ -69,18 +124,18 @@ func Webhooks(c *gin.Context) {
 
 		// Create stripe customer and update customer with clerk ID into metadata
 		params := &stripe.CustomerParams{
-			Email: stripe.String(body.Data.EmailAddresses[0].EmailAddress),
+			Email: stripe.String(data.Data.EmailAddresses[0].EmailAddress),
 		}
 
 		cus, _ := customer.New(params)
 
 		updateParams := &stripe.CustomerParams{}
-		updateParams.AddMetadata("clerk_id", body.Data.ID)
+		updateParams.AddMetadata("clerk_id", data.Data.ID)
 
 		customer.Update(cus.ID, updateParams)
 
 		newUser := user.User{
-			Uuid:       body.Data.ID,
+			Uuid:       data.Data.ID,
 			CustomerId: cus.ID,
 		}
 
@@ -98,6 +153,7 @@ func Webhooks(c *gin.Context) {
 
 	c.String(202, "success")
 	return
+
 }
 
 func StripeWebhooks(c *gin.Context) {

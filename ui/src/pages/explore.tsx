@@ -47,10 +47,10 @@ const Explore = () => {
         <div className="p-10 border border-border  rounded-xl w-full mt-10 shadow-md">
           <header className="flex justify-between">
             <p className=" mb-4 font-bold text-muted-foreground">
-              {explore.data?.build_count} / {GOAL} Builds
+              {explore.data?.build_count ?? 0} / {GOAL} Builds
             </p>
             <p className=" mb-4 font-bold text-muted-foreground">
-              {explore.data?.goal_remaining} remaining
+              {explore.data?.goal_remaining ?? 0} remaining
             </p>
           </header>
           <Progress value={50} />
