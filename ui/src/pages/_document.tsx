@@ -6,6 +6,8 @@ export default function Document() {
     <Html lang="en">
       <Head>
         <PublicEnvScript />
+        <link rel="icon" type="image/jpg" href="/favicon.jpg" />
+
         <script
           defer
           data-domain="iover.land"

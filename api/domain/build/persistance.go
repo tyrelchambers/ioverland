@@ -103,3 +103,9 @@ func (b *Build) Delete(db *gorm.DB) error {
 
 	return nil
 }
+
+func AllBuildsCount(db *gorm.DB) (int64, error) {
+	var count int64
+	err := db.Model(&Build{}).Count(&count).Error
+	return count, err
+}

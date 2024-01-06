@@ -1,78 +1,61 @@
 import BuildItem from "@/components/BuildItem";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
-import RenderMedia from "@/components/RenderMedia";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import Featured from "@/components/explore/Featured";
+import Top10 from "@/components/explore/Top10";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useExplore } from "@/hooks/useExplore";
-import { useViewportWidth } from "@/hooks/useViewportWidth";
+import { Feather } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const Explore = () => {
   const { explore } = useExplore();
-  const { width } = useViewportWidth();
+  const GOAL = 20;
+
   return (
-    <div>
+    <div className="relative min-h-screen">
       <Header />
 
-      <div className="max-w-screen-xl mx-auto my-10">
-        <H1>Find inspiration for your next build.</H1>
-        <Carousel
-          className="mt-6 lg:mx-4"
-          opts={{
-            loop: true,
-          }}
-        >
-          <CarouselContent>
-            {explore.data?.featured?.map((build, index) => (
-              <CarouselItem key={build.id + "_" + index}>
-                <Link href={`/build/${build.uuid}`}>
-                  <div className="relative">
-                    <header className="relative h-[200px] lg:h-[600px] shadow-md">
-                      {build.banner && (
-                        <RenderMedia media={build.banner} autoPlay loop />
-                      )}
-                    </header>
-                    <div className="absolute bottom-0 left-0 right-0 backdrop-blur-md bg-white/10 p-6">
-                      <p className="mt-3 font-bold text-xl font-serif text-background">
-                        {build.name}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          {width > 768 && (
-            <>
-              <CarouselPrevious />
-              <CarouselNext />
-            </>
-          )}
-        </Carousel>
-      </div>
-      <section className="bg-card w-full">
-        <div className="max-w-screen-xl mx-auto my-10 p-10">
-          <H2>Top 10 Builds</H2>
+      {/* <Featured featured={explore.data?.featured} />
+      <Top10 top10={explore.data?.top_10} /> */}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-12">
-            {explore.data?.top_10?.map((build, index) => (
-              <BuildItem
-                build={build}
-                key={build.uuid + "_" + index}
-                showVideo
-                playVideo
-              />
-            ))}
-          </div>
+      <div className="w-1/2 -rotate-45 top-[150px] left-[-150px] opacity-20 absolute">
+        <Image src="/lines.png" alt="lines" height={600} width={1920} />
+      </div>
+
+      <div className="w-1/2 rotate-45 top-[150px] -right-[150px] opacity-20 absolute">
+        <Image src="/lines.png" alt="lines" height={600} width={1920} />
+      </div>
+
+      <div className="max-w-3xl flex flex-col items-center mx-auto my-10 p-10 absolute z-10 inset-0 top-10">
+        <Feather size={40} className="text-green-500" />
+        <H1 className="my-10 text-6xl text-center">
+          You&apos;ve made it to the explore page!
+        </H1>
+        <p className="text-muted-foreground text-center">
+          iOverland is a very new project and evidently we don&apos;t have much
+          to show here, yet. We would absolutely love it if you&apos;d help us
+          by creating your own overlanding build so we can add it to this list!{" "}
+        </p>
+        <Link href="/build/new" className="mt-10">
+          <Button size="lg">Create a build</Button>
+        </Link>
+
+        <div className="p-10 border border-border  rounded-xl w-full mt-10 shadow-md">
+          <header className="flex justify-between">
+            <p className=" mb-4 font-bold text-muted-foreground">
+              {explore.data?.build_count} / {GOAL} Builds
+            </p>
+            <p className=" mb-4 font-bold text-muted-foreground">
+              {explore.data?.goal_remaining} remaining
+            </p>
+          </header>
+          <Progress value={50} />
         </div>
-      </section>
+      </div>
     </div>
   );
 };

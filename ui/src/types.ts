@@ -106,6 +106,8 @@ export type Account = z.infer<typeof account>;
 const explore = z.object({
   featured: z.array(buildSchema),
   top_10: z.array(buildSchema),
+  goal_remaining: z.number(),
+  build_count: z.number(),
 });
 
 export type Explore = z.infer<typeof explore>;
