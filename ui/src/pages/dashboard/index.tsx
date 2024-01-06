@@ -91,7 +91,7 @@ const Dashboard = () => {
                 </ul>
               ) : (
                 <p className="text-card-foreground bg-card p-4 rounded-xl w-full mt-4">
-                  No bookmarks to see here
+                  No builds to see here
                 </p>
               )}
             </TabsContent>
