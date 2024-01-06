@@ -133,7 +133,7 @@ func GetAccount(u *clerk.User) AccountResponse {
 
 	var resp AccountResponse
 
-	if cus.Subscriptions.TotalCount > 0 {
+	if cus.Subscriptions != nil && cus.Subscriptions.TotalCount > 0 {
 		resp.HasSubscription = true
 		resp.Subscription.ID = cus.Subscriptions.Data[0].ID
 		resp.Subscription.Name = cus.Subscriptions.Data[0].Plan.Product.Name
