@@ -31,7 +31,6 @@ const Explore = () => {
       </div>
 
       <div className="max-w-3xl flex flex-col items-center mx-auto my-10 p-10 absolute z-10 inset-0 top-10">
-        <Feather size={40} className="text-green-500" />
         <H1 className="my-10 text-6xl text-center">
           You&apos;ve made it to the explore page!
         </H1>
