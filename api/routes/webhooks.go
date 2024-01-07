@@ -86,7 +86,7 @@ func Webhooks(c *gin.Context) {
 
 		update_new_user_with_customer_id := false
 
-		if err.Error() == "record not found" {
+		if err != nil && err.Error() == "record not found" {
 			new_user := user.User{
 				Uuid:       data.Data.UserID,
 				CustomerId: "",
