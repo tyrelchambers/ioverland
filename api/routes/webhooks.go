@@ -84,9 +84,25 @@ func Webhooks(c *gin.Context) {
 		}
 		domain_user, err := user.FindCurrentUser(db.Client, data.Data.UserID)
 
+		update_new_user_with_customer_id := false
+
+		if err.Error() == "record not found" {
+			new_user := user.User{
+				Uuid:       data.Data.UserID,
+				CustomerId: "",
+			}
+
+			user.Create(db.Client, &new_user)
+
+			domain_user = new_user
+
+			update_new_user_with_customer_id = true
+
+		}
+
 		params := &stripe.CustomerSearchParams{
 			SearchParams: stripe.SearchParams{
-				Query: "metadata['clerk_id']:'user_2aCFV9JDDJwxyLnymOdhlFCgaFJ'",
+				Query: fmt.Sprintf("metadata['clerk_id']:'%s'", data.Data.UserID),
 			},
 		}
 		result := customer.Search(params)
@@ -111,6 +127,11 @@ func Webhooks(c *gin.Context) {
 			domain_user.Update(db.Client)
 		}
 
+		if update_new_user_with_customer_id {
+			domain_user.CustomerId = result_data.Data[0].ID
+			domain_user.Update(db.Client)
+		}
+
 	case "user.created":
 		var data struct {
 			Data  clerk.User `json:"data"`
@@ -121,6 +142,8 @@ func Webhooks(c *gin.Context) {
 			c.String(400, "Bad Request")
 			return
 		}
+
+		fmt.Println(data.Data.EmailAddresses)
 
 		// Create stripe customer and update customer with clerk ID into metadata
 		params := &stripe.CustomerParams{
