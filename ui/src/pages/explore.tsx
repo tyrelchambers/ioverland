@@ -53,8 +53,8 @@ const Explore = () => {
               {explore.data?.goal_remaining ?? 0} remaining
             </p>
           </header>
-          {explore.data?.build_count && (
-            <Progress value={(explore.data.build_count / GOAL) * 100} />
+          {explore.data?.build_count !== undefined && (
+            <Progress value={(explore.data?.build_count / GOAL) * 100} />
           )}
         </div>
       </div>
