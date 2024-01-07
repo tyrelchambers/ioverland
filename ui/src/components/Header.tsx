@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Home, LayoutDashboard, Mountain } from "lucide-react";
+import { Input } from "./ui/input";
 
 const routes = [
   {
@@ -62,6 +63,8 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
     >
       <div className="max-w-screen-2xl mx-auto flex items-center justify-between w-full">
         <h2 className="text-foreground font-bold font-serif">iOverland</h2>
+
+        {/* this is the mobile nav */}
         {width <= 768 ? (
           <Sheet>
             <SheetTrigger>
@@ -116,7 +119,8 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
             </SheetContent>
           </Sheet>
         ) : (
-          <div className="flex gap-8 items-center ">
+          <div className="flex gap-8 items-center">
+            <Input type="search" placeholder="Search for a build" />
             {routes.map((route) => (
               <Link
                 href={route.href}
