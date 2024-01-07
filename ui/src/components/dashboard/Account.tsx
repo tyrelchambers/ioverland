@@ -128,6 +128,17 @@ const Account = () => {
               If you&apos;d like to experience all iOverland has to offer,
               please purchase a plan.
             </p>
+            <Separator className="mt-4" />
+            <ul className=" flex flex-col gap-4 mt-4 text-sm">
+              <li className="flex items-center gap-2 text-muted-foreground">
+                <Check size={16} className="text-primary" />
+                Multiple builds - up to 5
+              </li>
+              <li className="flex items-center gap-2 text-muted-foreground">
+                <Check size={16} className="text-primary" />
+                Video support for your builds
+              </li>
+            </ul>
             <Drawer>
               <DrawerTrigger asChild>
                 <Button className="mt-4">Subscribe to Pro</Button>
