@@ -22,11 +22,11 @@ const Explore = () => {
       {/* <Featured featured={explore.data?.featured} />
       <Top10 top10={explore.data?.top_10} /> */}
 
-      <div className="w-1/2 -rotate-45 top-[150px] left-[-150px] opacity-20 absolute">
+      <div className="w-1/2 -rotate-45 top-[150px] left-[-150px] opacity-20 absolute hidden lg:block">
         <Image src="/lines.png" alt="lines" height={600} width={1920} />
       </div>
 
-      <div className="w-1/2 rotate-45 top-[150px] -right-[150px] opacity-20 absolute">
+      <div className="w-1/2 rotate-45 top-[150px] -right-[150px] opacity-20 absolute hidden lg:block">
         <Image src="/lines.png" alt="lines" height={600} width={1920} />
       </div>
 
