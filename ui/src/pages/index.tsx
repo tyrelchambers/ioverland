@@ -32,7 +32,7 @@ export default function Home() {
               Showcase your overlanding builds. But it doesn&apos;t stop there.
               Show everyone your offroad builds from trucks, to SxS and ATVs.
             </p>
-            <div className="flex items-center mt-10 gap-6 flex-col lg:flex-row">
+            <div className="flex items-center mt-10 gap-6 flex-col md:flex-row">
               <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
                 <Button type="button" className="w-full">
                   Create your build
@@ -60,7 +60,7 @@ export default function Home() {
 
       <section className="max-w-screen-xl mx-auto  lg:-translate-y-40">
         <div className="my-10 rounded-md shadow-xl overflow-hidden mx-4">
-          <div className="relative w-full lg:h-[600px] h-[200px]">
+          <div className="relative w-full lg:h-[600px] h-[400px]">
             <Image
               src="/car in forest.jpg"
               alt=""
@@ -96,10 +96,10 @@ export default function Home() {
       </section>
 
       <section className="max-w-screen-xl w-full flex flex-col lg:flex-row mx-auto mb-20 lg:mb-40 p-6">
-        <div className="lg:h-[600px] lg:w-[600px] w-full h-[200px]  relative overflow-hidden rounded-xl shadow-xl mb-10 lg:mb-0">
+        <div className="lg:h-[600px] lg:w-[600px] w-full h-[400px]  relative overflow-hidden rounded-xl shadow-xl mb-10 lg:mb-0">
           <Image src="/car by water.jpg" alt="" fill className="object-cover" />
         </div>
-        <div className="flex-1 flex flex-col px-10">
+        <div className="flex-1 flex flex-col px-4">
           <header className="max-w-2xl w-full">
             <H2 className="mb-5 text-4xl">Features</H2>
             <p className="text-muted-foreground">

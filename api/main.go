@@ -109,6 +109,8 @@ func main() {
 
 	exploreG.GET("/", routes.Explore)
 
+	api.GET("/search", routes.Search)
+
 	r.GET("/health", routes.Health)
 
 	// create a scheduler

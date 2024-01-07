@@ -5,8 +5,21 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Home, LayoutDashboard, Mountain } from "lucide-react";
+import { Home, LayoutDashboard, Mountain, Search } from "lucide-react";
 import { Input } from "./ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useSearch } from "@/hooks/useSearch";
+import Image from "next/image";
+import RenderMedia from "./RenderMedia";
+import MobileNav from "./header/MobileNav";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 const routes = [
   {
@@ -37,6 +50,7 @@ interface Props {
 
 const Header = ({ on, className, stickyOnScroll }: Props) => {
   const { width } = useViewportWidth();
+  const { hasResults, searchValue, search, results } = useSearch();
 
   useEffect(() => {
     const header = document.querySelector(".header");
@@ -63,65 +77,99 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
     >
       <div className="max-w-screen-2xl mx-auto flex items-center justify-between w-full">
         <h2 className="text-foreground font-bold font-serif">iOverland</h2>
-
         {/* this is the mobile nav */}
-        {width <= 768 ? (
-          <Sheet>
-            <SheetTrigger>
-              <div className="w-[20px] h-[15px] flex flex-col gap-1">
-                <span className="w-full h-[2px] bg-foreground"></span>
-                <span className="w-full h-[2px] bg-foreground"></span>
-                <span className="w-1/2 h-[2px] bg-foreground"></span>
+        <div className="gap-8 flex lg:hidden">
+          <Dialog>
+            <DialogTrigger>
+              <Search className="text-foreground" />
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Search</DialogTitle>
+                <DialogDescription>
+                  Search for a build by its name.
+                </DialogDescription>
+              </DialogHeader>
+              <Input
+                type="search"
+                placeholder="Search for a build"
+                className="w-full"
+                value={searchValue}
+                onChange={(e) => search(e.target.value)}
+              />
+              <div className="flex flex-col gap-3">
+                {results &&
+                  results?.map((build) => (
+                    <Link key={build.uuid} href={`/build/${build.uuid}`}>
+                      <div className="flex gap-3 items-center">
+                        <div className="relative h-auto w-[100px]">
+                          <RenderMedia media={build.banner} />
+                        </div>
+                        <p className="font-bold">{build.name}</p>
+                        <p>{}</p>
+                      </div>
+                    </Link>
+                  ))}
               </div>
-            </SheetTrigger>
-            <SheetContent>
-              <section className="mt-4">
-                <UserButton afterSignOutUrl="/" />
-                <div className="flex flex-col gap-8 mt-10">
-                  {routes.map((route) => (
-                    <Link
-                      href={route.href}
-                      key={route.label}
-                      className="flex gap-6 items-center underline hover:text-primary"
-                    >
-                      {route.icon} {route.label}
-                    </Link>
-                  ))}
+            </DialogContent>
+          </Dialog>
+          <MobileNav routes={routes} authRoutes={authRoutes} />
+        </div>
+
+        {/* this is the desktop nav */}
+        <div className="gap-8 items-center hidden lg:flex">
+          <Popover open={searchValue !== "" && width > 768}>
+            <PopoverTrigger>
+              <Input
+                type="search"
+                placeholder="Search for a build"
+                className="w-[400px]"
+                value={searchValue}
+                onChange={(e) => search(e.target.value)}
+              />
+
+              <PopoverContent
+                className="w-[400px]"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <div className="flex flex-col gap-3">
+                  {results &&
+                    results?.map((build) => (
+                      <Link key={build.uuid} href={`/build/${build.uuid}`}>
+                        <div className="flex gap-3 items-center">
+                          <div className="relative h-auto w-[100px]">
+                            <RenderMedia media={build.banner} />
+                          </div>
+                          <p className="font-bold">{build.name}</p>
+                          <p>{}</p>
+                        </div>
+                      </Link>
+                    ))}
+
+                  {results?.length === 0 && (
+                    <p className="text-muted-foreground">
+                      Can&apos;t find any builds with the name{" "}
+                      <span className="font-bold text-foreground">
+                        {searchValue}
+                      </span>
+                    </p>
+                  )}
                 </div>
-                <SignedIn>
-                  {authRoutes.map((route) => (
-                    <Link
-                      href={route.href}
-                      key={route.label}
-                      className="flex gap-6 items-center underline hover:text-primary"
-                    >
-                      {route.icon} {route.label}
-                    </Link>
-                  ))}
-                  <Link href="/build/new" className="w-full block mt-6">
-                    <Button
-                      className={cn("w-full", {
-                        "text-primary-foreground bg-primary": on === "dark",
-                      })}
-                    >
-                      New build
-                    </Button>
-                  </Link>
-                </SignedIn>
-                <SignedOut>
-                  <Link href="/sign-up" className="w-full block mt-6">
-                    <Button className="w-full" type="button">
-                      Sign up
-                    </Button>
-                  </Link>
-                </SignedOut>
-              </section>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <div className="flex gap-8 items-center">
-            <Input type="search" placeholder="Search for a build" />
-            {routes.map((route) => (
+              </PopoverContent>
+            </PopoverTrigger>
+          </Popover>
+          {routes.map((route) => (
+            <Link
+              href={route.href}
+              key={route.label}
+              className="flex gap-3 items-center  hover:text-primary text-foreground/50"
+            >
+              {route.label}
+            </Link>
+          ))}
+          <SignedIn>
+            {authRoutes.map((route) => (
               <Link
                 href={route.href}
                 key={route.label}
@@ -130,35 +178,24 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
                 {route.label}
               </Link>
             ))}
-            <SignedIn>
-              {authRoutes.map((route) => (
-                <Link
-                  href={route.href}
-                  key={route.label}
-                  className="flex gap-3 items-center  hover:text-primary text-foreground/50"
-                >
-                  {route.label}
-                </Link>
-              ))}
-              <Link href="/build/new">
-                <Button
-                  size="sm"
-                  className={cn({
-                    "text-primary-foreground bg-primary": on === "dark",
-                  })}
-                >
-                  New build
-                </Button>
-              </Link>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-            <SignedOut>
-              <Link href="/sign-up">
-                <Button>Sign up</Button>
-              </Link>
-            </SignedOut>
-          </div>
-        )}
+            <Link href="/build/new">
+              <Button
+                size="sm"
+                className={cn({
+                  "text-primary-foreground bg-primary": on === "dark",
+                })}
+              >
+                New build
+              </Button>
+            </Link>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+          <SignedOut>
+            <Link href="/sign-up">
+              <Button>Sign up</Button>
+            </Link>
+          </SignedOut>
+        </div>
       </div>
     </header>
   );
