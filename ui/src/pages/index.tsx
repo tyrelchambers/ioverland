@@ -99,7 +99,7 @@ export default function Home() {
         <div className="lg:h-[600px] lg:w-[600px] w-full h-[400px]  relative overflow-hidden rounded-xl shadow-xl mb-10 lg:mb-0">
           <Image src="/car by water.jpg" alt="" fill className="object-cover" />
         </div>
-        <div className="flex-1 flex flex-col px-4">
+        <div className="flex-1 flex flex-col px-20">
           <header className="max-w-2xl w-full">
             <H2 className="mb-5 text-4xl">Features</H2>
             <p className="text-muted-foreground">
