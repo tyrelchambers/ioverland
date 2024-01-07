@@ -25,12 +25,11 @@ export default function Home() {
           <Header className="absolute top-0 bg-transparent border-0 w-full" />
           <div className="flex flex-col p-4 w-full items-center">
             {" "}
-            <h1 className="font-serif lg:text-8xl text-4xl mb-10 font-bold text-foreground text-center">
-              More than Overland
+            <h1 className="font-serif lg:text-8xl text-4xl mb-10 font-bold text-foreground text-center max-w-6xl text-pretty">
+              Unleash Your Overlanding Adventure
             </h1>
             <p className="lg:text-2xl text-muted-foreground font-light max-w-2xl leading-relaxed text-center text-pretty">
-              Showcase your overlanding builds. But it doesn&apos;t stop there.
-              Show everyone your offroad builds from trucks, to SxS and ATVs.
+              Showcase, Share, and Inspire with Your Overlanding Build
             </p>
             <div className="flex items-center mt-10 gap-6 flex-col md:flex-row">
               <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
