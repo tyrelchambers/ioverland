@@ -32,7 +32,7 @@ export default function Home() {
               Showcase your overlanding builds. But it doesn&apos;t stop there.
               Show everyone your offroad builds from trucks, to SxS and ATVs.
             </p>
-            <div className="flex items-center mt-10 gap-6 flex-col lg:flex-row">
+            <div className="flex items-center mt-10 gap-6 flex-col md:flex-row">
               <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
                 <Button type="button" className="w-full">
                   Create your build
@@ -60,9 +60,9 @@ export default function Home() {
 
       <section className="max-w-screen-xl mx-auto  lg:-translate-y-40">
         <div className="my-10 rounded-md shadow-xl overflow-hidden mx-4">
-          <div className="relative w-full lg:h-[600px] h-[200px] ">
+          <div className="relative w-full lg:h-[600px] h-[400px]">
             <Image
-              src="/tease 2.jpg"
+              src="/car in forest.jpg"
               alt=""
               fill
               className="object-cover"
@@ -95,40 +95,51 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-screen-xl w-full mx-auto mb-20 lg:mb-40 p-6">
-        <header className="max-w-2xl w-full">
-          <H2 className="mb-5 text-4xl">Features</H2>
-          <p className="text-muted-foreground">
-            iOverland is designed and will continue to be improved upon, to
-            provide you with a fun and easy way to showcase your overland
-            builds. We want you to show-off what you&apos;ve built and be able
-            to connect with other like-minded creators.
-          </p>
-        </header>
-
-        <div className="grid lg:grid-cols-3 grid-cols-1 mt-12 gap-10">
-          <div>
-            <Bookmark className="text-primary" size={30} />
-            <p className=" font-bold my-2 text-xl">Bookmarks</p>
+      <section className="max-w-screen-xl w-full flex flex-col lg:flex-row mx-auto mb-20 lg:mb-40 p-6">
+        <div className="lg:h-[600px] lg:w-[600px] w-full h-[400px]  relative overflow-hidden rounded-xl shadow-xl mb-10 lg:mb-0">
+          <Image src="/car by water.jpg" alt="" fill className="object-cover" />
+        </div>
+        <div className="flex-1 flex flex-col px-4">
+          <header className="max-w-2xl w-full">
+            <H2 className="mb-5 text-4xl">Features</H2>
             <p className="text-muted-foreground">
-              Find a build you like and bookmark it
+              iOverland is designed and will continue to be improved upon, to
+              provide you with a fun and easy way to showcase your overland
+              builds. We want you to show-off what you&apos;ve built and be able
+              to connect with other like-minded creators.
             </p>
-          </div>
+          </header>
 
-          <div>
-            <Heart className="text-primary" size={30} />
-            <p className=" font-bold my-2 text-xl">Likes</p>
-            <p className="text-muted-foreground">
-              Show your support and love with likes
-            </p>
-          </div>
+          <div className="grid lg:grid-cols-1 grid-cols-1 mt-12 gap-10">
+            <div className="flex gap-6">
+              <Bookmark className="text-primary mt-1" size={30} />
+              <div className="flex flex-col">
+                <p className=" font-bold  text-xl">Bookmarks</p>
+                <p className="text-muted-foreground">
+                  Find a build you like and bookmark it
+                </p>
+              </div>
+            </div>
 
-          <div>
-            <Trophy className="text-primary" size={30} />
-            <p className=" font-bold my-2 text-xl">Featured</p>
-            <p className="text-muted-foreground">
-              Have a chance to be featured on iOverland
-            </p>
+            <div className="flex gap-6">
+              <Heart className="text-primary mt-1" size={30} />
+              <div className="flex flex-col">
+                <p className=" font-bold  text-xl">Likes</p>
+                <p className="text-muted-foreground">
+                  Show your support and love with likes
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-6">
+              <Trophy className="text-primary mt-1" size={30} />
+              <div className="flex flex-col">
+                <p className=" font-bold  text-xl">Featured</p>
+                <p className="text-muted-foreground">
+                  Have a chance to be featured on iOverland
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -178,6 +189,35 @@ export default function Home() {
             </div>
           </div>
         </section>
+      </section>
+
+      <section className="my-20 max-w-screen-xl mx-auto">
+        <div className="flex items-center flex-col-reverse lg:flex-row p-4 lg:p-0">
+          <div className="flex flex-col lg:p-20 p-6">
+            <H2 className="lg:text-6xl text-4xl mb-10">
+              We would love to see your build
+            </H2>
+            <p className="text-muted-foreground max-w-3xl text-xl leading-relaxed">
+              Overlanding is an ever-growing recreational activity and we all
+              need a place where we can show off the love and care we have put
+              into our Overland builds. We would love to see your build on
+              iOverland so it can be appreciated in all it&apos;s glory!
+            </p>
+            <Link href="/sign-up" className="mt-10">
+              <Button type="button" size="lg">
+                Sign up
+              </Button>
+            </Link>
+          </div>
+          <div className="lg:h-[600px] lg:w-[700px] w-full h-[400px] relative overflow-hidden rounded-xl shadow-xl">
+            <Image
+              src="/group car 1.jpg"
+              alt=""
+              fill
+              className="scale-105 object-cover"
+            />
+          </div>
+        </div>
       </section>
     </main>
   );

@@ -116,3 +116,9 @@ export interface EditBuildResponse {
   build: Build;
   can_be_public: boolean;
 }
+
+export interface Route {
+  href: string;
+  icon: JSX.Element;
+  label: string;
+}
