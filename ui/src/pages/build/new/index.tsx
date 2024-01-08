@@ -305,7 +305,7 @@ const Index = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
-                  maxFileSize={getMaxFileSize(account.data?.has_subscription)}
+                  maxFileSize={account.data?.max_file_size}
                   disabled={form.formState.disabled}
                 />
               </div>
@@ -535,7 +535,7 @@ const Index = () => {
                   allowMultiple={true}
                   maxFiles={6}
                   type="photos"
-                  maxFileSize={getMaxFileSize(account.data?.has_subscription)}
+                  maxFileSize={account.data?.max_file_size}
                   disabled={form.formState.disabled}
                 />
               </div>
