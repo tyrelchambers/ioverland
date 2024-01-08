@@ -152,10 +152,10 @@ func GetAccount(u *clerk.User) AccountResponse {
 
 	if resp.HasSubscription {
 		resp.BuildsRemaining = 5 - userBuilds
-		resp.MaxFileSize = "1000MB"
+		resp.MaxFileSize = "300MB"
 	} else {
 		remainingBuilds := 1 - userBuilds
-		resp.MaxFileSize = "300MB"
+		resp.MaxFileSize = "100MB"
 		if remainingBuilds < 0 {
 			remainingBuilds = 0
 		} else {

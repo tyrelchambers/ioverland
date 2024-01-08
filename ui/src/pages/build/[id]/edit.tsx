@@ -60,7 +60,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createId } from "@paralleldrive/cuid2";
+import cuid2, { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
 import { ImageIcon, PlusCircle } from "lucide-react";
 import { GetServerSideProps } from "next";
@@ -248,14 +248,25 @@ const Edit = () => {
     };
 
     if (banner[0]) {
-      payload.banner = JSON.parse(banner[0].serverId);
+      payload.banner = {
+        mime_type: banner[0].fileType,
+        name: banner[0].filename,
+        uuid: cuid2.createId(),
+        type: "photos",
+        url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].filename}`,
+      } satisfies Media;
     }
 
     if (photos.length !== 0) {
-      payload.photos = photos.map((d) => ({
-        ...JSON.parse(d.serverId),
-        build_id: build?.uuid,
-      }));
+      payload.photos = photos.map((d) => {
+        return {
+          mime_type: d.fileType,
+          name: d.filename,
+          uuid: cuid2.createId(),
+          type: "photos",
+          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${d.filename}`,
+        } satisfies Media;
+      });
     }
 
     update.mutateAsync(payload, {
@@ -317,7 +328,10 @@ const Edit = () => {
             <H1>Editing &quot;{build?.name}&quot;</H1>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
-              <MaxFileSizeText isProPlan={account?.has_subscription} />
+              <MaxFileSizeText
+                isProPlan={account?.has_subscription}
+                maxFileSize={account?.max_file_size}
+              />
               {build?.banner?.url && build?.banner?.uuid ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
                   <div className="relative h-fit flex items-center rounded-md overflow-hidden min-h-[400px]">
@@ -695,6 +709,7 @@ const Edit = () => {
                 <MaxFileSizeText
                   isProPlan={account?.has_subscription}
                   additional="Max files 6"
+                  maxFileSize={account?.max_file_size}
                 />
                 <Uploader
                   files={photos as any}

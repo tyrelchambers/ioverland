@@ -24,7 +24,7 @@ export const useBuild = (id?: string) => {
 
   const createBuild = useMutation({
     mutationFn: async (data: Build) => {
-      return request.post("/api/build/", data, {
+      return request.post("/api/build", data, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
@@ -56,7 +56,7 @@ export const useBuild = (id?: string) => {
     },
     onSuccess: () => {
       toast.success("Build updated");
-      context.invalidateQueries({ queryKey: ["build", id] });
+      context.invalidateQueries({ queryKey: ["build_settings", id] });
     },
     onError: (error) => {
       if (isAxiosError(error)) {

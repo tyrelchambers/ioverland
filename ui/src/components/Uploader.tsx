@@ -58,6 +58,8 @@ const Uploader = ({
       allowMultiple={allowMultiple}
       maxFiles={maxFiles}
       maxFileSize={maxFileSize}
+      chunkUploads={true}
+      chunkForce={true}
       server={{
         url,
         process: {
@@ -67,6 +69,9 @@ const Uploader = ({
             "file-type": type,
             Authorization: `Bearer ${token}`,
           },
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
         revert: {
           url: "/revert",
