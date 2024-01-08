@@ -2,7 +2,6 @@ import { request } from "@/lib/axios";
 import { Account, DomainUser } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "sonner";
 export const useDomainUser = (id?: string) => {
   const { getToken, userId } = useAuth();
