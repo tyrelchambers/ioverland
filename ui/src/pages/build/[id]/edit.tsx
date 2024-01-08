@@ -737,7 +737,7 @@ const Edit = () => {
           </form>
         </Form>
         <Separator className="my-10" />
-        <section className="flex flex-col">
+        <section className="flex flex-col bg-red-100 rounded-xl p-6">
           <H2>Danger zone</H2>
           <p className="text-muted-foreground">
             This action cannot be undone. Are you sure you want to delete this

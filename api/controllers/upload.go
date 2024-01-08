@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 )
 
 func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.Media, error) {
+
 	path := fmt.Sprintf("uploads/%s", user_id)
 	full_url := fmt.Sprintf("https://ioverland.b-cdn.net/%s/%s", path, file.Filename)
 	file_type := c.Request.Header.Get("file-type")
@@ -28,6 +30,7 @@ func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.
 
 	filename := fmt.Sprintf("%s/%s", uploadDir, file.Filename)
 	new_file, err := os.Create(filename)
+	defer os.Remove(filename)
 
 	if err != nil {
 		fmt.Println(err)
@@ -52,15 +55,20 @@ func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.
 
 	openNewFile, err := os.Open(filename)
 
-	res, err := utils.BunnyClient.Upload(c.Request.Context(), path, file.Filename, "", openNewFile)
+	url := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s", user_id, file.Filename)
+
+	req, _ := http.NewRequest("PUT", url, openNewFile)
+
+	req.Header.Add("Content-Type", "multipart/form-data")
+	req.Header.Add("AccessKey", os.Getenv("BUNNY_KEY"))
+	req.Header.Add("accept", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
 
 	if err != nil {
 		return build.Media{}, err
 	}
-
-	if res.Status != 200 && res.Status != 201 {
-		return build.Media{}, err
-	}
+	defer res.Body.Close()
 
 	r := build.Media{
 		Name:     file.Filename,
@@ -69,8 +77,6 @@ func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.
 		Url:      full_url,
 		Uuid:     cuid.New(),
 	}
-
-	defer os.Remove(filename)
 
 	return r, nil
 }

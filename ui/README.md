@@ -12,5 +12,3 @@
 - explore page
 - seeding the db with stuff
 - instragram feed for a build?
-
-- figure out why the jwt expires so quick or something: go-jose/go-jose/jwt: validation failed, token is expired (exp)
