@@ -13,7 +13,7 @@ import (
 func ProcessUpload(path string, request UploadRequest, payload []byte, user_id string, c *gin.Context) error {
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
-	// defer os.Remove(path)
+	defer os.Remove(path)
 	if err != nil {
 		fmt.Println(err)
 		return err

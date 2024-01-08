@@ -62,6 +62,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	os.Mkdir("temp-uploads", 0755)
+
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://iover.land"},
