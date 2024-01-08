@@ -24,7 +24,7 @@ export const useBuild = (id?: string) => {
 
   const createBuild = useMutation({
     mutationFn: async (data: Build) => {
-      return request.post("/api/build/", data, {
+      return request.post("/api/build", data, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },

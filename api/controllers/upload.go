@@ -4,8 +4,6 @@ import (
 	"api/domain/build"
 	"api/utils"
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"strings"
@@ -14,50 +12,39 @@ import (
 	"github.com/lucsky/cuid"
 )
 
-func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.Media, error) {
+type UploadRequest struct {
+	UploadLength string
+	MimeType     string
+	UploadOffset int64
+	UploadName   string
+}
 
-	path := fmt.Sprintf("uploads/%s", user_id)
-	full_url := fmt.Sprintf("https://ioverland.b-cdn.net/%s/%s", path, file.Filename)
-	file_type := c.Request.Header.Get("file-type")
-	mimeType := file.Header.Get("Content-Type")
-	openFile, err := file.Open()
+func ProcessUpload(path string, request UploadRequest, payload []byte, user_id string, c *gin.Context) (build.Media, error) {
 
-	uploadDir := fmt.Sprintf("temp-uploads")
+	// f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0644)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return build.Media{}, err
+	// }
+	// defer f.Close()
 
-	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
-		os.Mkdir(uploadDir, 0755)
-	}
+	// // Seek to the specified offset
+	// _, err = f.Seek(request.UploadOffset, 0)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return build.Media{}, err
+	// }
 
-	filename := fmt.Sprintf("%s/%s", uploadDir, file.Filename)
-	new_file, err := os.Create(filename)
-	defer os.Remove(filename)
+	// // Write the received bytes to the file
+	// _, err = f.Write(payload)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return build.Media{}, err
+	// }
 
-	if err != nil {
-		fmt.Println(err)
-		return build.Media{}, err
-	}
+	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s", user_id, request.UploadName)
 
-	defer new_file.Close()
-
-	fileContent, err := io.ReadAll(openFile)
-
-	if err != nil {
-		fmt.Println(err)
-		return build.Media{}, err
-	}
-
-	_, err = new_file.Write(fileContent)
-
-	if err != nil {
-		fmt.Println(err)
-		return build.Media{}, err
-	}
-
-	openNewFile, err := os.Open(filename)
-
-	url := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s", user_id, file.Filename)
-
-	req, _ := http.NewRequest("PUT", url, openNewFile)
+	req, _ := http.NewRequest("PUT", endpoint, c.Request.Body)
 
 	req.Header.Add("Content-Type", "multipart/form-data")
 	req.Header.Add("AccessKey", os.Getenv("BUNNY_KEY"))
@@ -70,8 +57,12 @@ func Process(file *multipart.FileHeader, user_id string, c *gin.Context) (build.
 	}
 	defer res.Body.Close()
 
+	full_url := fmt.Sprintf("https://ioverland.b-cdn.net/%s", path)
+	file_type := c.Request.Header.Get("file-type")
+	mimeType := c.Request.Header.Get("Content-Type")
+
 	r := build.Media{
-		Name:     file.Filename,
+		Name:     request.UploadName,
 		Type:     file_type,
 		MimeType: mimeType,
 		Url:      full_url,

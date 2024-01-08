@@ -64,7 +64,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://iover.land"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization", "Upload-Length", "Upload-Offset", "Upload-Name", "Upload-Length"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
@@ -78,7 +78,7 @@ func main() {
 	billingG := api.Group("/billing")
 	exploreG := api.Group("/explore")
 
-	buildG.POST("/", routes.CreateBuild)
+	buildG.POST("", routes.CreateBuild)
 	buildG.GET("/:build_id", routes.GetById)
 	buildG.PUT("/:build_id", routes.Update)
 	buildG.GET("/:build_id/edit", routes.BuildEditSettings)
@@ -95,6 +95,7 @@ func main() {
 	billingG.POST("/portal", routes.CreateCustomerPortal)
 
 	uploadG.POST("/process", routes.Upload)
+	uploadG.PATCH("", routes.Upload)
 	uploadG.POST("/revert", routes.Revert)
 
 	userG.POST("/:build_id/bookmark", routes.Bookmark)
@@ -104,10 +105,10 @@ func main() {
 	userG.DELETE("/me", routes.DeleteUser)
 	userG.POST("/me/restore", routes.RestoreUser)
 
-	webhooksG.POST("/", routes.Webhooks)
+	webhooksG.POST("", routes.Webhooks)
 	webhooksG.POST("/stripe", routes.StripeWebhooks)
 
-	exploreG.GET("/", routes.Explore)
+	exploreG.GET("", routes.Explore)
 
 	api.GET("/search", routes.Search)
 

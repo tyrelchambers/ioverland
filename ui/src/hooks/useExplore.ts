@@ -9,7 +9,7 @@ export const useExplore = () => {
     queryKey: ["explore"],
     queryFn: async (): Promise<Explore> => {
       return request
-        .get(`/api/explore/`, {
+        .get(`/api/explore`, {
           headers: {
             Authorization: `Bearer ${await getToken()}`,
           },
