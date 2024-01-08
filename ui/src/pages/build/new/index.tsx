@@ -56,6 +56,7 @@ import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
+import cuid2 from "@paralleldrive/cuid2";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -167,12 +168,30 @@ const Index = () => {
       user_id: user.id,
     };
 
-    if (banner[0]) {
-      payload.banner = JSON.parse(banner[0].serverId);
-    }
+    try {
+      if (banner[0]) {
+        payload.banner = {
+          mime_type: banner[0].fileType,
+          name: banner[0].filename,
+          uuid: cuid2.createId(),
+          type: "photos",
+          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].filename}`,
+        } satisfies Media;
+      }
 
-    if (photos.length !== 0) {
-      payload.photos = photos.map((d) => JSON.parse(d.serverId));
+      if (photos.length !== 0) {
+        payload.photos = photos.map((d) => {
+          return {
+            mime_type: d.fileType,
+            name: d.filename,
+            uuid: cuid2.createId(),
+            type: "photos",
+            url: `https://ioverland.b-cdn.net/uploads/${user.id}/${d.filename}`,
+          } satisfies Media;
+        });
+      }
+    } catch (error) {
+      console.log(error);
     }
 
     createBuild.mutate(payload);
@@ -296,7 +315,10 @@ const Index = () => {
               </div>
               <div className="flex flex-col">
                 <Label className="mb-2">Banner</Label>
-                <MaxFileSizeText isProPlan={account.data?.has_subscription} />
+                <MaxFileSizeText
+                  isProPlan={account.data?.has_subscription}
+                  maxFileSize={account?.data?.max_file_size}
+                />
                 <Uploader
                   onUpdate={setBanner}
                   acceptedFileTypes={acceptedFiletypes(
@@ -525,6 +547,7 @@ const Index = () => {
                 <MaxFileSizeText
                   isProPlan={account.data?.has_subscription}
                   additional="Max files 6"
+                  maxFileSize={account?.data?.max_file_size}
                 />
 
                 <Uploader

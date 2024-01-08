@@ -3,6 +3,7 @@ package main
 import (
 	"api/db"
 	"api/domain/build"
+	"api/domain/upload"
 	"api/domain/user"
 	"api/routes"
 	"api/utils"
@@ -94,9 +95,9 @@ func main() {
 	billingG.POST("/checkout", routes.CreateCheckout)
 	billingG.POST("/portal", routes.CreateCustomerPortal)
 
-	uploadG.POST("/process", routes.Upload)
-	uploadG.PATCH("", routes.Upload)
-	uploadG.POST("/revert", routes.Revert)
+	uploadG.POST("/process", upload.UploadRoute)
+	uploadG.PATCH("", upload.UploadRoute)
+	uploadG.POST("/revert", upload.UploadRoute)
 
 	userG.POST("/:build_id/bookmark", routes.Bookmark)
 	userG.POST("/:build_id/remove-bookmark", routes.Unbookmark)

@@ -56,7 +56,7 @@ export const useBuild = (id?: string) => {
     },
     onSuccess: () => {
       toast.success("Build updated");
-      context.invalidateQueries({ queryKey: ["build", id] });
+      context.invalidateQueries({ queryKey: ["build_settings", id] });
     },
     onError: (error) => {
       if (isAxiosError(error)) {

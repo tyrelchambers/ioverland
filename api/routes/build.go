@@ -3,6 +3,7 @@ package routes
 import (
 	"api/controllers"
 	"api/domain/build"
+	"api/domain/upload"
 	"api/middleware"
 	"fmt"
 
@@ -88,7 +89,7 @@ func RemoveImage(c *gin.Context) {
 	url := c.Query("url")
 
 	err := controllers.RemoveImage(build_id, media_id)
-	err = controllers.Revert(c, url)
+	err = upload.Revert(c, url)
 
 	if err != nil {
 		c.String(500, err.Error())

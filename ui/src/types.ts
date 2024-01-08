@@ -44,7 +44,7 @@ export type NewBuildSchema = z.infer<typeof newBuildSchema>;
 export type NewBuildSchemaWithoutUserId = Omit<NewBuildSchema, "user_id">;
 
 const media = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   url: z.string(),
   type: z.string(),
   uuid: z.string(),
