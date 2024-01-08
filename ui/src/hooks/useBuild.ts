@@ -36,14 +36,13 @@ export const useBuild = (id?: string) => {
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        toast.error("Error", {
+        return toast.error("Error", {
           description: error.response?.data.message || error.response?.data,
         });
-      } else {
-        toast.error("Error", {
-          description: "Something went wrong",
-        });
       }
+      toast.error("Error", {
+        description: "Something went wrong. Please try again.",
+      });
     },
   });
 
