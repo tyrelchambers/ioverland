@@ -1,4 +1,8 @@
-import { modificationCategories } from "@/constants";
+import {
+  MAX_FILE_SIZE,
+  MAX_FILE_SIZE_PRO,
+  modificationCategories,
+} from "@/constants";
 import { Modification } from "@/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -58,4 +62,9 @@ export const acceptedFiletypes = (has_subscription: boolean | undefined) => {
 
 export const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
+};
+
+export const getMaxFileSize = (has_subscription: boolean | undefined) => {
+  if (has_subscription) return MAX_FILE_SIZE_PRO;
+  return MAX_FILE_SIZE;
 };

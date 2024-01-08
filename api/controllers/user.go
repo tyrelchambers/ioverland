@@ -5,7 +5,7 @@ import (
 	"api/domain/build"
 	"api/domain/user"
 	"api/utils"
-	"log"
+	"fmt"
 	"time"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -27,6 +27,7 @@ type AccountResponse struct {
 	DeletedAt       *gorm.DeletedAt `json:"deleted_at"`
 	TotalBuilds     int64           `json:"total_builds"`
 	BuildsRemaining int64           `json:"builds_remaining"`
+	MaxFileSize     string          `json:"max_file_size"`
 }
 
 type GetCurrentUserWithStripeResponse struct {
@@ -113,13 +114,13 @@ func GetAccount(u *clerk.User) AccountResponse {
 	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	userBuilds, err := domainUser.BuildCount(db.Client)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	params := &stripe.CustomerParams{}
@@ -128,7 +129,7 @@ func GetAccount(u *clerk.User) AccountResponse {
 	cus, err := customer.Get(domainUser.CustomerId, params)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	var resp AccountResponse
@@ -151,9 +152,10 @@ func GetAccount(u *clerk.User) AccountResponse {
 
 	if resp.HasSubscription {
 		resp.BuildsRemaining = 5 - userBuilds
+		resp.MaxFileSize = "1000MB"
 	} else {
 		remainingBuilds := 1 - userBuilds
-
+		resp.MaxFileSize = "300MB"
 		if remainingBuilds < 0 {
 			remainingBuilds = 0
 		} else {

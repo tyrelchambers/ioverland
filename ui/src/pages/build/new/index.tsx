@@ -47,10 +47,15 @@ import {
 import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
-import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
+import {
+  acceptedFiletypes,
+  findCategorySubcategories,
+  getMaxFileSize,
+} from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
+import { MaxFileSizeText } from "@/components/MaxFileSize";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -291,9 +296,7 @@ const Index = () => {
               </div>
               <div className="flex flex-col">
                 <Label className="mb-2">Banner</Label>
-                <FormDescription>
-                  Max file size: {MAX_FILE_SIZE}
-                </FormDescription>
+                <MaxFileSizeText isProPlan={account.data?.has_subscription} />
                 <Uploader
                   onUpdate={setBanner}
                   acceptedFileTypes={acceptedFiletypes(
@@ -302,7 +305,7 @@ const Index = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
-                  maxFileSize={MAX_FILE_SIZE}
+                  maxFileSize={getMaxFileSize(account.data?.has_subscription)}
                   disabled={form.formState.disabled}
                 />
               </div>
@@ -519,9 +522,10 @@ const Index = () => {
 
               <div className="flex flex-col">
                 <Label className="mb-2">Photos</Label>
-                <FormDescription>
-                  Max size per file: {MAX_FILE_SIZE}
-                </FormDescription>
+                <MaxFileSizeText
+                  isProPlan={account.data?.has_subscription}
+                  additional="Max files 6"
+                />
 
                 <Uploader
                   onUpdate={setPhotos}
@@ -531,7 +535,7 @@ const Index = () => {
                   allowMultiple={true}
                   maxFiles={6}
                   type="photos"
-                  maxFileSize={MAX_FILE_SIZE}
+                  maxFileSize={getMaxFileSize(account.data?.has_subscription)}
                   disabled={form.formState.disabled}
                 />
               </div>

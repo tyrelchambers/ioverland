@@ -28,6 +28,7 @@ func Upload(c *gin.Context) {
 	media, err := controllers.Process(file, user.ID, c)
 
 	if err != nil {
+		fmt.Println(err)
 		c.String(500, err.Error())
 		return
 	}

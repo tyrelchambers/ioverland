@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import { MaxFileSizeText } from "@/components/MaxFileSize";
 import RenderMedia from "@/components/RenderMedia";
 import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
@@ -30,7 +31,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  MAX_FILE_SIZE,
   carModels,
   modificationCategories,
   popularCarBrands,
@@ -46,7 +46,7 @@ import {
   removeModification,
   removeTrip,
 } from "@/lib/form/helpers";
-import { acceptedFiletypes } from "@/lib/utils";
+import { acceptedFiletypes, getMaxFileSize } from "@/lib/utils";
 import {
   Build,
   EditBuildResponse,
@@ -93,6 +93,7 @@ const Edit = () => {
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
   const build = editSettings.data?.build;
+  const MAX_FILE_SIZE = account?.max_file_size;
 
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
@@ -316,7 +317,7 @@ const Edit = () => {
             <H1>Editing &quot;{build?.name}&quot;</H1>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
-              <FormDescription>Max file size: {MAX_FILE_SIZE}</FormDescription>
+              <MaxFileSizeText isProPlan={account?.has_subscription} />
               {build?.banner?.url && build?.banner?.uuid ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
                   <div className="relative h-fit flex items-center rounded-md overflow-hidden min-h-[400px]">
@@ -641,9 +642,7 @@ const Edit = () => {
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
-              <FormDescription className="mb-4">
-                Max size per file: {MAX_FILE_SIZE}
-              </FormDescription>
+
               {build?.photos && build?.photos.length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {build?.photos?.map((photo, index) => {
@@ -693,6 +692,10 @@ const Edit = () => {
                     ({6 - (build?.photos?.length || 0)} remaining )
                   </span>
                 </Label>
+                <MaxFileSizeText
+                  isProPlan={account?.has_subscription}
+                  additional="Max files 6"
+                />
                 <Uploader
                   files={photos as any}
                   onUpdate={setPhotos}

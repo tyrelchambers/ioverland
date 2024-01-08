@@ -1,4 +1,5 @@
-export const MAX_FILE_SIZE = "300MB";
+export const MAX_FILE_SIZE = "400MB";
+export const MAX_FILE_SIZE_PRO = "1GB";
 
 export const popularCarBrands = [
   { value: "alfa romeo", label: "Alfa Romeo" },

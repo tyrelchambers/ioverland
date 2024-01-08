@@ -12,6 +12,7 @@ import (
 type EditResponse struct {
 	Build         build.Build `json:"build"`
 	Can_be_public bool        `json:"can_be_public"`
+	MaxFileSize   string      `json:"max_file_size"`
 }
 
 func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
@@ -179,7 +180,7 @@ func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
 		return EditResponse{}, err
 	}
 
-	if account.Customer.Subscriptions != nil && account.Customer.Subscriptions.Data[0].Plan.Product.Name == "Pro" || build.Private != true {
+	if account.Customer.Subscriptions != nil && len(account.Customer.Subscriptions.Data) > 0 && account.Customer.Subscriptions.Data[0].Plan.Product.Name == "Pro" || build.Private != true {
 		resp.Can_be_public = true
 	} else {
 		var numOfPublicBuilds int
