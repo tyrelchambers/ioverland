@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export const useSearch = () => {
   const [value, setValue] = useState<string>("");
-  const [results, setResults] = useState<Build[] | undefined>(undefined);
+  const [results, setResults] = useState<Build[] | "">("");
 
   useEffect(() => {
     const fn = async () => {
@@ -18,7 +18,7 @@ export const useSearch = () => {
 
         setResults(data.data.results);
       } else {
-        setResults(undefined);
+        setResults("");
       }
     };
 
@@ -29,11 +29,9 @@ export const useSearch = () => {
     setValue(query);
   };
 
-  const hasResults = results && results.length > 0 ? true : false;
   return {
     searchValue: value,
     search: searchHandler,
     results,
-    hasResults,
   };
 };

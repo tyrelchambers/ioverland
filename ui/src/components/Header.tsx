@@ -50,7 +50,7 @@ interface Props {
 
 const Header = ({ on, className, stickyOnScroll }: Props) => {
   const { width } = useViewportWidth();
-  const { hasResults, searchValue, search, results } = useSearch();
+  const { searchValue, search, results } = useSearch();
 
   useEffect(() => {
     const header = document.querySelector(".header");
@@ -132,6 +132,7 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
               <PopoverContent
                 className="w-[400px]"
                 onOpenAutoFocus={(e) => e.preventDefault()}
+                onCloseAutoFocus={(e) => e.preventDefault()}
               >
                 <div className="flex flex-col gap-3">
                   {results &&
