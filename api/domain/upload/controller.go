@@ -3,6 +3,7 @@ package upload
 import (
 	"api/utils"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -10,10 +11,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ProcessUpload(path string, request UploadRequest, payload []byte, user_id string, c *gin.Context) error {
+func ProcessUpload(current_path_query string, request UploadRequest, payload []byte, user_id string, c *gin.Context) error {
+	temp_dir := "temp-uploads"
+
+	path := fmt.Sprintf("%s/%s/%s", temp_dir, current_path_query, request.UploadName)
+	path_without_prefix := strings.Split(path, "/")[1]
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
-	defer os.Remove(path)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -34,7 +38,16 @@ func ProcessUpload(path string, request UploadRequest, payload []byte, user_id s
 		return err
 	}
 
-	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s", user_id, request.UploadName)
+	node_env := os.Getenv("NODE_ENV")
+	var folder_root string
+
+	if node_env == "production" {
+		folder_root = "production"
+	} else {
+		folder_root = "development"
+	}
+
+	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/%s/%s/%s/%s", folder_root, user_id, path_without_prefix, request.UploadName)
 
 	file_stat, err := f.Stat()
 
@@ -48,6 +61,7 @@ func ProcessUpload(path string, request UploadRequest, payload []byte, user_id s
 		new_file, err := os.Open(path)
 
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
 		req, _ := http.NewRequest("PUT", endpoint, new_file)
@@ -59,9 +73,19 @@ func ProcessUpload(path string, request UploadRequest, payload []byte, user_id s
 		res, err := http.DefaultClient.Do(req)
 
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
-		defer res.Body.Close()
+
+		// read res body
+		body, err := io.ReadAll(res.Body)
+
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		fmt.Println(string(body))
 	}
 
 	return nil

@@ -12,3 +12,4 @@
 - explore page
 - seeding the db with stuff
 - instragram feed for a build?
+- replace integer statuscodes with enums
