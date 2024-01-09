@@ -26,7 +26,7 @@ const Explore = () => {
         <Image src="/lines.png" alt="lines" height={600} width={1920} />
       </div>
 
-      <div className="w-1/2 rotate-45 top-[150px] -right-[150px] opacity-20 absolute hidden lg:block">
+      <div className="w-1/2 rotate-45 top-[150px] -right-[190px] opacity-20 absolute hidden lg:block">
         <Image src="/lines.png" alt="lines" height={600} width={1920} />
       </div>
 

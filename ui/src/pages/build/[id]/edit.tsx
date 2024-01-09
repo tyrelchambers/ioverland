@@ -294,24 +294,9 @@ const Edit = () => {
 
   const deleteBuildHandler = () => {
     if (!build?.uuid) return;
-    deleteBuild.mutate(
-      {
-        build_id: build?.uuid,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Build deleted", {
-            description: "Your build has been deleted!",
-          });
-          router.push("/dashboard");
-        },
-        onError: () => {
-          toast.error("Error", {
-            description: "Something went wrong",
-          });
-        },
-      }
-    );
+    deleteBuild.mutate({
+      build_id: build?.uuid,
+    });
   };
 
   return (
