@@ -14,7 +14,7 @@ const Photos = ({ photos }: { photos: Media[] | undefined }) => {
           <a
             href={photo.url}
             target="_blank"
-            key={photo.uuid}
+            key={photo.id}
             className={cn(
               "relative  w-full aspect-square overflow-hidden shadow-xl ",
               i % 2 && "mt-[100px]"
@@ -23,7 +23,7 @@ const Photos = ({ photos }: { photos: Media[] | undefined }) => {
             <Image src={photo.url} alt="" fill className="object-cover" />
           </a>
         ) : (
-          <video key={photo.uuid} controls muted>
+          <video key={photo.id} controls muted>
             <source src={photo.url} type={photo.mime_type} />
           </video>
         )

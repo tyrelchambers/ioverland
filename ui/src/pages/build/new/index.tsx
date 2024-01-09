@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  MAX_FILE_SIZE,
   carModels,
   modificationCategories,
   popularCarBrands,
@@ -25,7 +24,6 @@ import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import {
   Modification,
-  Build,
   NewBuildSchemaWithoutUserId,
   Trip,
   newBuildSchema,
@@ -35,7 +33,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 
 import { Label } from "@/components/ui/label";
-import { FilePondFile, FileStatus } from "filepond";
+import { FilePondFile } from "filepond";
 import Uploader from "@/components/Uploader";
 import {
   formattedTrips,
@@ -48,16 +46,11 @@ import {
 import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PlusCircle } from "lucide-react";
-import {
-  acceptedFiletypes,
-  findCategorySubcategories,
-  getMaxFileSize,
-} from "@/lib/utils";
+import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
-import cuid2 from "@paralleldrive/cuid2";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -163,13 +156,14 @@ const Index = () => {
       modifications: modificationsToArray,
       user_id: user.id,
     };
-
+    const folderRoot =
+      process.env.NODE_ENV === "development" ? "development" : "production";
     try {
       if (banner[0]) {
         payload.banner = {
           mime_type: banner[0].fileType,
           name: banner[0].filename,
-          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
+          url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
           type: "banner",
         } satisfies Omit<Media, "uuid">;
       }
@@ -180,7 +174,7 @@ const Index = () => {
             ({
               mime_type: p.fileType,
               name: p.filename,
-              url: `https://ioverland.b-cdn.net/uploads/${user.id}/${p.serverId}/${p.filename}`,
+              url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${p.serverId}/${p.filename}`,
               type: "photos",
             } satisfies Omit<Media, "uuid">)
         );

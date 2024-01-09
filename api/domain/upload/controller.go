@@ -38,7 +38,16 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 		return err
 	}
 
-	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s/%s", user_id, path_without_prefix, request.UploadName)
+	node_env := os.Getenv("NODE_ENV")
+	var folder_root string
+
+	if node_env == "production" {
+		folder_root = "production"
+	} else {
+		folder_root = "development"
+	}
+
+	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/%s/%s/%s/%s", folder_root, user_id, path_without_prefix, request.UploadName)
 
 	file_stat, err := f.Stat()
 

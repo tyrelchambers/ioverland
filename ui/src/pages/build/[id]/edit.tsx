@@ -65,6 +65,7 @@ import cuid2, { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
 import { ImageIcon, PlusCircle } from "lucide-react";
 import { GetServerSideProps } from "next";
+import { env } from "next-runtime-env";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -243,12 +244,14 @@ const Edit = () => {
       user_id: user.id,
     };
 
+    const folderRoot =
+      process.env.NODE_ENV === "development" ? "development" : "production";
     try {
       if (banner[0]) {
         payload.banner = {
           mime_type: banner[0].fileType,
           name: banner[0].filename,
-          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
+          url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
           type: "banner",
         } satisfies Omit<Media, "uuid">;
       }
@@ -259,7 +262,7 @@ const Edit = () => {
             ({
               mime_type: p.fileType,
               name: p.filename,
-              url: `https://ioverland.b-cdn.net/uploads/${user.id}/${p.serverId}/${p.filename}`,
+              url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${p.serverId}/${p.filename}`,
               type: "photos",
             } satisfies Omit<Media, "uuid">)
         );
