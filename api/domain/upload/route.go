@@ -56,7 +56,7 @@ func UploadRoute(c *gin.Context) {
 		return
 	}
 
-	media, err := ProcessUpload(current_path_query, request, payload, user.ID, c)
+	err = ProcessUpload(current_path_query, request, payload, user.ID, c)
 
 	if err != nil {
 		fmt.Println(err)
@@ -64,7 +64,7 @@ func UploadRoute(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, media)
+	c.JSON(200, "success")
 }
 
 func RevertRoute(c *gin.Context) {

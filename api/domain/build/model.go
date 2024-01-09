@@ -50,7 +50,6 @@ type Modification struct {
 
 type Media struct {
 	ID       int    `gorm:"primaryKey" json:"id"`
-	Uuid     string `json:"uuid"`
 	BuildId  string `gorm:"type:uuid;" json:"build_id"`
 	Name     string `gorm:"type:varchar(255)" json:"name"`
 	Type     string `gorm:"type:varchar(255)" json:"type"`

@@ -55,7 +55,7 @@ import {
   NewBuildSchema,
   NewBuildSchemaWithoutUserId,
   Trip,
-  UpdateBuildPayload,
+  BuildPayload,
   newBuildSchema,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
@@ -234,7 +234,7 @@ const Edit = () => {
       });
     }
 
-    const payload: UpdateBuildPayload = {
+    const payload: BuildPayload = {
       ...data,
       id: build?.id,
       trips: tripsToArray,
@@ -245,17 +245,30 @@ const Edit = () => {
 
     try {
       if (banner[0]) {
-        payload.banner = banner[0].serverId;
+        payload.banner = {
+          mime_type: banner[0].fileType,
+          name: banner[0].filename,
+          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
+          type: "banner",
+        } satisfies Omit<Media, "uuid">;
       }
 
       if (photos.length !== 0) {
-        payload.photos = photos.map((d) => d.serverId);
+        payload.photos = photos.map(
+          (p) =>
+            ({
+              mime_type: p.fileType,
+              name: p.filename,
+              url: `https://ioverland.b-cdn.net/uploads/${user.id}/${p.serverId}/${p.filename}`,
+              type: "photos",
+            } satisfies Omit<Media, "uuid">)
+        );
       }
     } catch (error) {
       console.log(error);
     }
 
-    console.log(payload);
+    console.log(payload.photos);
 
     update.mutate(payload, {
       onSuccess: () => {
@@ -316,7 +329,7 @@ const Edit = () => {
                 isProPlan={account?.has_subscription}
                 maxFileSize={account?.max_file_size}
               />
-              {build?.banner?.url && build?.banner?.uuid ? (
+              {build?.banner?.url && build?.banner?.id ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
                   <div className="relative h-fit flex items-center rounded-md overflow-hidden min-h-[400px]">
                     <RenderMedia media={build?.banner} />
@@ -326,7 +339,7 @@ const Edit = () => {
                     variant="destructive"
                     className="mt-3"
                     onClick={() =>
-                      removeImageHandler(build.banner?.uuid, build.banner?.url)
+                      removeImageHandler(build.banner?.id, build.banner?.url)
                     }
                   >
                     Delete banner
@@ -667,7 +680,7 @@ const Edit = () => {
                           type="button"
                           variant="destructiveMuted"
                           onClick={() =>
-                            removeImageHandler(photo.uuid, photo.url)
+                            removeImageHandler(photo.id, photo.url)
                           }
                         >
                           Remove photo

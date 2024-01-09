@@ -30,6 +30,7 @@ import {
   Trip,
   newBuildSchema,
   Media,
+  BuildPayload,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
 
@@ -155,12 +156,7 @@ const Index = () => {
       });
     }
 
-    interface Payload extends Build {
-      banner?: Media;
-      photos?: Media[];
-    }
-
-    const payload: Omit<Payload, "likes"> = {
+    const payload: BuildPayload = {
       ...data,
       trips: tripsToArray,
       links: linksToArray,
@@ -173,22 +169,21 @@ const Index = () => {
         payload.banner = {
           mime_type: banner[0].fileType,
           name: banner[0].filename,
-          uuid: cuid2.createId(),
-          type: "photos",
-          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].filename}`,
-        } satisfies Media;
+          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
+          type: "banner",
+        } satisfies Omit<Media, "uuid">;
       }
 
       if (photos.length !== 0) {
-        payload.photos = photos.map((d) => {
-          return {
-            mime_type: d.fileType,
-            name: d.filename,
-            uuid: cuid2.createId(),
-            type: "photos",
-            url: `https://ioverland.b-cdn.net/uploads/${user.id}/${d.filename}`,
-          } satisfies Media;
-        });
+        payload.photos = photos.map(
+          (p) =>
+            ({
+              mime_type: p.fileType,
+              name: p.filename,
+              url: `https://ioverland.b-cdn.net/uploads/${user.id}/${p.serverId}/${p.filename}`,
+              type: "photos",
+            } satisfies Omit<Media, "uuid">)
+        );
       }
     } catch (error) {
       console.log(error);

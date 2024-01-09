@@ -64,7 +64,7 @@ func GetById(db *gorm.DB, uuid string) (Build, error) {
 }
 
 func RemoveImage(db *gorm.DB, build_id, media_id string) error {
-	db.Table("media").Where("uuid = ? AND build_id = ?", media_id, build_id).Delete(&Media{})
+	db.Table("media").Where("id = ? AND build_id = ?", media_id, build_id).Delete(&Media{})
 
 	return nil
 }

@@ -124,7 +124,7 @@ export interface Route {
   label: string;
 }
 
-export interface UpdateBuildPayload extends Omit<Build, "banner" | "photos"> {
-  banner?: string;
-  photos?: string[];
+export interface BuildPayload extends Omit<Build, "banner" | "photos"> {
+  banner?: Omit<Media, "uuid">;
+  photos?: Omit<Media, "uuid">[];
 }
