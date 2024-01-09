@@ -187,25 +187,11 @@ const Index = () => {
   };
 
   return (
-    <section className="flex">
-      <div className="sticky top-0 h-screen min-w-[400px] max-w-[600px] w-full hidden lg:block">
-        <div
-          className=" absolute z-10 inset-0"
-          style={{
-            boxShadow: "inset 0 0 40px rgba(0, 0, 0, 0.5)",
-          }}
-        ></div>
-        <Image
-          src="/thomas-tucker-QsiuD0w95h0-unsplash (1) (1).jpg"
-          alt=""
-          fill
-          objectFit="cover"
-        />
-      </div>
-      <div className="flex flex-col w-full">
-        <Header />
+    <section>
+      <Header />
+      <div className="max-w-screen-md mx-auto my-10">
         {account?.data?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
-        <div className="p-4 lg:p-10 w-full max-w-2xl flex-1">
+        <div className="p-4">
           <H1>Let&apos;s build</H1>
           <p className="text-muted-foreground">
             Create your first build here. Include as many or as little details

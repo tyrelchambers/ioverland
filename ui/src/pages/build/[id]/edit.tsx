@@ -63,7 +63,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import cuid2, { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
-import { ImageIcon, PlusCircle } from "lucide-react";
+import { ImageIcon, PlusCircle, Trash } from "lucide-react";
 import { GetServerSideProps } from "next";
 import { env } from "next-runtime-env";
 import Image from "next/image";
@@ -660,11 +660,11 @@ const Edit = () => {
                   {build?.photos?.map((photo, index) => {
                     return (
                       <div
-                        className="border-border border rounded-xl p-4 relative flex flex-col items-center gap-4"
+                        className=" flex flex-col items-center gap-4 relative  shadow-xl rounded-xl overflow-hidden"
                         key={photo.id}
                       >
                         {photo.mime_type.includes("image") ? (
-                          <div className="relative aspect-square h-[200px]">
+                          <div className="relative w-full h-[200px]">
                             <Image
                               src={photo.url}
                               alt=""
@@ -673,18 +673,20 @@ const Edit = () => {
                             />
                           </div>
                         ) : (
-                          <video controls>
+                          <video controls className="h-[200px] w-full">
                             <source src={photo.url} type={photo.mime_type} />
                           </video>
                         )}
                         <Button
                           type="button"
-                          variant="destructiveMuted"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
                           onClick={() =>
                             removeImageHandler(photo.id, photo.url)
                           }
                         >
-                          Remove photo
+                          <Trash size={18} />
                         </Button>
                       </div>
                     );
@@ -746,46 +748,39 @@ const Edit = () => {
                 </FormItem>
               )}
             />
-            <Button>Save changes</Button>
+            <div className="flex flex-1 justify-between">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructiveMuted">Delete build</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove your data from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <Button
+                        type="button"
+                        className="!bg-red-500"
+                        onClick={deleteBuildHandler}
+                      >
+                        Delete
+                      </Button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button>Save changes</Button>
+            </div>
           </form>
         </Form>
-        <Separator className="my-10" />
-        <section className="flex flex-col bg-red-100 rounded-xl p-6">
-          <H2>Danger zone</H2>
-          <p className="text-muted-foreground">
-            This action cannot be undone. Are you sure you want to delete this
-            build?
-          </p>
-
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructiveMuted" className="mt-6">
-                Delete build
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction asChild>
-                  <Button
-                    type="button"
-                    className="!bg-red-500"
-                    onClick={deleteBuildHandler}
-                  >
-                    Delete
-                  </Button>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </section>
       </div>
     </section>
   );
