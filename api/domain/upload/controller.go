@@ -1,22 +1,29 @@
 package upload
 
 import (
+	"api/domain/build"
 	"api/utils"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lucsky/cuid"
 )
 
-func ProcessUpload(path string, request UploadRequest, payload []byte, user_id string, c *gin.Context) error {
+func ProcessUpload(current_path_query string, request UploadRequest, payload []byte, user_id string, c *gin.Context) (build.Media, error) {
+	temp_dir := "temp-uploads"
+
+	path := fmt.Sprintf("%s/%s/%s", temp_dir, current_path_query, request.UploadName)
+	path_without_prefix := strings.Split(path, "/")[1]
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
-	defer os.Remove(path)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return build.Media{}, err
 	}
 	defer f.Close()
 
@@ -24,22 +31,24 @@ func ProcessUpload(path string, request UploadRequest, payload []byte, user_id s
 	_, err = f.Seek(request.UploadOffset, 0)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return build.Media{}, err
 	}
 
 	// Write the received bytes to the file
 	_, err = f.Write(payload)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return build.Media{}, err
 	}
 
-	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s", user_id, request.UploadName)
+	file_name := fmt.Sprintf("%d-%s", time.Now().Unix(), request.UploadName)
+
+	endpoint := fmt.Sprintf("https://ny.storage.bunnycdn.com/ioverland/uploads/%s/%s/%s", user_id, path_without_prefix, file_name)
 
 	file_stat, err := f.Stat()
 
 	if err != nil {
-		return err
+		return build.Media{}, err
 	}
 
 	size := file_stat.Size()
@@ -48,7 +57,8 @@ func ProcessUpload(path string, request UploadRequest, payload []byte, user_id s
 		new_file, err := os.Open(path)
 
 		if err != nil {
-			return err
+			fmt.Println(err)
+			return build.Media{}, err
 		}
 		req, _ := http.NewRequest("PUT", endpoint, new_file)
 
@@ -59,12 +69,32 @@ func ProcessUpload(path string, request UploadRequest, payload []byte, user_id s
 		res, err := http.DefaultClient.Do(req)
 
 		if err != nil {
-			return err
+			fmt.Println(err)
+			return build.Media{}, err
 		}
-		defer res.Body.Close()
+
+		// read res body
+		body, err := io.ReadAll(res.Body)
+
+		if err != nil {
+			fmt.Println(err)
+			return build.Media{}, err
+		}
+
+		fmt.Println(string(body))
 	}
 
-	return nil
+	file_url := fmt.Sprintf("https://ioverland.b-cdn.net/uploads/%s/%s/%s", user_id, path_without_prefix, file_name)
+
+	r := build.Media{
+		Name:     f.Name(),
+		Type:     c.Request.Header.Get("file-type"),
+		MimeType: request.MimeType,
+		Url:      file_url,
+		Uuid:     cuid.New(),
+	}
+
+	return r, nil
 }
 
 func Revert(c *gin.Context, url string) error {

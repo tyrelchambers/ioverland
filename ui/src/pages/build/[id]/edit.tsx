@@ -55,6 +55,7 @@ import {
   NewBuildSchema,
   NewBuildSchemaWithoutUserId,
   Trip,
+  UpdateBuildPayload,
   newBuildSchema,
 } from "@/types";
 import { useUser } from "@clerk/nextjs";
@@ -233,12 +234,7 @@ const Edit = () => {
       });
     }
 
-    interface Payload extends Build {
-      banner?: Media;
-      photos?: Media[];
-    }
-
-    const payload: Payload = {
+    const payload: UpdateBuildPayload = {
       ...data,
       id: build?.id,
       trips: tripsToArray,
@@ -247,38 +243,26 @@ const Edit = () => {
       user_id: user.id,
     };
 
-    if (banner[0]) {
-      payload.banner = {
-        mime_type: banner[0].fileType,
-        name: banner[0].filename,
-        uuid: cuid2.createId(),
-        type: "photos",
-        url: `https://ioverland.b-cdn.net/uploads/${user.id}/${banner[0].filename}`,
-      } satisfies Media;
+    try {
+      if (banner[0]) {
+        payload.banner = banner[0].serverId;
+      }
+
+      if (photos.length !== 0) {
+        payload.photos = photos.map((d) => d.serverId);
+      }
+    } catch (error) {
+      console.log(error);
     }
 
-    if (photos.length !== 0) {
-      payload.photos = photos.map((d) => {
-        return {
-          mime_type: d.fileType,
-          name: d.filename,
-          uuid: cuid2.createId(),
-          type: "photos",
-          url: `https://ioverland.b-cdn.net/uploads/${user.id}/${d.filename}`,
-        } satisfies Media;
-      });
-    }
+    console.log(payload);
 
-    update.mutateAsync(payload, {
+    update.mutate(payload, {
       onSuccess: () => {
-        toast.success("Build updated", {
-          description: "Your build has been updated!",
-        });
+        setBanner([]);
+        setPhotos([]);
       },
     });
-
-    setBanner([]);
-    setPhotos([]);
   };
 
   const removeImageHandler = (

@@ -1,5 +1,5 @@
 import { request } from "@/lib/axios";
-import { Build, EditBuildResponse } from "@/types";
+import { Build, EditBuildResponse, UpdateBuildPayload } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -47,7 +47,7 @@ export const useBuild = (id?: string) => {
   });
 
   const updateBuild = useMutation({
-    mutationFn: async (data: Build) => {
+    mutationFn: async (data: UpdateBuildPayload) => {
       return request.put(`/api/build/${id}`, data, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,

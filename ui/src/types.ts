@@ -123,3 +123,8 @@ export interface Route {
   icon: JSX.Element;
   label: string;
 }
+
+export interface UpdateBuildPayload extends Omit<Build, "banner" | "photos"> {
+  banner?: string;
+  photos?: string[];
+}
