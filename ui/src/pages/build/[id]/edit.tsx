@@ -268,8 +268,6 @@ const Edit = () => {
       console.log(error);
     }
 
-    console.log(payload.photos);
-
     update.mutate(payload, {
       onSuccess: () => {
         setBanner([]);
