@@ -58,6 +58,16 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 	size := file_stat.Size()
 
 	if request.UploadLength == size {
+		// re := regexp.MustCompile(`(\.\w+)$`)
+		// newFilename := re.ReplaceAllString(f.Name(), ".webp")
+
+		// err = ffmpeg_go.Input(path).Output(newFilename, ffmpeg_go.KwArgs{"c:v": "libwebp"}).OverWriteOutput().ErrorToStdOut().Run()
+
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
 		new_file, err := os.Open(path)
 
 		if err != nil {
