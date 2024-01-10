@@ -1,35 +1,48 @@
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 export const MaxFileSizeText = ({
   isProPlan,
-  additional,
+  maxFileUploads,
   maxFileSize,
+  type,
+  remainingPhotos,
 }: {
   isProPlan: boolean | undefined;
-  additional?: string;
+  maxFileUploads: number | undefined;
   maxFileSize: string | undefined;
+  type?: "banner";
+  remainingPhotos?: number;
 }) => {
-  if (isProPlan) {
-    return (
-      <p className="text-muted-foreground text-sm mb-1">
-        Max file size is: {maxFileSize}. {additional}
-      </p>
-    );
-  }
-
   return (
-    <p className="text-muted-foreground text-sm mb-1">
-      Max file size is: {maxFileSize}. {additional} Increase your file size to{" "}
-      300Mb by signing up for a pro subscription.{" "}
-      <Link
-        href="/dashboard?tab=account"
-        className="flex items-baseline text-sm underline text-blue-400"
-        target="_blank"
-      >
-        <ExternalLink size={14} className="mr-1" /> Learn more
-      </Link>
-    </p>
+    <div className="bg-indigo-100 p-4 rounded-md border-2 border-indigo-500 flex flex-col lg:flex-row items-center justify-between mb-3">
+      <div className="flex flex-wrap gap-3 items-center text-indigo-500">
+        <Info size={16} />
+        <p className=" text-sm ">
+          <span className="font-bold">{maxFileSize}</span> / file
+        </p>
+        <p className=" text-sm ">
+          Max <span className="font-bold">{maxFileUploads}</span> files
+        </p>
+
+        {remainingPhotos && (
+          <div className="px-3 py-1 text-white rounded-full text-xs bg-indigo-500 flex-1 text-center lg:flex-none">
+            {remainingPhotos} remaining
+          </div>
+        )}
+      </div>
+
+      {!isProPlan && type !== "banner" && (
+        <Link
+          href="/dashboard?tab=account"
+          className="text-indigo-500 text-sm flex gap-2 items-center underline mt-4 lg:mt-0"
+          target="_blank"
+        >
+          <ExternalLink size={16} />
+          Want more?
+        </Link>
+      )}
+    </div>
   );
 };

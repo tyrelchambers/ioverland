@@ -99,7 +99,10 @@ const account = z.object({
   deleted_at: z.date().nullable(),
   total_builds: z.number(),
   builds_remaining: z.number(),
-  max_file_size: z.string(),
+  file_limits: z.object({
+    max_file_size: z.string(),
+    max_file_uploads: z.number(),
+  }),
 });
 
 export type Account = z.infer<typeof account>;

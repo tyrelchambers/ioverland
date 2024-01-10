@@ -27,7 +27,10 @@ type AccountResponse struct {
 	DeletedAt       *gorm.DeletedAt `json:"deleted_at"`
 	TotalBuilds     int64           `json:"total_builds"`
 	BuildsRemaining int64           `json:"builds_remaining"`
-	MaxFileSize     string          `json:"max_file_size"`
+	FileLimits      struct {
+		MaxFileSize    string `json:"max_file_size"`
+		MaxFileUploads int64  `json:"max_file_uploads"`
+	} `json:"file_limits"`
 }
 
 type GetCurrentUserWithStripeResponse struct {
@@ -152,10 +155,12 @@ func GetAccount(u *clerk.User) AccountResponse {
 
 	if resp.HasSubscription {
 		resp.BuildsRemaining = 5 - userBuilds
-		resp.MaxFileSize = "300MB"
+		resp.FileLimits.MaxFileSize = "300MB"
+		resp.FileLimits.MaxFileUploads = 13
 	} else {
 		remainingBuilds := 1 - userBuilds
-		resp.MaxFileSize = "100MB"
+		resp.FileLimits.MaxFileSize = "50MB"
+		resp.FileLimits.MaxFileUploads = 6
 		if remainingBuilds < 0 {
 			remainingBuilds = 0
 		} else {

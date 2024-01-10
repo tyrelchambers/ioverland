@@ -292,7 +292,9 @@ const Index = () => {
                 <Label className="mb-2">Banner</Label>
                 <MaxFileSizeText
                   isProPlan={account.data?.has_subscription}
-                  maxFileSize={account?.data?.max_file_size}
+                  maxFileUploads={1}
+                  maxFileSize={account?.data?.file_limits.max_file_size}
+                  type="banner"
                 />
                 <Uploader
                   onUpdate={setBanner}
@@ -302,7 +304,7 @@ const Index = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
-                  maxFileSize={account.data?.max_file_size}
+                  maxFileSize={account.data?.file_limits.max_file_size}
                   disabled={form.formState.disabled}
                 />
               </div>
@@ -324,7 +326,7 @@ const Index = () => {
                     return (
                       <div className="bg-card rounded-xl p-4" key={input}>
                         <header className="flex flex-row justify-between">
-                          <p className="font-serif">Trip #{index + 1}</p>
+                          <p>Trip #{index + 1}</p>
                           <Button
                             type="button"
                             variant="link"
@@ -388,7 +390,7 @@ const Index = () => {
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
                       <header className="flex flex-row justify-between">
-                        <p className="font-serif">Modification #{index + 1}</p>
+                        <p>Modification #{index + 1}</p>
                         <Button
                           type="button"
                           variant="link"
@@ -492,7 +494,7 @@ const Index = () => {
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
                       <header className="flex flex-row justify-between">
-                        <p className="font-serif">Link #{index + 1}</p>
+                        <p>Link #{index + 1}</p>
                         <Button
                           type="button"
                           variant="link"
@@ -521,8 +523,8 @@ const Index = () => {
                 <Label className="mb-2">Photos</Label>
                 <MaxFileSizeText
                   isProPlan={account.data?.has_subscription}
-                  additional="Max files 6"
-                  maxFileSize={account?.data?.max_file_size}
+                  maxFileUploads={account.data?.file_limits.max_file_uploads}
+                  maxFileSize={account?.data?.file_limits.max_file_size}
                 />
 
                 <Uploader
@@ -531,9 +533,9 @@ const Index = () => {
                     account.data?.has_subscription
                   )}
                   allowMultiple={true}
-                  maxFiles={6}
+                  maxFiles={account.data?.file_limits.max_file_uploads}
                   type="photos"
-                  maxFileSize={account.data?.max_file_size}
+                  maxFileSize={account.data?.file_limits.max_file_size}
                   disabled={form.formState.disabled}
                 />
               </div>

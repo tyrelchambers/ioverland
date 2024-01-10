@@ -94,9 +94,6 @@ const Edit = () => {
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
-  const build = editSettings.data?.build;
-  const MAX_FILE_SIZE = account?.max_file_size;
-
   const form = useForm({
     resolver: zodResolver(newBuildSchema),
     defaultValues: {
@@ -158,9 +155,16 @@ const Edit = () => {
 
       form.reset(formattedData);
     }
-  }, [id, build]);
+  }, [id, editSettings.data?.build]);
 
+  const build = editSettings.data?.build;
+  const remainingPhotos =
+    account &&
+    account?.file_limits.max_file_uploads -
+      ((build && build?.photos?.length) || 0);
   const watchMake = form.watch("vehicle.make");
+
+  if (!build || !account) return null;
 
   const addTripHandler = () => {
     const fTrips = formattedTrips(tripsInput, {
@@ -313,7 +317,9 @@ const Edit = () => {
               <Label className="mb-2">Banner</Label>
               <MaxFileSizeText
                 isProPlan={account?.has_subscription}
-                maxFileSize={account?.max_file_size}
+                maxFileUploads={1}
+                maxFileSize={account?.file_limits.max_file_size}
+                type="banner"
               />
               {build?.banner?.url && build?.banner?.id ? (
                 <div className="flex flex-col p-4 bg-card rounded-2xl">
@@ -340,7 +346,7 @@ const Edit = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
-                  maxFileSize={MAX_FILE_SIZE}
+                  maxFileSize={account?.file_limits.max_file_size}
                 />
               )}
             </div>
@@ -441,7 +447,7 @@ const Edit = () => {
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
                       <header className="flex flex-row justify-between">
-                        <p className="font-serif">Trip #{index + 1}</p>
+                        <p>Trip #{index + 1}</p>
                         <Button
                           type="button"
                           variant="link"
@@ -506,7 +512,7 @@ const Edit = () => {
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
                       <header className="flex items-center justify-between">
-                        <p className="font-serif">Modification #{index + 1}</p>
+                        <p>Modification #{index + 1}</p>
                         <Button
                           type="button"
                           variant="link"
@@ -611,7 +617,7 @@ const Edit = () => {
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
                       <header className="flex flex-row justify-between">
-                        <p className="font-serif">Link #{index + 1}</p>
+                        <p>Link #{index + 1}</p>
                         <Button
                           type="button"
                           variant="link"
@@ -685,16 +691,12 @@ const Edit = () => {
               )}
 
               <div className="mt-8">
-                <Label>
-                  Upload photos - max 6{" "}
-                  <span className="italic text-muted-foreground">
-                    ({6 - (build?.photos?.length || 0)} remaining )
-                  </span>
-                </Label>
+                <Label>Upload photos </Label>
                 <MaxFileSizeText
                   isProPlan={account?.has_subscription}
-                  additional="Max files 6"
-                  maxFileSize={account?.max_file_size}
+                  maxFileUploads={account?.file_limits.max_file_uploads}
+                  maxFileSize={account?.file_limits.max_file_size}
+                  remainingPhotos={remainingPhotos}
                 />
                 <Uploader
                   files={photos as any}
@@ -703,9 +705,9 @@ const Edit = () => {
                     account?.has_subscription
                   )}
                   allowMultiple={true}
-                  maxFiles={6 - (build?.photos?.length || 0)}
+                  maxFiles={account?.file_limits.max_file_uploads}
                   type="photos"
-                  maxFileSize={MAX_FILE_SIZE}
+                  maxFileSize={account?.file_limits.max_file_size}
                 />
               </div>
             </div>
