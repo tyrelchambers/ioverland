@@ -36,20 +36,8 @@ const Uploader = ({
   maxFileSize,
   disabled,
 }: Props) => {
-  const [token, setToken] = React.useState<string | null>("");
-  const { getToken } = useAuth();
+  const { userId } = useAuth();
   const url = `${env("NEXT_PUBLIC_BACKEND_URL")}/api/upload`;
-
-  useEffect(() => {
-    const fn = async () => {
-      const token = await getToken();
-      setToken(token);
-    };
-
-    fn();
-  }, []);
-
-  if (!token) return null;
 
   return (
     <FilePond
@@ -67,18 +55,18 @@ const Uploader = ({
           method: "POST",
           headers: {
             "file-type": type,
-            Authorization: `Bearer ${token}`,
+            "clerk-user-id": userId ?? "",
           },
         },
         headers: {
-          Authorization: `Bearer ${token}`,
+          "clerk-user-id": userId ?? "",
         },
         revert: {
           url: "/revert",
           method: "POST",
           headers: {
             "file-type": type,
-            Authorization: `Bearer ${token}`,
+            "clerk-user-id": userId ?? "",
           },
         },
       }}

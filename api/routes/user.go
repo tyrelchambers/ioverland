@@ -2,9 +2,9 @@ package routes
 
 import (
 	"api/controllers"
-	"api/middleware"
 	"fmt"
 
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,17 +15,18 @@ func Bookmark(c *gin.Context) {
 
 	if err := c.Bind(&body); err != nil {
 		c.String(500, err.Error())
-	}
-
-	user, err := middleware.Authorize(c)
-
-	if err != nil {
-		fmt.Println("Error authenticating with middleware: ", err)
-		c.String(401, "Unauthorized")
 		return
 	}
 
-	err = controllers.Bookmark(body.BuildId, user.ID)
+	user, _ := c.Get("user")
+
+	err := controllers.Bookmark(body.BuildId, user.(*clerk.User).ID)
+
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
 
 	c.String(200, "success")
 }
@@ -40,61 +41,43 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	user, err := middleware.Authorize(c)
+	user, _ := c.Get("user")
+
+	err := controllers.Unbookmark(body.BuildId, user.(*clerk.User).ID)
 
 	if err != nil {
-		fmt.Println("Error authenticating with middleware: ", err)
-		c.String(401, "Unauthorized")
+		fmt.Println(err)
+		c.String(500, err.Error())
 		return
 	}
-
-	err = controllers.Unbookmark(body.BuildId, user.ID)
 
 	c.String(200, "success")
 }
 
 func GetCurrentUser(c *gin.Context) {
-	user, err := middleware.Authorize(c)
+	user, _ := c.Get("user")
 
-	if err != nil {
-		fmt.Println("Error authenticating with middleware: ", err)
-		c.String(401, "Unauthorized")
-		return
-	}
-
-	domainUser, err := controllers.GetCurrentUser(user.ID)
+	domainUser, err := controllers.GetCurrentUser(user.(*clerk.User).ID)
 
 	if err != nil {
 		c.String(500, err.Error())
+		return
 	}
 
 	c.JSON(200, domainUser)
 }
 
 func GetAccount(c *gin.Context) {
-	user, err := middleware.Authorize(c)
-
-	if err != nil {
-		fmt.Println("Error authenticating with middleware: ", err)
-		c.String(401, "Unauthorized")
-		return
-	}
-
-	acc := controllers.GetAccount(user)
+	user, _ := c.Get("user")
+	acc := controllers.GetAccount(user.(*clerk.User))
 
 	c.JSON(200, acc)
 }
 
 func DeleteUser(c *gin.Context) {
-	user, err := middleware.Authorize(c)
+	user, _ := c.Get("user")
 
-	if err != nil {
-		fmt.Println("Error authenticating with middleware: ", err)
-		c.String(401, "Unauthorized")
-		return
-	}
-
-	err = controllers.DeleteUser(user)
+	err := controllers.DeleteUser(user.(*clerk.User))
 
 	if err != nil {
 		c.String(500, err.Error())
@@ -105,15 +88,9 @@ func DeleteUser(c *gin.Context) {
 }
 
 func RestoreUser(c *gin.Context) {
-	user, err := middleware.Authorize(c)
+	user, _ := c.Get("user")
 
-	if err != nil {
-		fmt.Println("Error authenticating with middleware: ", err)
-		c.String(401, "Unauthorized")
-		return
-	}
-
-	err = controllers.RestoreUser(user)
+	err := controllers.RestoreUser(user.(*clerk.User))
 
 	if err != nil {
 		c.String(500, err.Error())

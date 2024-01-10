@@ -772,9 +772,13 @@ const Edit = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { userId } = getAuth(ctx.req);
+  const { userId, getToken } = getAuth(ctx.req);
   const data = await request
-    .get<EditBuildResponse>(`/api/build/${ctx.query.id}/edit`)
+    .get<EditBuildResponse>(`/api/build/${ctx.query.id}/edit`, {
+      headers: {
+        Authorization: `Bearer ${await getToken()}`,
+      },
+    })
     .then((res) => res.data);
 
   if (!userId || !data.build) {

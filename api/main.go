@@ -5,6 +5,7 @@ import (
 	"api/domain/build"
 	"api/domain/upload"
 	"api/domain/user"
+	"api/middleware"
 	"api/routes"
 	"api/utils"
 	"fmt"
@@ -19,6 +20,38 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron/v2"
 )
+
+func AuthRequired(c *gin.Context) {
+	user, err := middleware.Authorize(c)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	c.Set("user", user)
+	c.Next()
+}
+
+func UploadAuth(c *gin.Context) {
+	user_id := c.Request.Header.Get("Clerk-User-Id")
+
+	if user_id == "" {
+		c.String(401, "Unauthorized - no header")
+		return
+	}
+
+	_, err := utils.ClerkClient.Users().Read(user_id)
+
+	if err != nil {
+		c.String(401, "Unauthorized")
+		return
+	}
+
+	c.Set("clerk-user-id", user_id)
+
+	c.Next()
+}
 
 func main() {
 
@@ -67,7 +100,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://iover.land"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization", "Upload-Length", "Upload-Offset", "Upload-Name", "Upload-Length"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization", "Upload-Length", "Upload-Offset", "Upload-Name", "Upload-Length", "Clerk-User-Id"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
@@ -83,30 +116,29 @@ func main() {
 
 	buildG.POST("", routes.CreateBuild)
 	buildG.GET("/:build_id", routes.GetById)
-	buildG.PUT("/:build_id", routes.Update)
-	buildG.GET("/:build_id/edit", routes.BuildEditSettings)
+	buildG.PUT("/:build_id", AuthRequired, routes.Update)
+	buildG.GET("/:build_id/edit", AuthRequired, routes.BuildEditSettings)
 	buildG.POST("/:build_id/view", routes.IncrementViews)
 	buildG.POST("/:build_id/like", routes.Like)
 	buildG.POST("/:build_id/dislike", routes.Dislike)
-	buildG.DELETE("/:build_id/delete", routes.Delete)
+	buildG.DELETE("/:build_id/delete", AuthRequired, routes.Delete)
+	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, routes.RemoveImage)
 
-	buildG.DELETE("/:build_id/image/:media_id", routes.RemoveImage)
+	buildsG.GET("/user/:user_id", AuthRequired, routes.GetBuilds)
 
-	buildsG.GET("/user/:user_id", routes.GetBuilds)
+	billingG.POST("/checkout", AuthRequired, routes.CreateCheckout)
+	billingG.POST("/portal", AuthRequired, routes.CreateCustomerPortal)
 
-	billingG.POST("/checkout", routes.CreateCheckout)
-	billingG.POST("/portal", routes.CreateCustomerPortal)
+	uploadG.POST("/process", UploadAuth, upload.UploadRoute)
+	uploadG.PATCH("", UploadAuth, upload.UploadRoute)
+	uploadG.POST("/revert", UploadAuth, upload.UploadRoute)
 
-	uploadG.POST("/process", upload.UploadRoute)
-	uploadG.PATCH("", upload.UploadRoute)
-	uploadG.POST("/revert", upload.UploadRoute)
-
-	userG.POST("/:build_id/bookmark", routes.Bookmark)
-	userG.POST("/:build_id/remove-bookmark", routes.Unbookmark)
-	userG.GET("/me", routes.GetCurrentUser)
-	userG.GET("/me/account", routes.GetAccount)
-	userG.DELETE("/me", routes.DeleteUser)
-	userG.POST("/me/restore", routes.RestoreUser)
+	userG.POST("/:build_id/bookmark", AuthRequired, routes.Bookmark)
+	userG.POST("/:build_id/remove-bookmark", AuthRequired, routes.Unbookmark)
+	userG.GET("/me", AuthRequired, routes.GetCurrentUser)
+	userG.GET("/me/account", AuthRequired, routes.GetAccount)
+	userG.DELETE("/me", AuthRequired, routes.DeleteUser)
+	userG.POST("/me/restore", AuthRequired, routes.RestoreUser)
 
 	webhooksG.POST("", routes.Webhooks)
 	webhooksG.POST("/stripe", routes.StripeWebhooks)

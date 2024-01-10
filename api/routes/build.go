@@ -4,18 +4,14 @@ import (
 	"api/controllers"
 	"api/domain/build"
 	"api/domain/upload"
-	"api/middleware"
 	"fmt"
 
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateBuild(c *gin.Context) {
-	user, err := middleware.Authorize(c)
-	if err != nil {
-		c.String(401, "Unauthorized")
-		return
-	}
+	user, _ := c.Get("user")
 
 	var reqBody build.Build
 
@@ -25,9 +21,9 @@ func CreateBuild(c *gin.Context) {
 		return
 	}
 
-	reqBody.UserId = user.ID
+	reqBody.UserId = user.(*clerk.User).ID
 
-	newBuild, err := controllers.Build(reqBody, user)
+	newBuild, err := controllers.Build(reqBody, user.(*clerk.User))
 
 	if err != nil {
 		c.String(500, err.Error())
@@ -109,26 +105,32 @@ func IncrementViews(c *gin.Context) {
 
 func Like(c *gin.Context) {
 	id := c.Param("build_id")
-	user, err := middleware.Authorize(c)
+
+	user, _ := c.Get("user")
+
+	err := controllers.Like(id, user.(*clerk.User).ID)
+
 	if err != nil {
-		c.String(401, "Unauthorized")
+		fmt.Println(err)
+		c.String(500, err.Error())
 		return
 	}
-
-	err = controllers.Like(id, user.ID)
 
 	c.String(200, "success")
 }
 
 func Dislike(c *gin.Context) {
 	id := c.Param("build_id")
-	user, err := middleware.Authorize(c)
+
+	user, _ := c.Get("user")
+
+	err := controllers.Dislike(id, user.(*clerk.User).ID)
+
 	if err != nil {
-		c.String(401, "Unauthorized")
+		fmt.Println(err)
+		c.String(500, err.Error())
 		return
 	}
-
-	err = controllers.Dislike(id, user.ID)
 
 	c.String(200, "success")
 }

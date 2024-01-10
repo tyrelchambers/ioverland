@@ -2,36 +2,25 @@ package routes
 
 import (
 	"api/controllers"
-	"api/middleware"
 
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 )
 
 func CreateCheckout(c *gin.Context) {
 
-	user, err := middleware.Authorize(c)
 	redirect_to := c.Query("redirect_to")
+	user, _ := c.Get("user")
 
-	if err != nil {
-		c.String(401, "Unauthorized")
-		return
-	}
-
-	url := controllers.CreateCheckout(user, redirect_to)
+	url := controllers.CreateCheckout(user.(*clerk.User), redirect_to)
 
 	c.JSON(200, gin.H{"url": url})
 }
 
 func CreateCustomerPortal(c *gin.Context) {
 
-	user, err := middleware.Authorize(c)
-
-	if err != nil {
-		c.String(401, "Unauthorized")
-		return
-	}
-
-	domainUser, err := controllers.GetCurrentUser(user.ID)
+	user, _ := c.Get("user")
+	domainUser, err := controllers.GetCurrentUser(user.(*clerk.User).ID)
 
 	if err != nil {
 		c.String(500, err.Error())

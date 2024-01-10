@@ -1,7 +1,6 @@
 package upload
 
 import (
-	"api/middleware"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,16 +18,9 @@ type UploadRequest struct {
 }
 
 func UploadRoute(c *gin.Context) {
+	user_id, _ := c.Get("clerk-user-id")
 
 	var request UploadRequest
-
-	user, err := middleware.Authorize(c)
-
-	if err != nil {
-		fmt.Println(err)
-		c.String(401, "Unauthorized")
-		return
-	}
 
 	current_path_query := c.Query("patch")
 
@@ -56,7 +48,7 @@ func UploadRoute(c *gin.Context) {
 		return
 	}
 
-	err = ProcessUpload(current_path_query, request, payload, user.ID, c)
+	err = ProcessUpload(current_path_query, request, payload, user_id.(string), c)
 
 	if err != nil {
 		fmt.Println(err)
