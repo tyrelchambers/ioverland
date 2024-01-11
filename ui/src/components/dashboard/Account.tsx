@@ -58,9 +58,7 @@ const Account = () => {
         <H3>Builds</H3>
         <p className="text-muted-foreground">
           This is the number of builds you&apos;ve created according to your
-          plan type.{" "}
-          {account?.has_subscription &&
-            "You have can have up to 5 builds since you are on the Pro plan."}
+          plan type.
         </p>
 
         <div className="p-6 rounded-xl border border-border mt-6">
@@ -69,10 +67,15 @@ const Account = () => {
             <span className="font-black text-foreground">
               {account?.total_builds} builds
             </span>{" "}
-            in total. You also have{" "}
-            <span className="font-black text-foreground">
-              {account?.builds_remaining} builds remaining.
-            </span>{" "}
+            in total.
+            {account?.builds_remaining !== -1 && (
+              <p>
+                You also have{" "}
+                <span className="font-black text-foreground">
+                  {account?.builds_remaining} builds remaining.
+                </span>{" "}
+              </p>
+            )}
           </p>
 
           {!account?.has_subscription && (

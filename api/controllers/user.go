@@ -182,7 +182,12 @@ func GetAccount(u *clerk.User) AccountResponse {
 	if resp.HasSubscription {
 		pl := plan_limits[cus.Subscriptions.Data[0].Plan.Product.Name]
 		resp.PlanLimits = pl
-		resp.BuildsRemaining = pl.MaxBuilds - userBuilds
+
+		if pl.MaxBuilds == -1 {
+			resp.BuildsRemaining = -1
+		} else {
+			resp.BuildsRemaining = pl.MaxBuilds - userBuilds
+		}
 
 	} else {
 		remainingBuilds := 1 - userBuilds

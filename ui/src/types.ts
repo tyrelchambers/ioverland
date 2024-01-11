@@ -102,6 +102,8 @@ const account = z.object({
   plan_limits: z.object({
     max_file_size: z.string(),
     max_file_uploads: z.number(),
+    max_builds: z.number(),
+    video_support: z.boolean(),
   }),
 });
 
