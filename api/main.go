@@ -114,7 +114,7 @@ func main() {
 	billingG := api.Group("/billing")
 	exploreG := api.Group("/explore")
 
-	buildG.POST("", routes.CreateBuild)
+	buildG.POST("", AuthRequired, routes.CreateBuild)
 	buildG.GET("/:build_id", routes.GetById)
 	buildG.PUT("/:build_id", AuthRequired, routes.Update)
 	buildG.GET("/:build_id/edit", AuthRequired, routes.BuildEditSettings)
