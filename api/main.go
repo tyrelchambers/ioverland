@@ -119,8 +119,8 @@ func main() {
 	buildG.PUT("/:build_id", AuthRequired, routes.Update)
 	buildG.GET("/:build_id/edit", AuthRequired, routes.BuildEditSettings)
 	buildG.POST("/:build_id/view", routes.IncrementViews)
-	buildG.POST("/:build_id/like", routes.Like)
-	buildG.POST("/:build_id/dislike", routes.Dislike)
+	buildG.POST("/:build_id/like", AuthRequired, routes.Like)
+	buildG.POST("/:build_id/dislike", AuthRequired, routes.Dislike)
 	buildG.DELETE("/:build_id/delete", AuthRequired, routes.Delete)
 	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, routes.RemoveImage)
 
