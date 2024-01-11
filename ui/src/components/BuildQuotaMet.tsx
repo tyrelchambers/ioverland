@@ -4,7 +4,7 @@ import React from "react";
 
 const BuildQuotaMet = () => {
   return (
-    <div className="flex flex-col lg:flex-row bg-warning text-warning-foreground p-6 rounded-xl gap-4 shadow-lg mx-10 my-4">
+    <div className="flex flex-col lg:flex-row bg-warning text-warning-foreground p-6 rounded-xl gap-4 shadow-lg my-4">
       <AlertTriangle />
       <div className="flex flex-col gap-2">
         <p className="font-bold">Build quota has been met</p>
