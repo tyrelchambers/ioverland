@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	Uuid       string         `gorm:"primaryKey" json:"uuid"`
+	Uuid       string         `gorm:"primaryKey; not null" json:"uuid"`
 	Builds     []build.Build  `json:"builds"`
 	Bookmarks  []build.Build  `gorm:"many2many:user_bookmarks" json:"bookmarks"`
 	CustomerId string         `json:"customer_id"`

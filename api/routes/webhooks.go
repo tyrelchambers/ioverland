@@ -15,7 +15,6 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
-	"github.com/stripe/stripe-go/v76/customer"
 	"github.com/stripe/stripe-go/v76/webhook"
 	svix "github.com/svix/svix-webhooks/go"
 )
@@ -56,11 +55,13 @@ func Webhooks(c *gin.Context) {
 	}
 
 	switch evtType {
-	case "session.created":
+
+	case "user.created":
+
 		var data struct {
-			Data  clerk.Session `json:"data"`
-			Event string        `json:"event"`
-			Type  string        `json:"type"`
+			Data  clerk.User `json:"data"`
+			Event string     `json:"event"`
+			Type  string     `json:"type"`
 		}
 
 		if err := json.Unmarshal(payload, &data); err != nil {
@@ -68,98 +69,8 @@ func Webhooks(c *gin.Context) {
 			return
 		}
 
-		stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
-		stripe.Key = stripe_key
-
-		if err != nil {
-			c.String(500, err.Error())
-			return
-		}
-
-		clerk_user, err := utils.ClerkClient.Users().Read(data.Data.UserID)
-
-		if err != nil {
-			c.String(500, err.Error())
-			return
-		}
-		domain_user, err := user.FindCurrentUser(db.Client, data.Data.UserID)
-
-		update_new_user_with_customer_id := false
-
-		if err != nil && err.Error() == "record not found" {
-			new_user := user.User{
-				Uuid:       data.Data.UserID,
-				CustomerId: "",
-			}
-
-			user.Create(db.Client, &new_user)
-
-			domain_user = new_user
-
-			update_new_user_with_customer_id = true
-
-		}
-
-		params := &stripe.CustomerSearchParams{
-			SearchParams: stripe.SearchParams{
-				Query: fmt.Sprintf("metadata['clerk_id']:'%s'", data.Data.UserID),
-			},
-		}
-		result := customer.Search(params)
-		result_data := result.CustomerSearchResult()
-
-		if len(result_data.Data) == 0 {
-			fmt.Println("Couldn't find customer in Stripe - creating.")
-
-			params := &stripe.CustomerParams{
-				Email: stripe.String(clerk_user.EmailAddresses[0].EmailAddress),
-			}
-
-			cus, _ := customer.New(params)
-
-			updateParams := &stripe.CustomerParams{}
-			updateParams.AddMetadata("clerk_id", data.Data.UserID)
-
-			customer.Update(cus.ID, updateParams)
-
-			domain_user.CustomerId = cus.ID
-
-			domain_user.Update(db.Client)
-		}
-
-		if update_new_user_with_customer_id {
-			domain_user.CustomerId = result_data.Data[0].ID
-			domain_user.Update(db.Client)
-		}
-
-	case "user.created":
-		var data struct {
-			Data  clerk.User `json:"data"`
-			Event string     `json:"event"`
-			Type  string     `json:"type"`
-		}
-		if err := json.Unmarshal(payload, &body); err != nil {
-			c.String(400, "Bad Request")
-			return
-		}
-
-		fmt.Println(data.Data.EmailAddresses)
-
-		// Create stripe customer and update customer with clerk ID into metadata
-		params := &stripe.CustomerParams{
-			Email: stripe.String(data.Data.EmailAddresses[0].EmailAddress),
-		}
-
-		cus, _ := customer.New(params)
-
-		updateParams := &stripe.CustomerParams{}
-		updateParams.AddMetadata("clerk_id", data.Data.ID)
-
-		customer.Update(cus.ID, updateParams)
-
 		newUser := user.User{
-			Uuid:       data.Data.ID,
-			CustomerId: cus.ID,
+			Uuid: data.Data.ID,
 		}
 
 		// Create user from Clerk data
@@ -211,6 +122,27 @@ func StripeWebhooks(c *gin.Context) {
 	}
 
 	switch event.Type {
+	case "checkout.session.completed":
+		var data stripe.CheckoutSession
+
+		if err := json.Unmarshal(event.Data.Raw, &data); err != nil {
+			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+			c.String(400, "Bad Request")
+			return
+		}
+
+		usr, err := user.FindCurrentUser(db.Client, data.Metadata["clerk_user_id"])
+
+		if err != nil {
+			fmt.Println("Error getting user in Stripe webhook event: ", err)
+			c.String(500, "Something went wrong")
+			return
+		}
+
+		usr.CustomerId = data.Customer.ID
+
+		usr.Update(db.Client)
+
 	case "customer.subscription.deleted":
 		var subscriptionData stripe.Subscription
 
@@ -224,7 +156,7 @@ func StripeWebhooks(c *gin.Context) {
 
 		if err != nil {
 			fmt.Println("Error getting user in Stripe webhook event: ", err)
-			c.String(500, "Something wen wrong")
+			c.String(500, "Something went wrong")
 			return
 		}
 

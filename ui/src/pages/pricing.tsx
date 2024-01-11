@@ -56,7 +56,7 @@ const plans: Plan[] = [
       "Overlander badge for your profile",
     ],
     featured: true,
-    redirect_link: `/sign-up?redirect_to=${getPrices().overlander}`,
+    redirect_link: `/sign-up?plan=${getPrices().overlander}`,
   },
   {
     name: "Explorer",
@@ -71,7 +71,7 @@ const plans: Plan[] = [
       "Document up to 5 trips",
       "Basic badge for your profile",
     ],
-    redirect_link: `/sign-up?redirect_to=${getPrices().explorer}`,
+    redirect_link: `/sign-up?plan=${getPrices().explorer}`,
   },
 ];
 

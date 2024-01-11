@@ -4,6 +4,7 @@ import (
 	"api/db"
 	"api/domain/user"
 	"api/utils"
+	"fmt"
 	"log"
 	"os"
 
@@ -13,30 +14,41 @@ import (
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
-func CreateCheckout(u *clerk.User, redirect_to string) string {
+func CreateCheckout(u *clerk.User, redirect_to, plan string) string {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	var priceItem string
+	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
+	success_url := os.Getenv("APP_URL")
 
-	if os.Getenv("NODE_ENV") == "production" {
-		priceItem = "price_1OUISIEPapIiG0WqIF1qgli1"
-	} else {
-		priceItem = "price_1OSKyeEPapIiG0WqjUGqdonV"
+	fmt.Println(domainUser, u, plan)
+
+	if redirect_to != "" {
+		success_url = redirect_to
 	}
 
-	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
+	stripe_customer_id := ""
+
+	if domainUser.CustomerId != "" {
+		stripe_customer_id = domainUser.CustomerId
+	}
 
 	checkout_params := stripe.CheckoutSessionParams{
 		Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-		SuccessURL: stripe.String(redirect_to),
+		SuccessURL: stripe.String(success_url),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String(priceItem),
+				Price:    stripe.String(plan),
 				Quantity: stripe.Int64(1),
 			},
 		},
-		Customer: &domainUser.CustomerId,
+		Metadata: map[string]string{"clerk_user_id": u.ID},
+	}
+
+	fmt.Println(checkout_params.Metadata)
+
+	if stripe_customer_id != "" {
+		checkout_params.Customer = stripe.String(stripe_customer_id)
 	}
 
 	result, err := session.New(&checkout_params)

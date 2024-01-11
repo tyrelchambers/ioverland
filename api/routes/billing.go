@@ -10,9 +10,10 @@ import (
 func CreateCheckout(c *gin.Context) {
 
 	redirect_to := c.Query("redirect_to")
+	plan := c.Query("plan")
 	user, _ := c.Get("user")
 
-	url := controllers.CreateCheckout(user.(*clerk.User), redirect_to)
+	url := controllers.CreateCheckout(user.(*clerk.User), redirect_to, plan)
 
 	c.JSON(200, gin.H{"url": url})
 }

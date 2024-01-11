@@ -127,6 +127,7 @@ func main() {
 	buildsG.GET("/user/:user_id", AuthRequired, routes.GetBuilds)
 
 	billingG.POST("/checkout", AuthRequired, routes.CreateCheckout)
+	billingG.GET("/checkout", AuthRequired, routes.CreateCheckout)
 	billingG.POST("/portal", AuthRequired, routes.CreateCustomerPortal)
 
 	uploadG.POST("/process", UploadAuth, upload.UploadRoute)
