@@ -293,7 +293,7 @@ const Index = () => {
                 <MaxFileSizeText
                   isProPlan={account.data?.has_subscription}
                   maxFileUploads={1}
-                  maxFileSize={account?.data?.file_limits.max_file_size}
+                  maxFileSize={account?.data?.plan_limits?.max_file_size}
                   type="banner"
                 />
                 <Uploader
@@ -304,7 +304,7 @@ const Index = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
-                  maxFileSize={account.data?.file_limits.max_file_size}
+                  maxFileSize={account.data?.plan_limits?.max_file_size}
                   disabled={form.formState.disabled}
                 />
               </div>
@@ -523,8 +523,8 @@ const Index = () => {
                 <Label className="mb-2">Photos</Label>
                 <MaxFileSizeText
                   isProPlan={account.data?.has_subscription}
-                  maxFileUploads={account.data?.file_limits.max_file_uploads}
-                  maxFileSize={account?.data?.file_limits.max_file_size}
+                  maxFileUploads={account.data?.plan_limits?.max_file_uploads}
+                  maxFileSize={account?.data?.plan_limits?.max_file_size}
                 />
 
                 <Uploader
@@ -533,9 +533,9 @@ const Index = () => {
                     account.data?.has_subscription
                   )}
                   allowMultiple={true}
-                  maxFiles={account.data?.file_limits.max_file_uploads}
+                  maxFiles={account.data?.plan_limits?.max_file_uploads}
                   type="photos"
-                  maxFileSize={account.data?.file_limits.max_file_size}
+                  maxFileSize={account.data?.plan_limits?.max_file_size}
                   disabled={form.formState.disabled}
                 />
               </div>

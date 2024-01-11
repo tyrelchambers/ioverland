@@ -33,7 +33,7 @@ type AccountResponse struct {
 	DeletedAt       *gorm.DeletedAt `json:"deleted_at"`
 	TotalBuilds     int64           `json:"total_builds"`
 	BuildsRemaining int64           `json:"builds_remaining"`
-	PlanLimits      PlanLimit       `json:"file_limits"`
+	PlanLimits      PlanLimit       `json:"plan_limits"`
 	MaxBuilds       int64           `json:"max_builds"`
 }
 

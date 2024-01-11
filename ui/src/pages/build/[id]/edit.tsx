@@ -160,7 +160,7 @@ const Edit = () => {
   const build = editSettings.data?.build;
   const remainingPhotos =
     account &&
-    account?.file_limits.max_file_uploads -
+    account?.plan_limits.max_file_uploads -
       ((build && build?.photos?.length) || 0);
   const watchMake = form.watch("vehicle.make");
 
@@ -318,7 +318,7 @@ const Edit = () => {
               <MaxFileSizeText
                 isProPlan={account?.has_subscription}
                 maxFileUploads={1}
-                maxFileSize={account?.file_limits.max_file_size}
+                maxFileSize={account?.plan_limits.max_file_size}
                 type="banner"
               />
               {build?.banner?.url && build?.banner?.id ? (
@@ -346,7 +346,7 @@ const Edit = () => {
                   allowMultiple={false}
                   maxFiles={1}
                   type="banner"
-                  maxFileSize={account?.file_limits.max_file_size}
+                  maxFileSize={account?.plan_limits.max_file_size}
                 />
               )}
             </div>
@@ -694,8 +694,8 @@ const Edit = () => {
                 <Label>Upload photos </Label>
                 <MaxFileSizeText
                   isProPlan={account?.has_subscription}
-                  maxFileUploads={account?.file_limits.max_file_uploads}
-                  maxFileSize={account?.file_limits.max_file_size}
+                  maxFileUploads={account?.plan_limits.max_file_uploads}
+                  maxFileSize={account?.plan_limits.max_file_size}
                   remainingPhotos={remainingPhotos}
                 />
                 <Uploader
@@ -705,9 +705,9 @@ const Edit = () => {
                     account?.has_subscription
                   )}
                   allowMultiple={true}
-                  maxFiles={account?.file_limits.max_file_uploads}
+                  maxFiles={account?.plan_limits.max_file_uploads}
                   type="photos"
-                  maxFileSize={account?.file_limits.max_file_size}
+                  maxFileSize={account?.plan_limits.max_file_size}
                 />
               </div>
             </div>
