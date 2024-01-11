@@ -108,3 +108,14 @@
     transform: scale(1.01);
   }
 }
+
+.featured-pricing::before {
+  content: "";
+  background: url("/topographical.jpg") center/cover no-repeat;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: 0.1;
+}

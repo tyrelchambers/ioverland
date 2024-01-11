@@ -5,7 +5,13 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Home, LayoutDashboard, Mountain, Search } from "lucide-react";
+import {
+  BadgeDollarSign,
+  Home,
+  LayoutDashboard,
+  Mountain,
+  Search,
+} from "lucide-react";
 import { Input } from "./ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useSearch } from "@/hooks/useSearch";
@@ -31,6 +37,11 @@ const routes = [
     href: "/explore",
     label: "Explore",
     icon: <Mountain size={20} />,
+  },
+  {
+    href: "/pricing",
+    label: "Pricing",
+    icon: <BadgeDollarSign size={20} />,
   },
 ];
 

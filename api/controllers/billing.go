@@ -13,6 +13,21 @@ import (
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
+var prices struct {
+	Free struct {
+		Test string
+		Live string
+	}
+	Explorer struct {
+		Test string
+		Live string
+	}
+	Overlander struct {
+		Test string
+		Live string
+	}
+}
+
 func CreateCheckout(u *clerk.User, redirect_to string) string {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key

@@ -14,7 +14,7 @@ export const headingFont = Playfair_Display({
   variable: "--font-heading",
 });
 export const paragraphFont = Mulish({
-  weight: ["300", "400", "500", "700"],
+  weight: ["300", "400", "500", "700", "900"],
   subsets: ["latin"],
   variable: "--font-paragraph",
 });

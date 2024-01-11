@@ -68,3 +68,12 @@ export const getMaxFileSize = (has_subscription: boolean | undefined) => {
   if (has_subscription) return MAX_FILE_SIZE_PRO;
   return MAX_FILE_SIZE;
 };
+
+export const formatPrice = (itemPrice: number) => {
+  const price = new Intl.NumberFormat("en-CA", {
+    currency: "CAD",
+    style: "currency",
+  });
+
+  return price.format(itemPrice / 100);
+};
