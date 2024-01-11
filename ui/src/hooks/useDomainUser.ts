@@ -132,10 +132,16 @@ export const useDomainUser = (id?: string) => {
   });
 
   const createCheckoutLink = useMutation({
-    mutationFn: async ({ redirect_to }: { redirect_to?: string }) => {
+    mutationFn: async ({
+      redirect_to,
+      plan,
+    }: {
+      redirect_to?: string;
+      plan?: string;
+    }) => {
       return request
         .post(
-          `/api/billing/checkout?redirect_to=${redirect_to}`,
+          `/api/billing/checkout?redirect_to=${redirect_to}&plan=${plan}`,
           {},
           {
             headers: {

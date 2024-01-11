@@ -1,22 +1,24 @@
 import { format } from "date-fns";
-import { Zap, Check, Calendar } from "lucide-react";
+import { Zap, Calendar } from "lucide-react";
 import React from "react";
 import { H3 } from "../Heading";
 import { Button } from "../ui/button";
-import {
-  DrawerTrigger,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
-  Drawer,
-} from "../ui/drawer";
+import { DrawerClose } from "../ui/drawer";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { env } from "next-runtime-env";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import PricingBlock from "../PricingBlock";
+import { plans } from "@/constants";
 
 const Account = () => {
   const {
@@ -40,9 +42,10 @@ const Account = () => {
     restoreUser.mutate();
   };
 
-  const getCheckoutLink = async () => {
+  const getCheckoutLink = async (plan: string) => {
     const data = await createCheckoutLink.mutateAsync({
       redirect_to: `${env("NEXT_PUBLIC_FRONTEND_URL")}/dashboard?tab=account`,
+      plan,
     });
 
     if (data.url) {
@@ -97,7 +100,8 @@ const Account = () => {
           <div className="mt-10 flex flex-col p-6 rounded-xl w-full bg-gradient-to-tr from-blue-900 to-blue-500 shadow-lg">
             <Zap className="text-white mb-4" />
             <p className="text-white text-xl">
-              You are currently subscribed to the Pro plan!
+              You are currently subscribed to the {account.subscription.name}{" "}
+              plan!
             </p>
             <p className="text-white text-2xl my-4 font-black">
               ${account.subscription.price / 100}/month
@@ -128,60 +132,38 @@ const Account = () => {
               If you&apos;d like to experience all iOverland has to offer,
               please purchase a plan.
             </p>
-            <Separator className="mt-4" />
-            <ul className=" flex flex-col gap-4 mt-4 text-sm">
-              <li className="flex items-center gap-2 text-muted-foreground">
-                <Check size={16} className="text-primary" />
-                Multiple builds - up to 5
-              </li>
-              <li className="flex items-center gap-2 text-muted-foreground">
-                <Check size={16} className="text-primary" />
-                Video support for your builds
-              </li>
-            </ul>
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button className="mt-4">Subscribe to Pro</Button>
-              </DrawerTrigger>
-              <DrawerContent>
-                <div className="max-w-[400px] w-full mx-auto">
-                  <DrawerHeader>
-                    <DrawerTitle>Choose a plan</DrawerTitle>
-                    <DrawerDescription>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="mt-4">Choose a plan</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-[1280px]">
+                <div className="max-w-[1280px] w-full mx-auto">
+                  <DialogHeader>
+                    <DialogTitle>Choose a plan</DialogTitle>
+                    <DialogDescription>
                       Paid on a monthly basis.
-                    </DrawerDescription>
-                  </DrawerHeader>
-                  <div className="p-6 rounded-xl border-2 border-primary  m-4 shadow-lg">
-                    <p className="mb-4 font-bold text-primary">Pro</p>
-                    <p className="text-3xl font-bold">$10</p>
-                    <Separator className="my-6" />
-                    <p className="text-sm">Gives you access to:</p>
-                    <ul className=" flex flex-col gap-4 mt-4 text-sm">
-                      <li className="flex items-center gap-2 text-muted-foreground">
-                        <Check size={16} className="text-primary" />
-                        Multiple builds - up to 5
-                      </li>
-                      <li className="flex items-center gap-2 text-muted-foreground">
-                        <Check size={16} className="text-primary" />
-                        Video support for your builds
-                      </li>
-                    </ul>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-4 lg:p-0 mt-4">
+                    {plans.map((plan) => (
+                      <PricingBlock
+                        plan={plan}
+                        key={plan.name}
+                        checkoutLink={getCheckoutLink}
+                      />
+                    ))}
                   </div>
-                  <DrawerFooter>
-                    <Button
-                      type="button"
-                      onClick={getCheckoutLink}
-                      className="w-full"
-                    >
-                      Continue
-                    </Button>
-                    <DrawerClose className="text-muted-foreground">
-                      Cancel
+                  <DialogFooter className="flex !flex-col items-center">
+                    <DrawerClose asChild className="text-muted-foreground mt-4">
+                      <Button type="button" variant="outline">
+                        Cancel
+                      </Button>
                     </DrawerClose>
-                  </DrawerFooter>
+                  </DialogFooter>
                 </div>
-              </DrawerContent>
-            </Drawer>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </section>

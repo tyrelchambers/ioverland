@@ -1,79 +1,8 @@
 import Header from "@/components/Header";
-import { H1, H2 } from "@/components/Heading";
-import { Button } from "@/components/ui/button";
-import { cn, formatPrice } from "@/lib/utils";
-import { CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { H1 } from "@/components/Heading";
+import PricingBlock from "@/components/PricingBlock";
+import { plans } from "@/constants";
 import React from "react";
-
-const testPrices = {
-  explorer: "price_1OXQNUEPapIiG0WqFCMtKQUM",
-  overlander: "price_1OXQOLEPapIiG0WqICw9ZvOj",
-};
-
-const livePrices = {
-  explorer: "price_1OXRlIEPapIiG0WqyEk7J1da",
-  overlander: "price_1OXRlDEPapIiG0WqYc6GfFIS",
-};
-
-const getPrices = () => {
-  if (process.env.NODE_ENV === "production") {
-    return livePrices;
-  } else {
-    return testPrices;
-  }
-};
-
-interface Plan {
-  name: string;
-  tagline: string;
-  price: number;
-  plan_name: string;
-  features: string[];
-  featured?: boolean;
-  redirect_link: string;
-}
-
-const plans: Plan[] = [
-  {
-    name: "Free",
-    tagline: "For hobbyists",
-    price: 0,
-    plan_name: "free",
-    features: ["1 build", "6 images per build", "50MB per image"],
-    redirect_link: "/sign-up",
-  },
-  {
-    name: "Overlander",
-    tagline: "For seasoned Overlanders",
-    price: 25,
-    plan_name: "overlander",
-    features: [
-      "Unlimited builds",
-      "25 images per build",
-      "300MB per image or video",
-      "Unlimited trips",
-      "Overlander badge for your profile",
-    ],
-    featured: true,
-    redirect_link: `/sign-up?plan=${getPrices().overlander}`,
-  },
-  {
-    name: "Explorer",
-    tagline: "For aspiring Overlanders",
-    price: 15,
-    plan_name: "explorer",
-    features: [
-      "5 builds",
-      "16 images per build",
-      "100MB per image or video",
-      "Video support",
-      "Document up to 5 trips",
-      "Basic badge for your profile",
-    ],
-    redirect_link: `/sign-up?plan=${getPrices().explorer}`,
-  },
-];
 
 const pricing = () => {
   return (
@@ -97,62 +26,12 @@ const pricing = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-4 lg:p-0 ">
           {plans.map((plan) => (
-            <PricingBlock plan={plan} key={plan.name} />
+            <PricingBlock plan={plan} key={plan.name} useLink />
           ))}
         </div>
       </section>
     </div>
   );
 };
-
-const PricingBlock = ({ plan }: { plan: Plan }) => (
-  <div
-    className={cn(
-      "border border-border rounded-lg p-6 py-10",
-      plan.featured && "border-primary featured-pricing relative"
-    )}
-  >
-    <header className="flex flex-col items-center w-full relative z-10">
-      {plan.featured && (
-        <p className="bg-primary text-primary-foreground rounded-full px-4 py-1.5 text-xs font-bold mb-3">
-          For the best Overlanders
-        </p>
-      )}
-      <H2 className="text-xl">{plan.name}</H2>
-      <p className="font-black text-5xl my-4">
-        ${plan.price}
-        <span className="text-lg font-normal"></span>
-      </p>
-      <p className="text-xl text-muted-foreground">{plan.tagline}</p>
-      <Link href={plan.redirect_link} className="w-full">
-        <Button className="mt-6 w-full">Get Started</Button>
-      </Link>
-    </header>
-
-    <section
-      className={cn(
-        "mt-10",
-        plan.featured && "bg-primary p-6 rounded-lg shadow-xl relative z-10"
-      )}
-    >
-      <ul className="flex flex-col gap-4">
-        {plan.features.map((feature) => (
-          <li
-            key={feature}
-            className={cn(
-              "text-lg text-muted-foreground flex gap-6 items-center",
-              plan.featured && "text-primary-foreground"
-            )}
-          >
-            <span className="w-[18px]">
-              <CheckCircle2 size={18} />
-            </span>
-            <p className="font-medium">{feature}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
-  </div>
-);
 
 export default pricing;

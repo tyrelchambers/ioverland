@@ -99,7 +99,7 @@ const account = z.object({
   deleted_at: z.date().nullable(),
   total_builds: z.number(),
   builds_remaining: z.number(),
-  file_limits: z.object({
+  plan_limits: z.object({
     max_file_size: z.string(),
     max_file_uploads: z.number(),
   }),
@@ -130,4 +130,15 @@ export interface Route {
 export interface BuildPayload extends Omit<Build, "banner" | "photos"> {
   banner?: Omit<Media, "uuid">;
   photos?: Omit<Media, "uuid">[];
+}
+
+export interface Plan {
+  name: string;
+  tagline: string;
+  price: number;
+  plan_name: string;
+  features: string[];
+  featured?: boolean;
+  plan_id?: string;
+  redirect_link: string;
 }

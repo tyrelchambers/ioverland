@@ -1,5 +1,68 @@
+import { Plan } from "./types";
+
 export const MAX_FILE_SIZE = "400MB";
 export const MAX_FILE_SIZE_PRO = "1GB";
+
+const testPrices = {
+  explorer: "price_1OXQNUEPapIiG0WqFCMtKQUM",
+  overlander: "price_1OXQOLEPapIiG0WqICw9ZvOj",
+};
+
+const livePrices = {
+  explorer: "price_1OXRlIEPapIiG0WqyEk7J1da",
+  overlander: "price_1OXRlDEPapIiG0WqYc6GfFIS",
+};
+
+const getPrices = () => {
+  if (process.env.NODE_ENV === "production") {
+    return livePrices;
+  } else {
+    return testPrices;
+  }
+};
+
+export const plans: Plan[] = [
+  {
+    name: "Free",
+    tagline: "For hobbyists",
+    price: 0,
+    plan_name: "free",
+    features: ["1 build", "6 images per build", "50MB per image"],
+    redirect_link: "/sign-up",
+  },
+  {
+    name: "Overlander",
+    tagline: "For seasoned Overlanders",
+    price: 25,
+    plan_name: "overlander",
+    features: [
+      "Unlimited builds",
+      "25 images per build",
+      "300MB per image or video",
+      "Unlimited trips",
+      "Overlander badge for your profile",
+    ],
+    featured: true,
+    redirect_link: `/sign-up?plan=${getPrices().overlander}`,
+    plan_id: getPrices().overlander,
+  },
+  {
+    name: "Explorer",
+    tagline: "For aspiring Overlanders",
+    price: 15,
+    plan_name: "explorer",
+    features: [
+      "5 builds",
+      "16 images per build",
+      "100MB per image or video",
+      "Video support",
+      "Document up to 5 trips",
+      "Basic badge for your profile",
+    ],
+    redirect_link: `/sign-up?plan=${getPrices().explorer}`,
+    plan_id: getPrices().explorer,
+  },
+];
 
 export const popularCarBrands = [
   { value: "alfa romeo", label: "Alfa Romeo" },

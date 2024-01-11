@@ -15,6 +15,12 @@ import (
 	"gorm.io/gorm"
 )
 
+type PlanLimit struct {
+	MaxBuilds    int64  `json:"max_builds"`
+	MaxFiles     int64  `json:"max_files"`
+	VideoSupport bool   `json:"video"`
+	MaxFileSize  string `json:"max_file_size"`
+}
 type AccountResponse struct {
 	HasSubscription bool `json:"has_subscription"`
 	Subscription    struct {
@@ -27,10 +33,8 @@ type AccountResponse struct {
 	DeletedAt       *gorm.DeletedAt `json:"deleted_at"`
 	TotalBuilds     int64           `json:"total_builds"`
 	BuildsRemaining int64           `json:"builds_remaining"`
-	FileLimits      struct {
-		MaxFileSize    string `json:"max_file_size"`
-		MaxFileUploads int64  `json:"max_file_uploads"`
-	} `json:"file_limits"`
+	PlanLimits      PlanLimit       `json:"file_limits"`
+	MaxBuilds       int64           `json:"max_builds"`
 }
 
 type GetCurrentUserWithStripeResponse struct {
@@ -112,6 +116,28 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 }
 
 func GetAccount(u *clerk.User) AccountResponse {
+
+	plan_limits := map[string]PlanLimit{
+		"Free": {
+			MaxFiles:     6,
+			MaxFileSize:  "50mb",
+			VideoSupport: false,
+			MaxBuilds:    1,
+		},
+		"Explorer": {
+			MaxFiles:     16,
+			MaxFileSize:  "100mb",
+			VideoSupport: true,
+			MaxBuilds:    5,
+		},
+		"Overlander": {
+			MaxFiles:     25,
+			MaxFileSize:  "300mb",
+			VideoSupport: false,
+			MaxBuilds:    -1,
+		},
+	}
+
 	utils.StripeClientInit()
 
 	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
@@ -154,13 +180,14 @@ func GetAccount(u *clerk.User) AccountResponse {
 	resp.TotalBuilds = userBuilds
 
 	if resp.HasSubscription {
-		resp.BuildsRemaining = 5 - userBuilds
-		resp.FileLimits.MaxFileSize = "300MB"
-		resp.FileLimits.MaxFileUploads = 13
+		pl := plan_limits[cus.Subscriptions.Data[0].Plan.Product.Name]
+		resp.PlanLimits = pl
+		resp.BuildsRemaining = pl.MaxBuilds - userBuilds
+
 	} else {
 		remainingBuilds := 1 - userBuilds
-		resp.FileLimits.MaxFileSize = "50MB"
-		resp.FileLimits.MaxFileUploads = 6
+		resp.PlanLimits = plan_limits["Free"]
+
 		if remainingBuilds < 0 {
 			remainingBuilds = 0
 		} else {

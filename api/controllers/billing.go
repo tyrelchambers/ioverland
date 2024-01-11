@@ -4,7 +4,6 @@ import (
 	"api/db"
 	"api/domain/user"
 	"api/utils"
-	"fmt"
 	"log"
 	"os"
 
@@ -20,8 +19,6 @@ func CreateCheckout(u *clerk.User, redirect_to, plan string) string {
 
 	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
 	success_url := os.Getenv("APP_URL")
-
-	fmt.Println(domainUser, u, plan)
 
 	if redirect_to != "" {
 		success_url = redirect_to
@@ -44,8 +41,6 @@ func CreateCheckout(u *clerk.User, redirect_to, plan string) string {
 		},
 		Metadata: map[string]string{"clerk_user_id": u.ID},
 	}
-
-	fmt.Println(checkout_params.Metadata)
 
 	if stripe_customer_id != "" {
 		checkout_params.Customer = stripe.String(stripe_customer_id)
