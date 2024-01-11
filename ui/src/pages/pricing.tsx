@@ -3,7 +3,26 @@ import { H1, H2 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import { cn, formatPrice } from "@/lib/utils";
 import { CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 import React from "react";
+
+const testPrices = {
+  explorer: "price_1OXQNUEPapIiG0WqFCMtKQUM",
+  overlander: "price_1OXQOLEPapIiG0WqICw9ZvOj",
+};
+
+const livePrices = {
+  explorer: "price_1OXRlIEPapIiG0WqyEk7J1da",
+  overlander: "price_1OXRlDEPapIiG0WqYc6GfFIS",
+};
+
+const getPrices = () => {
+  if (process.env.NODE_ENV === "production") {
+    return livePrices;
+  } else {
+    return testPrices;
+  }
+};
 
 interface Plan {
   name: string;
@@ -12,6 +31,7 @@ interface Plan {
   plan_name: string;
   features: string[];
   featured?: boolean;
+  redirect_link: string;
 }
 
 const plans: Plan[] = [
@@ -21,6 +41,7 @@ const plans: Plan[] = [
     price: 0,
     plan_name: "free",
     features: ["1 build", "6 images per build", "50MB per image"],
+    redirect_link: "/sign-up",
   },
   {
     name: "Overlander",
@@ -35,6 +56,7 @@ const plans: Plan[] = [
       "Overlander badge for your profile",
     ],
     featured: true,
+    redirect_link: `/sign-up?redirect_to=${getPrices().overlander}`,
   },
   {
     name: "Explorer",
@@ -49,6 +71,7 @@ const plans: Plan[] = [
       "Document up to 5 trips",
       "Basic badge for your profile",
     ],
+    redirect_link: `/sign-up?redirect_to=${getPrices().explorer}`,
   },
 ];
 
@@ -101,7 +124,9 @@ const PricingBlock = ({ plan }: { plan: Plan }) => (
         <span className="text-lg font-normal"></span>
       </p>
       <p className="text-xl text-muted-foreground">{plan.tagline}</p>
-      <Button className="mt-6 w-full">Get Started</Button>
+      <Link href={plan.redirect_link} className="w-full">
+        <Button className="mt-6 w-full">Get Started</Button>
+      </Link>
     </header>
 
     <section
