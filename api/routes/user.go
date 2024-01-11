@@ -67,13 +67,6 @@ func GetCurrentUser(c *gin.Context) {
 	c.JSON(200, domainUser)
 }
 
-func GetAccount(c *gin.Context) {
-	user, _ := c.Get("user")
-	acc := controllers.GetAccount(user.(*clerk.User))
-
-	c.JSON(200, acc)
-}
-
 func DeleteUser(c *gin.Context) {
 	user, _ := c.Get("user")
 

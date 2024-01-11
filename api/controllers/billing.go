@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api/db"
+	dbConfig "api/db"
 	"api/domain/user"
 	"api/utils"
 	"log"
@@ -17,7 +17,7 @@ func CreateCheckout(u *clerk.User, redirect_to, plan string) string {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user.FindCurrentUser(db.Client, u.ID)
+	domainUser, err := user.FindCurrentUser(dbConfig.Client, u.ID)
 	success_url := os.Getenv("APP_URL")
 
 	if redirect_to != "" {

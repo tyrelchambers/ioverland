@@ -1,9 +1,10 @@
 package routes
 
 import (
-	"api/db"
+	dbConfig "api/db"
 	"api/domain/build"
 	"api/domain/user"
+	"api/services"
 	"api/utils"
 	"encoding/json"
 	"fmt"
@@ -15,6 +16,8 @@ import (
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
+	"github.com/stripe/stripe-go/v76/customer"
+	"github.com/stripe/stripe-go/v76/subscription"
 	"github.com/stripe/stripe-go/v76/webhook"
 	svix "github.com/svix/svix-webhooks/go"
 )
@@ -74,7 +77,7 @@ func Webhooks(c *gin.Context) {
 		}
 
 		// Create user from Clerk data
-		err := user.Create(db.Client, &newUser)
+		err := user.Create(dbConfig.Client, &newUser)
 
 		if err != nil {
 			c.String(500, err.Error())
@@ -131,7 +134,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		usr, err := user.FindCurrentUser(db.Client, data.Metadata["clerk_user_id"])
+		usr, err := user.FindCurrentUser(dbConfig.Client, data.Metadata["clerk_user_id"])
 
 		if err != nil {
 			fmt.Println("Error getting user in Stripe webhook event: ", err)
@@ -141,7 +144,28 @@ func StripeWebhooks(c *gin.Context) {
 
 		usr.CustomerId = data.Customer.ID
 
-		usr.Update(db.Client)
+		cus_params := &stripe.CustomerParams{}
+		cus_params.AddExpand("subscriptions")
+		stripe_cus, err := customer.Get(usr.CustomerId, cus_params)
+
+		if err != nil {
+			fmt.Println("Error getting customer in Stripe webhook event: ", err)
+			c.String(500, "Something went wrong")
+			return
+		}
+
+		params := &stripe.SubscriptionParams{}
+		params.AddExpand("items.data.price.product")
+
+		stripe_sub, err := subscription.Get(stripe_cus.Subscriptions.Data[0].ID, params)
+		if err != nil {
+			fmt.Println("Error getting customer in Stripe webhook event: ", err)
+			c.String(500, "Something went wrong")
+			return
+		}
+		usr.MaxPublicBuilds = int(services.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
+
+		usr.Update(dbConfig.Client)
 
 	case "customer.subscription.deleted":
 		var subscriptionData stripe.Subscription
@@ -152,7 +176,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		usr, err := user.FindUserByCustomerId(db.Client, subscriptionData.Customer.ID)
+		usr, err := user.FindUserByCustomerId(dbConfig.Client, subscriptionData.Customer.ID)
 
 		if err != nil {
 			fmt.Println("Error getting user in Stripe webhook event: ", err)
@@ -160,7 +184,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		builds, err := build.AllByUser(db.Client, usr.Uuid)
+		builds, err := build.AllByUser(dbConfig.Client, usr.Uuid)
 
 		if err != nil {
 			fmt.Println("Error getting builds in Stripe webhook event: ", err)
@@ -170,10 +194,14 @@ func StripeWebhooks(c *gin.Context) {
 
 		if len(builds) > 1 {
 			for _, build := range builds[1:] {
-				build.Private = true
-				build.Update(db.Client)
+				build.Public = false
+				build.Update(dbConfig.Client)
 			}
 		}
+
+		usr.MaxPublicBuilds = 1
+
+		usr.Update(dbConfig.Client)
 	}
 	c.String(200, "success")
 }

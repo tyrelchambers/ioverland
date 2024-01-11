@@ -1,8 +1,9 @@
 package controllers
 
 import (
-	"api/db"
+	dbConfig "api/db"
 	"api/domain/build"
+	"api/services"
 	"errors"
 	"fmt"
 
@@ -12,12 +13,25 @@ import (
 type EditResponse struct {
 	Build         build.Build `json:"build"`
 	Can_be_public bool        `json:"can_be_public"`
-	MaxFileSize   string      `json:"max_file_size"`
+}
+
+func countVisibleBuilds(user services.AccountResponse) int {
+	count := 0
+	for _, build := range user.Builds {
+		if build.Public {
+			count++
+		}
+	}
+	return count
+}
+
+func canBePublic(user services.AccountResponse) bool {
+	return countVisibleBuilds(user) <= user.MaxPublicBuilds
 }
 
 func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 
-	acc := GetAccount(clerk_user)
+	acc := services.GetUserAccount(clerk_user.ID)
 
 	if acc.BuildsRemaining == 0 {
 		return build.Build{}, errors.New("You have reached your build limit")
@@ -61,7 +75,7 @@ func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 			Year:  newBuild.Vehicle.Year,
 		},
 		Modifications: modifications,
-		Private:       newBuild.Private,
+		Public:        newBuild.Public,
 		Trips:         trips,
 		Links:         links,
 		UserId:        newBuild.UserId,
@@ -69,7 +83,7 @@ func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 		Photos:        newBuild.Photos,
 	}
 
-	err := buildEntity.Create(db.Client)
+	err := buildEntity.Create(dbConfig.Client)
 
 	if err != nil {
 		fmt.Println(err)
@@ -80,7 +94,7 @@ func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 }
 
 func GetById(id string) (build.Build, error) {
-	buildEntity, err := build.GetById(db.Client, id)
+	buildEntity, err := build.GetById(dbConfig.Client, id)
 
 	if err != nil {
 		return build.Build{}, err
@@ -92,7 +106,7 @@ func GetById(id string) (build.Build, error) {
 
 func UpdateBuild(id string, data build.Build) (build.Build, error) {
 
-	err := data.Update(db.Client)
+	err := data.Update(dbConfig.Client)
 
 	if err != nil {
 		return build.Build{}, err
@@ -102,7 +116,7 @@ func UpdateBuild(id string, data build.Build) (build.Build, error) {
 }
 
 func RemoveImage(build_id string, media_id string) error {
-	return build.RemoveImage(db.Client, build_id, media_id)
+	return build.RemoveImage(dbConfig.Client, build_id, media_id)
 }
 
 func IncrementViews(id string) error {
@@ -112,7 +126,7 @@ func IncrementViews(id string) error {
 		return err
 	}
 
-	return build.IncrementViews(db.Client)
+	return build.IncrementViews(dbConfig.Client)
 }
 
 func Like(build_id, user_id string) error {
@@ -123,7 +137,7 @@ func Like(build_id, user_id string) error {
 		return err
 	}
 
-	build.Like(db.Client, user_id)
+	build.Like(dbConfig.Client, user_id)
 
 	return nil
 }
@@ -136,7 +150,7 @@ func Dislike(build_id, user_id string) error {
 		return err
 	}
 
-	build.DisLike(db.Client, user_id)
+	build.DisLike(dbConfig.Client, user_id)
 
 	return nil
 }
@@ -160,7 +174,7 @@ func DeleteBuild(id string) error {
 		return err
 	}
 
-	return build.Delete(db.Client)
+	return build.Delete(dbConfig.Client)
 }
 
 func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
@@ -173,35 +187,18 @@ func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
 		return EditResponse{}, err
 	}
 
-	account, err := GetCurrentUserWithStripe(build.UserId)
+	account := services.GetUserAccount(build.UserId)
 
 	if err != nil {
 		fmt.Println("[BUILD CONTROLLER] [BUILD EDIT SETTINGS] [ACCOUNT] Error getting account in edit settings: ", err)
 		return EditResponse{}, err
 	}
 
-	if account.Customer.Subscriptions != nil && len(account.Customer.Subscriptions.Data) > 0 && account.Customer.Subscriptions.Data[0].Plan.Product.Name == "Pro" || build.Private != true {
-		resp.Can_be_public = true
-	} else {
-		var numOfPublicBuilds int
-		builds, err := GetUserBuilds(build.UserId)
+	can_toggle := canBePublic(account)
 
-		if err != nil {
-			fmt.Println("[BUILD CONTROLLER] [BUILD EDIT SETTINGS] [ACCOUNT] Error getting builds in edit settings: ", err)
-			return EditResponse{}, err
-		}
+	fmt.Println(countVisibleBuilds(account) <= account.MaxPublicBuilds)
 
-		for _, v := range builds {
-			if v.Private == false {
-				numOfPublicBuilds++
-			}
-		}
-
-		if numOfPublicBuilds == 0 {
-			resp.Can_be_public = true
-		}
-
-	}
+	resp.Can_be_public = can_toggle
 
 	resp.Build = build
 

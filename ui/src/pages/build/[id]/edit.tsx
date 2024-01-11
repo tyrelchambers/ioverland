@@ -107,7 +107,7 @@ const Edit = () => {
         make: "",
         year: "",
       },
-      private: false,
+      public: false,
       banner: "",
       photos: [],
       modifications: {},
@@ -160,8 +160,7 @@ const Edit = () => {
   const build = editSettings.data?.build;
   const remainingPhotos =
     account &&
-    account?.plan_limits.max_file_uploads -
-      ((build && build?.photos?.length) || 0);
+    account?.plan_limits.max_files - ((build && build?.photos?.length) || 0);
   const watchMake = form.watch("vehicle.make");
 
   if (!build || !account) return null;
@@ -694,7 +693,7 @@ const Edit = () => {
                 <Label>Upload photos </Label>
                 <MaxFileSizeText
                   isProPlan={account?.has_subscription}
-                  maxFileUploads={account?.plan_limits.max_file_uploads}
+                  maxFileUploads={account?.plan_limits.max_files}
                   maxFileSize={account?.plan_limits.max_file_size}
                   remainingPhotos={remainingPhotos}
                 />
@@ -705,7 +704,7 @@ const Edit = () => {
                     account?.has_subscription
                   )}
                   allowMultiple={true}
-                  maxFiles={account?.plan_limits.max_file_uploads}
+                  maxFiles={account?.plan_limits.max_files}
                   type="photos"
                   maxFileSize={account?.plan_limits.max_file_size}
                 />
@@ -715,21 +714,20 @@ const Edit = () => {
             <Separator className="my-4" />
             <FormField
               control={form.control}
-              name="private"
+              name="public"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      disabled={editSettings.data?.can_be_public == false}
+                      disabled={!editSettings.data?.can_be_public}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Make this build private?</FormLabel>
+                    <FormLabel>Make this build public?</FormLabel>
                     <FormDescription>
-                      Making this build private will hide it from other users so
-                      no one can see it. Builds are public by default.
+                      Anyone with the link can access this build.
                     </FormDescription>
                   </div>
                 </FormItem>

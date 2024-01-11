@@ -34,7 +34,7 @@ export const newBuildSchema = z.object({
     year: z.string().optional(),
   }),
   modifications: z.record(z.string(), modification).optional(),
-  private: z.boolean(),
+  public: z.boolean(),
   views: z.number().optional(),
   likes: z.array(z.string()).optional().nullable(),
 });
@@ -66,7 +66,7 @@ export const buildSchema = z.object({
     year: z.string().optional(),
   }),
   modifications: z.array(modification).optional(),
-  private: z.boolean(),
+  public: z.boolean(),
   user_id: z.string(),
   photos: z.array(media).optional(),
   banner: media.optional(),
@@ -101,7 +101,7 @@ const account = z.object({
   builds_remaining: z.number(),
   plan_limits: z.object({
     max_file_size: z.string(),
-    max_file_uploads: z.number(),
+    max_files: z.number(),
     max_builds: z.number(),
     video_support: z.boolean(),
   }),

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"api/db"
+	"api/controllers"
+	dbConfig "api/db"
 	"api/domain/build"
 	"api/domain/upload"
 	"api/domain/user"
@@ -55,8 +56,8 @@ func UploadAuth(c *gin.Context) {
 
 func main() {
 
-	db.Init()
-	err := db.Client.AutoMigrate(&build.Build{}, &build.Trip{}, &build.Vehicle{}, &build.Modification{}, &build.Media{}, &user.User{})
+	dbConfig.Init()
+	err := dbConfig.Client.AutoMigrate(&build.Build{}, &build.Trip{}, &build.Vehicle{}, &build.Modification{}, &build.Media{}, &user.User{})
 
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))
@@ -137,7 +138,7 @@ func main() {
 	userG.POST("/:build_id/bookmark", AuthRequired, routes.Bookmark)
 	userG.POST("/:build_id/remove-bookmark", AuthRequired, routes.Unbookmark)
 	userG.GET("/me", AuthRequired, routes.GetCurrentUser)
-	userG.GET("/me/account", AuthRequired, routes.GetAccount)
+	userG.GET("/me/account", AuthRequired, controllers.GetAccount)
 	userG.DELETE("/me", AuthRequired, routes.DeleteUser)
 	userG.POST("/me/restore", AuthRequired, routes.RestoreUser)
 
@@ -167,7 +168,7 @@ func main() {
 		),
 		gocron.NewTask(
 			func() {
-				usersToDelete, err := user.GetUsersToDelete(db.Client, time.Now())
+				usersToDelete, err := user.GetUsersToDelete(dbConfig.Client, time.Now())
 
 				if err != nil {
 					fmt.Println("Error getting users to delete: ", err)
@@ -183,7 +184,7 @@ func main() {
 				}
 
 				if len(usersToDelete) > 0 {
-					db.Client.Unscoped().Delete(&usersToDelete)
+					dbConfig.Client.Unscoped().Delete(&usersToDelete)
 				}
 			},
 		),

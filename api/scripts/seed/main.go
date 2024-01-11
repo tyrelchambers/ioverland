@@ -1,7 +1,7 @@
 package main
 
 import (
-	"api/db"
+	dbConfig "api/db"
 	"api/domain/user"
 	"fmt"
 
@@ -21,7 +21,7 @@ func main() {
 		}
 
 		fmt.Println("from faker: ", u)
-		user.Create(db.Client, &u)
+		user.Create(dbConfig.Client, &u)
 
 		if err != nil {
 			fmt.Println("from create: ", err)
