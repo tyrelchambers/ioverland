@@ -11,12 +11,7 @@ const Top10 = ({ top10 }: { top10: Build[] | undefined }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-12">
           {top10?.map((build, index) => (
-            <BuildItem
-              build={build}
-              key={build.uuid + "_" + index}
-              showVideo
-              playVideo
-            />
+            <BuildItem build={build} key={build.uuid + "_" + index} playVideo />
           ))}
         </div>
       </div>
