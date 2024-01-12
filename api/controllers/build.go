@@ -113,9 +113,9 @@ func CreateBuild(c *gin.Context) {
 }
 
 func GetById(c *gin.Context) {
-	user_id := c.Param("user_id")
+	build_id := c.Param("build_id")
 
-	buildEntity, err := build_service.GetById(dbConfig.Client, user_id)
+	buildEntity, err := build_service.GetById(dbConfig.Client, build_id)
 
 	if err != nil {
 		fmt.Println(err)
@@ -123,6 +123,7 @@ func GetById(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(buildEntity)
 	c.JSON(200, buildEntity)
 
 }
