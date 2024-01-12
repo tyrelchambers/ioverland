@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"api/db"
+	dbConfig "api/db"
 	"api/domain/build"
 )
 
 func GetUserBuilds(user_id string) ([]build.Build, error) {
-	builds, err := build.AllByUser(db.Client, user_id)
+	builds, err := build.AllByUser(dbConfig.Client, user_id)
 
 	if err != nil {
 		return nil, err

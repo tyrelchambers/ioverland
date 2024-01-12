@@ -1,4 +1,4 @@
-package db
+package dbConfig
 
 import (
 	"api/utils"

@@ -83,7 +83,7 @@ const Dashboard = () => {
                                 {build.likes?.length ?? 0}
                               </p>
                             </div>
-                            {build.private && <Badge>Private</Badge>}
+                            {build.public && <Badge>public</Badge>}
                           </footer>
                         }
                       />

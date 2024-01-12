@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api/db"
+	dbConfig "api/db"
 	"api/domain/build"
 	"fmt"
 	"math/rand"
@@ -17,7 +17,7 @@ type ExploreRes struct {
 func Explore() (ExploreRes, error) {
 	var res ExploreRes
 
-	count, err := build.AllBuildsCount(db.Client)
+	count, err := build.AllBuildsCount(dbConfig.Client)
 
 	if err != nil {
 		fmt.Println(err)

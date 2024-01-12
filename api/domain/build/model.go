@@ -16,7 +16,7 @@ type Build struct {
 	Links         pq.StringArray `gorm:"type:text[]" json:"links"`
 	Vehicle       Vehicle        `gorm:"embedded;embeddedPrefix:vehicle_;" json:"vehicle"`
 	Modifications []Modification `gorm:"constraint:OnUpdate:CASCADE;foreignKey:BuildId" json:"modifications"`
-	Private       bool           `gorm:"default:false" json:"private"`
+	Public        bool           `gorm:"default:false" json:"public"`
 	UserId        string         `gorm:"not null" json:"user_id"`
 	Banner        Media          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"banner"`
 	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"photos"`

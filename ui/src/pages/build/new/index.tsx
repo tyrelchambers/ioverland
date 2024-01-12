@@ -82,7 +82,7 @@ const Index = () => {
         year: "",
       },
       modifications: {},
-      private: false,
+      public: false,
     },
     disabled: account.data?.builds_remaining === 0 ? true : false,
   });
@@ -523,7 +523,7 @@ const Index = () => {
                 <Label className="mb-2">Photos</Label>
                 <MaxFileSizeText
                   isProPlan={account.data?.has_subscription}
-                  maxFileUploads={account.data?.plan_limits?.max_file_uploads}
+                  maxFileUploads={account.data?.plan_limits?.max_files}
                   maxFileSize={account?.data?.plan_limits?.max_file_size}
                 />
 
@@ -533,7 +533,7 @@ const Index = () => {
                     account.data?.has_subscription
                   )}
                   allowMultiple={true}
-                  maxFiles={account.data?.plan_limits?.max_file_uploads}
+                  maxFiles={account.data?.plan_limits?.max_files}
                   type="photos"
                   maxFileSize={account.data?.plan_limits?.max_file_size}
                   disabled={form.formState.disabled}
@@ -543,7 +543,7 @@ const Index = () => {
               <Separator className="my-4" />
               <FormField
                 control={form.control}
-                name="private"
+                name="public"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
                     <FormControl>
