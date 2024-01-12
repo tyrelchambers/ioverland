@@ -87,9 +87,9 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 
 		fmt.Println(string(body))
 
-	}
+		defer os.RemoveAll(fmt.Sprintf("%s/%s", temp_dir, current_path_query))
 
-	defer os.RemoveAll(fmt.Sprintf("%s/%s", temp_dir, current_path_query))
+	}
 
 	return nil
 }
