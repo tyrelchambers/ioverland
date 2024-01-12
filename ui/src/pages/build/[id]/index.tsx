@@ -131,7 +131,7 @@ const Build = () => {
       </Button>
     );
 
-  if (build.private && build.user_id !== user?.id) {
+  if (!build.public && build.user_id !== user?.id) {
     return (
       <section>
         <Header />
@@ -160,7 +160,7 @@ const Build = () => {
       <Header />
 
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">
-        {build.private && (
+        {!build.public && (
           <div className="bg-warning p-4 rounded-md flex items-center gap-4 mb-10">
             <EyeOff />
             <p className="text-warning-foreground">
