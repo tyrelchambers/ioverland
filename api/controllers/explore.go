@@ -2,29 +2,27 @@ package controllers
 
 import (
 	dbConfig "api/db"
-	"api/domain/build"
+	"api/services/build_service"
 	"fmt"
-	"math/rand"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ExploreRes struct {
-	Top10         []build.Build `json:"top_10"`
-	Featured      []build.Build `json:"featured"`
-	GoalRemaining int           `json:"goal_remaining"`
-	BuildCount    int64         `json:"build_count"`
+	GoalRemaining int   `json:"goal_remaining"`
+	BuildCount    int64 `json:"build_count"`
 }
 
-func Explore() (ExploreRes, error) {
+func Explore(c *gin.Context) {
 	var res ExploreRes
 
-	count, err := build.AllBuildsCount(dbConfig.Client)
+	count, err := build_service.AllBuildsCount(dbConfig.Client)
 
 	if err != nil {
 		fmt.Println(err)
-		return ExploreRes{}, err
+		c.String(500, err.Error())
+		return
 	}
-
-	rand.Shuffle(len(res.Top10), func(i, j int) { res.Top10[i], res.Top10[j] = res.Top10[j], res.Top10[i] })
 
 	if 20-int(count) < 0 {
 		res.GoalRemaining = 0
@@ -34,6 +32,6 @@ func Explore() (ExploreRes, error) {
 
 	res.BuildCount = count
 
-	return res, nil
+	c.JSON(200, res)
 
 }

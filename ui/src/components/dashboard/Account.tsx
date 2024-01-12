@@ -49,8 +49,8 @@ const Account = () => {
       plan,
     });
 
-    if (data.url) {
-      window.location.href = data.url;
+    if (data) {
+      window.location.href = data;
     }
   };
   return (

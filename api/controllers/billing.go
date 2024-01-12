@@ -2,21 +2,28 @@ package controllers
 
 import (
 	dbConfig "api/db"
-	"api/domain/user"
+	"api/services/user_service"
 	"api/utils"
 	"log"
 	"os"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
+	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
-func CreateCheckout(u *clerk.User, redirect_to, plan string) string {
+func CreateCheckout(c *gin.Context) {
+	redirect_to := c.Query("redirect_to")
+	plan := c.Query("plan")
+	user, _ := c.Get("user")
+
+	u := user.(*clerk.User)
+
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user.FindCurrentUser(dbConfig.Client, u.ID)
+	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, u.ID)
 	success_url := os.Getenv("APP_URL")
 
 	if redirect_to != "" {
@@ -49,12 +56,13 @@ func CreateCheckout(u *clerk.User, redirect_to, plan string) string {
 
 	if err != nil {
 		log.Fatal(err)
+		c.String(500, err.Error())
 	}
 
-	return result.URL
+	c.String(200, result.URL)
 }
 
-func CreateCustomerPortal(id string) string {
+func CreateCustomerPortal(c *gin.Context) {
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
@@ -67,5 +75,5 @@ func CreateCustomerPortal(id string) string {
 		portal_link = "https://billing.stripe.com/p/login/test_bIYcQJgy61JH5UY000"
 	}
 
-	return portal_link
+	c.String(200, portal_link)
 }

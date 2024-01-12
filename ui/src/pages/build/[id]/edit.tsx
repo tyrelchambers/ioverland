@@ -297,9 +297,16 @@ const Edit = () => {
 
   const deleteBuildHandler = () => {
     if (!build?.uuid) return;
-    deleteBuild.mutate({
-      build_id: build?.uuid,
-    });
+    deleteBuild.mutate(
+      {
+        build_id: build?.uuid,
+      },
+      {
+        onSuccess: () => {
+          router.push("/dashboard");
+        },
+      }
+    );
   };
 
   return (

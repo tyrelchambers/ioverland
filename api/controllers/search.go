@@ -2,17 +2,22 @@ package controllers
 
 import (
 	dbConfig "api/db"
-	"api/domain/build"
+	"api/services/build_service"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
-func Search(query string) []build.Build {
-	result, err := build.Search(dbConfig.Client, query)
+func Search(c *gin.Context) {
+	query := c.Query("query")
+
+	result, err := build_service.Search(dbConfig.Client, query)
 
 	if err != nil {
 		log.Println(err)
-		return []build.Build{}
+		c.String(500, err.Error())
+		return
 	}
 
-	return result
+	c.JSON(200, result)
 }

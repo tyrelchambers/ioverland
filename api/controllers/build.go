@@ -2,20 +2,21 @@ package controllers
 
 import (
 	dbConfig "api/db"
-	"api/domain/build"
-	"api/services"
-	"errors"
+	"api/models"
+	"api/services/build_service"
+	"api/services/user_service"
 	"fmt"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
+	"github.com/gin-gonic/gin"
 )
 
 type EditResponse struct {
-	Build         build.Build `json:"build"`
-	Can_be_public bool        `json:"can_be_public"`
+	Build         build_service.Build `json:"build"`
+	Can_be_public bool                `json:"can_be_public"`
 }
 
-func countVisibleBuilds(user services.AccountResponse) int {
+func countVisibleBuilds(user user_service.AccountResponse) int {
 	count := 0
 
 	for _, build := range user.Builds {
@@ -27,39 +28,52 @@ func countVisibleBuilds(user services.AccountResponse) int {
 	return count
 }
 
-func canBePublic(user services.AccountResponse) bool {
+func canBePublic(user user_service.AccountResponse) bool {
 	return countVisibleBuilds(user) < user.MaxPublicBuilds || user.MaxPublicBuilds == -1
 }
 
-func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
+func CreateBuild(c *gin.Context) {
+	user, _ := c.Get("user")
 
-	acc := services.GetUserAccount(clerk_user.ID)
+	var reqBody models.Build
+
+	if err := c.Bind(&reqBody); err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+
+	reqBody.UserId = user.(*clerk.User).ID
+
+	acc := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
 
 	if acc.BuildsRemaining == 0 {
-		return build.Build{}, errors.New("You have reached your build limit")
+		c.JSON(400, gin.H{"error": "You have reached your build limit"})
+		return
 	}
 
-	if newBuild.Name == "" {
-		return build.Build{}, errors.New("Name is required")
+	if reqBody.Name == "" {
+		c.JSON(400, gin.H{"error": "Name is required"})
+		return
 	}
 
-	modifications := []build.Modification{}
+	modifications := []models.Modification{}
 	links := []string{}
-	trips := []build.Trip{}
+	trips := []models.Trip{}
 
-	for _, v := range newBuild.Trips {
-		trips = append(trips, build.Trip{
+	for _, v := range reqBody.Trips {
+		trips = append(trips, models.Trip{
 			Name:    v.Name,
 			Year:    v.Year,
 			BuildId: v.BuildId,
 		})
 	}
 
-	for _, v := range newBuild.Links {
+	for _, v := range reqBody.Links {
 		links = append(links, v)
 	}
-	for _, v := range newBuild.Modifications {
-		modifications = append(modifications, build.Modification{
+	for _, v := range reqBody.Modifications {
+		modifications = append(modifications, models.Modification{
 			Category:    v.Category,
 			Subcategory: v.Subcategory,
 			Name:        v.Name,
@@ -67,104 +81,139 @@ func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
 		})
 	}
 
-	buildEntity := &build.Build{
-		Name:        newBuild.Name,
-		Description: newBuild.Description,
-		Budget:      newBuild.Budget,
-		Vehicle: build.Vehicle{
-			Model: newBuild.Vehicle.Model,
-			Make:  newBuild.Vehicle.Make,
-			Year:  newBuild.Vehicle.Year,
+	buildEntity := &build_service.Build{
+		Build: models.Build{
+			Name:        reqBody.Name,
+			Description: reqBody.Description,
+			Budget:      reqBody.Budget,
+			Vehicle: models.Vehicle{
+				Model: reqBody.Vehicle.Model,
+				Make:  reqBody.Vehicle.Make,
+				Year:  reqBody.Vehicle.Year,
+			},
+			Modifications: modifications,
+			Public:        reqBody.Public,
+			Trips:         trips,
+			Links:         links,
+			UserId:        reqBody.UserId,
+			Banner:        reqBody.Banner,
+			Photos:        reqBody.Photos,
 		},
-		Modifications: modifications,
-		Public:        newBuild.Public,
-		Trips:         trips,
-		Links:         links,
-		UserId:        newBuild.UserId,
-		Banner:        newBuild.Banner,
-		Photos:        newBuild.Photos,
 	}
 
 	err := buildEntity.Create(dbConfig.Client)
 
 	if err != nil {
 		fmt.Println(err)
-		return build.Build{}, err
+		c.String(500, err.Error())
+		return
 	}
 
-	return *buildEntity, nil
+	c.JSON(200, buildEntity)
 }
 
-func GetById(id string) (build.Build, error) {
-	buildEntity, err := build.GetById(dbConfig.Client, id)
+func GetById(c *gin.Context) {
+	build_id := c.Param("build_id")
+
+	buildEntity, err := build_service.GetById(dbConfig.Client, build_id)
 
 	if err != nil {
-		return build.Build{}, err
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
 	}
 
-	return buildEntity, nil
+	fmt.Println(buildEntity)
+	c.JSON(200, buildEntity)
 
 }
 
-func UpdateBuild(id string, data build.Build) (build.Build, error) {
+func UpdateBuild(c *gin.Context) {
 
-	can_be_public := canBePublic(services.GetUserAccount(data.UserId))
+	var reqBody build_service.Build
 
-	if !can_be_public && data.Public {
-		return build.Build{}, errors.New("You have reached your public build limit")
+	if err := c.Bind(&reqBody); err != nil {
+		c.String(500, err.Error())
+		return
 	}
 
-	err := data.Update(dbConfig.Client)
+	can_be_public := canBePublic(user_service.GetUserAccount(dbConfig.Client, reqBody.UserId))
+
+	if !can_be_public && reqBody.Public {
+		c.JSON(400, gin.H{"error": "You cannot make this build public"})
+		return
+	}
+
+	err := reqBody.Update(dbConfig.Client)
 
 	if err != nil {
-		return build.Build{}, err
+		c.String(500, err.Error())
+		return
 	}
 
-	return data, nil
+	c.JSON(200, reqBody)
 }
 
-func RemoveImage(build_id string, media_id string) error {
-	return build.RemoveImage(dbConfig.Client, build_id, media_id)
+func RemoveImage(c *gin.Context) {
+	media_id := c.Param("media_id")
+	build_id := c.Param("build_id")
+
+	build_service.RemoveImage(dbConfig.Client, build_id, media_id)
+
+	c.String(200, "success")
 }
 
-func IncrementViews(id string) error {
-	build, err := GetById(id)
+func IncrementViews(c *gin.Context) {
+	id := c.Param("build_id")
+
+	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
+		return
 	}
 
-	return build.IncrementViews(dbConfig.Client)
+	build.IncrementViews(dbConfig.Client)
+
+	c.String(200, "success")
 }
 
-func Like(build_id, user_id string) error {
+func Like(c *gin.Context) {
+	build_id := c.Param("build_id")
 
-	build, err := GetById(build_id)
+	user, _ := c.Get("user")
+
+	build, err := build_service.GetById(dbConfig.Client, build_id)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
+		return
 	}
 
-	build.Like(dbConfig.Client, user_id)
+	build.Like(dbConfig.Client, user.(*clerk.User).ID)
 
-	return nil
+	c.String(200, "success")
 }
 
-func Dislike(build_id, user_id string) error {
+func Dislike(c *gin.Context) {
+	id := c.Param("build_id")
 
-	build, err := GetById(build_id)
+	user, _ := c.Get("user")
+	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
+		return
 	}
 
-	build.DisLike(dbConfig.Client, user_id)
+	build.DisLike(dbConfig.Client, user.(*clerk.User).ID)
 
-	return nil
+	c.String(200, "success")
 }
-func DeleteBuild(id string) error {
+func DeleteBuild(c *gin.Context) {
+	id := c.Param("build_id")
 
-	build, err := GetById(id)
+	build, err := build_service.GetById(dbConfig.Client, id)
 	banner := build.Banner
 	photos := build.Photos
 
@@ -179,27 +228,38 @@ func DeleteBuild(id string) error {
 	}
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
+		return
+	}
+	err = build.Delete(dbConfig.Client)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
 	}
 
-	return build.Delete(dbConfig.Client)
+	c.String(200, "success")
 }
 
-func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
+func BuildEditSettings(c *gin.Context) {
+	id := c.Param("build_id")
+
 	var resp EditResponse
 
-	build, err := GetById(id)
+	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
 		fmt.Println("Error getting build in edit settings: ", err)
-		return EditResponse{}, err
+		c.String(500, err.Error())
+		return
 	}
 
-	account := services.GetUserAccount(build.UserId)
+	account := user_service.GetUserAccount(dbConfig.Client, build.UserId)
 
 	if err != nil {
 		fmt.Println("[BUILD CONTROLLER] [BUILD EDIT SETTINGS] [ACCOUNT] Error getting account in edit settings: ", err)
-		return EditResponse{}, err
+		c.String(500, err.Error())
+		return
 	}
 
 	can_toggle := canBePublic(account)
@@ -210,5 +270,5 @@ func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
 
 	resp.Build = build
 
-	return resp, nil
+	c.JSON(200, resp)
 }
