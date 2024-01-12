@@ -2,17 +2,25 @@ import { Build } from "@/types";
 import Link from "next/link";
 import React from "react";
 import RenderMedia from "./RenderMedia";
+import { Skeleton } from "./ui/skeleton";
+
+export const BuildSkeleton = () => (
+  <div className="flex flex-col gap-3">
+    <Skeleton className="w-full aspect-video" />
+
+    <Skeleton className="h-5 w-full" />
+    <Skeleton className="h-5 w-full" />
+  </div>
+);
 
 const BuildItem = ({
   build,
   footer,
   playVideo,
-  showVideo,
 }: {
   build: Build;
   footer?: JSX.Element;
   playVideo?: boolean;
-  showVideo?: boolean;
 }) => {
   return (
     <Link href={`/build/${build.uuid}`} key={build.uuid}>
