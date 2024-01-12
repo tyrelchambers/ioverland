@@ -3,11 +3,9 @@ package main
 import (
 	"api/controllers"
 	dbConfig "api/db"
-	"api/domain/build"
-	"api/domain/upload"
-	"api/domain/user"
 	"api/middleware"
-	"api/routes"
+	"api/models"
+	"api/services/user_service"
 	"api/utils"
 	"fmt"
 	"log"
@@ -57,7 +55,7 @@ func UploadAuth(c *gin.Context) {
 func main() {
 
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&build.Build{}, &build.Trip{}, &build.Vehicle{}, &build.Modification{}, &build.Media{}, &user.User{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Vehicle{}, &models.Modification{}, &models.Media{}, &models.User{})
 
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))
@@ -115,41 +113,41 @@ func main() {
 	billingG := api.Group("/billing")
 	exploreG := api.Group("/explore")
 
-	buildG.POST("", AuthRequired, routes.CreateBuild)
-	buildG.GET("/:build_id", routes.GetById)
-	buildG.PUT("/:build_id", AuthRequired, routes.Update)
-	buildG.GET("/:build_id/edit", AuthRequired, routes.BuildEditSettings)
-	buildG.POST("/:build_id/view", routes.IncrementViews)
-	buildG.POST("/:build_id/like", AuthRequired, routes.Like)
-	buildG.POST("/:build_id/dislike", AuthRequired, routes.Dislike)
-	buildG.DELETE("/:build_id/delete", AuthRequired, routes.Delete)
-	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, routes.RemoveImage)
+	buildG.POST("", AuthRequired, controllers.CreateBuild)
+	buildG.GET("/:build_id", controllers.GetById)
+	buildG.PUT("/:build_id", AuthRequired, controllers.UpdateBuild)
+	buildG.GET("/:build_id/edit", AuthRequired, controllers.BuildEditSettings)
+	buildG.POST("/:build_id/view", controllers.IncrementViews)
+	buildG.POST("/:build_id/like", AuthRequired, controllers.Like)
+	buildG.POST("/:build_id/dislike", AuthRequired, controllers.Dislike)
+	buildG.DELETE("/:build_id/delete", AuthRequired, controllers.DeleteBuild)
+	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, controllers.RemoveImage)
 
-	buildsG.GET("/user/:user_id", AuthRequired, routes.GetBuilds)
+	buildsG.GET("/user/:user_id", AuthRequired, controllers.GetUserBuilds)
 
-	billingG.POST("/checkout", AuthRequired, routes.CreateCheckout)
-	billingG.GET("/checkout", AuthRequired, routes.CreateCheckout)
-	billingG.POST("/portal", AuthRequired, routes.CreateCustomerPortal)
+	billingG.POST("/checkout", AuthRequired, controllers.CreateCheckout)
+	billingG.GET("/checkout", AuthRequired, controllers.CreateCheckout)
+	billingG.POST("/portal", AuthRequired, controllers.CreateCustomerPortal)
 
-	uploadG.POST("/process", UploadAuth, upload.UploadRoute)
-	uploadG.PATCH("", UploadAuth, upload.UploadRoute)
-	uploadG.POST("/revert", UploadAuth, upload.UploadRoute)
+	uploadG.POST("/process", UploadAuth, controllers.ProcessUpload)
+	uploadG.PATCH("", UploadAuth, controllers.ProcessUpload)
+	uploadG.POST("/revert", UploadAuth, controllers.Revert)
 
-	userG.POST("/:build_id/bookmark", AuthRequired, routes.Bookmark)
-	userG.POST("/:build_id/remove-bookmark", AuthRequired, routes.Unbookmark)
-	userG.GET("/me", AuthRequired, routes.GetCurrentUser)
+	userG.POST("/:build_id/bookmark", AuthRequired, controllers.Bookmark)
+	userG.POST("/:build_id/remove-bookmark", AuthRequired, controllers.Unbookmark)
+	userG.GET("/me", AuthRequired, controllers.GetCurrentUser)
 	userG.GET("/me/account", AuthRequired, controllers.GetAccount)
-	userG.DELETE("/me", AuthRequired, routes.DeleteUser)
-	userG.POST("/me/restore", AuthRequired, routes.RestoreUser)
+	userG.DELETE("/me", AuthRequired, controllers.DeleteUser)
+	userG.POST("/me/restore", AuthRequired, controllers.RestoreUser)
 
-	webhooksG.POST("", routes.Webhooks)
-	webhooksG.POST("/stripe", routes.StripeWebhooks)
+	webhooksG.POST("", controllers.Webhooks)
+	webhooksG.POST("/stripe", controllers.StripeWebhooks)
 
-	exploreG.GET("", routes.Explore)
+	exploreG.GET("", controllers.Explore)
 
-	api.GET("/search", routes.Search)
+	api.GET("/search", controllers.Search)
 
-	r.GET("/health", routes.Health)
+	r.GET("/health", controllers.Health)
 
 	// create a scheduler
 	s, err := gocron.NewScheduler()
@@ -168,7 +166,7 @@ func main() {
 		),
 		gocron.NewTask(
 			func() {
-				usersToDelete, err := user.GetUsersToDelete(dbConfig.Client, time.Now())
+				usersToDelete, err := user_service.GetUsersToDelete(dbConfig.Client, time.Now())
 
 				if err != nil {
 					fmt.Println("Error getting users to delete: ", err)

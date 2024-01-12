@@ -1,4 +1,4 @@
-package upload
+package controllers
 
 import (
 	"api/utils"
@@ -9,9 +9,47 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lucsky/cuid"
 )
 
-func ProcessUpload(current_path_query string, request UploadRequest, payload []byte, user_id string, c *gin.Context) error {
+type UploadRequest struct {
+	UploadLength int64  `header:"Upload-Length"`
+	MimeType     string `header:"Content-Type"`
+	UploadOffset int64  `header:"Upload-Offset"`
+	UploadName   string `header:"Upload-Name"`
+}
+
+func ProcessUpload(c *gin.Context) {
+	user_id, _ := c.Get("clerk-user-id")
+
+	var request UploadRequest
+
+	current_path_query := c.Query("patch")
+
+	if err := c.BindHeader(&request); err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	if c.Request.Method == http.MethodPost {
+
+		rand_string := cuid.New()
+		uploadDir := fmt.Sprintf("temp-uploads/%s", rand_string)
+
+		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+			os.Mkdir(uploadDir, 0755)
+		}
+
+		c.String(200, rand_string)
+		return
+	}
+
+	payload, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	temp_dir := "temp-uploads"
 
 	path := fmt.Sprintf("%s/%s/%s", temp_dir, current_path_query, request.UploadName)
@@ -20,7 +58,7 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		c.String(500, err.Error())
 	}
 	defer f.Close()
 
@@ -28,14 +66,14 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 	_, err = f.Seek(request.UploadOffset, 0)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		c.String(500, err.Error())
 	}
 
 	// Write the received bytes to the file
 	_, err = f.Write(payload)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		c.String(500, err.Error())
 	}
 
 	node_env := os.Getenv("NODE_ENV")
@@ -52,7 +90,7 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 	file_stat, err := f.Stat()
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
 	}
 
 	size := file_stat.Size()
@@ -62,7 +100,7 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 
 		if err != nil {
 			fmt.Println(err)
-			return err
+			c.String(500, err.Error())
 		}
 		req, _ := http.NewRequest("PUT", endpoint, new_file)
 
@@ -74,7 +112,7 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 
 		if err != nil {
 			fmt.Println(err)
-			return err
+			c.String(500, err.Error())
 		}
 
 		// read res body
@@ -82,7 +120,7 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 
 		if err != nil {
 			fmt.Println(err)
-			return err
+			c.String(500, err.Error())
 		}
 
 		fmt.Println(string(body))
@@ -91,20 +129,29 @@ func ProcessUpload(current_path_query string, request UploadRequest, payload []b
 
 	}
 
-	return nil
 }
 
-func Revert(c *gin.Context, url string) error {
-	name_parts := strings.Split(url, "/")
+func Revert(c *gin.Context) {
+	body, err := io.ReadAll(c.Request.Body)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	requestBody := string(body)
+
+	name_parts := strings.Split(requestBody, "/")
 	filename := name_parts[len(name_parts)-1]
 	user_id := name_parts[len(name_parts)-2]
 	path := fmt.Sprintf("uploads/%s", user_id)
 
-	_, err := utils.BunnyClient.Delete(c.Request.Context(), path, filename)
+	_, err = utils.BunnyClient.Delete(c.Request.Context(), path, filename)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
+		return
 	}
 
-	return nil
+	c.String(200, "success")
 }

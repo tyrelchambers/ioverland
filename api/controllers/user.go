@@ -2,9 +2,8 @@ package controllers
 
 import (
 	dbConfig "api/db"
-	"api/domain/build"
-	"api/domain/user"
-	"api/services"
+	"api/services/build_service"
+	"api/services/user_service"
 	"api/utils"
 	"fmt"
 	"time"
@@ -17,103 +16,103 @@ import (
 	"gorm.io/gorm"
 )
 
-type GetCurrentUserWithStripeResponse struct {
-	User     user.User        `json:"user"`
-	Customer *stripe.Customer `json:"customer"`
+func Bookmark(c *gin.Context) {
+	var body struct {
+		BuildId string `json:"build_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	user, _ := c.Get("user")
+
+	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	u.Bookmark(dbConfig.Client, build)
+
+	c.String(200, "success")
+
 }
 
-func Bookmark(build_id, user_id string) error {
-
-	build, err := build.GetById(dbConfig.Client, build_id)
-
-	if err != nil {
-		return err
+func Unbookmark(c *gin.Context) {
+	var body struct {
+		BuildId string `json:"build_id"`
 	}
 
-	user, err := user.FindCurrentUser(dbConfig.Client, user_id)
-
-	if err != nil {
-		return err
+	if err := c.Bind(&body); err != nil {
+		c.String(500, err.Error())
+		return
 	}
 
-	user.Bookmark(dbConfig.Client, build)
+	user, _ := c.Get("user")
 
-	return nil
+	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		c.String(500, err.Error())
+		return
+	}
+
+	u.Unbookmark(dbConfig.Client, build)
+
+	c.String(200, "success")
 }
 
-func Unbookmark(build_id, user_id string) error {
+func GetCurrentUser(c *gin.Context) {
+	user, _ := c.Get("user")
 
-	build, err := build.GetById(dbConfig.Client, build_id)
-
-	if err != nil {
-		return err
-	}
-
-	user, err := user.FindCurrentUser(dbConfig.Client, user_id)
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		return err
+		c.String(500, err.Error())
+		return
 	}
 
-	user.Unbookmark(dbConfig.Client, build)
-
-	return nil
-}
-
-func GetCurrentUser(id string) (user.User, error) {
-	return user.FindCurrentUser(dbConfig.Client, id)
-}
-
-func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, error) {
-
-	var resp GetCurrentUserWithStripeResponse
-
-	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
-
-	stripe.Key = stripe_key
-
-	domainUser, err := GetCurrentUser(id)
-
-	if err != nil {
-		return resp, err
-	}
-
-	resp.User = domainUser
-
-	if domainUser.CustomerId != "" {
-		params := &stripe.CustomerParams{}
-		params.AddExpand("subscriptions.data.plan.product")
-
-		cus, err := customer.Get(domainUser.CustomerId, params)
-
-		if err != nil {
-			return resp, err
-		}
-		resp.Customer = cus
-
-	}
-
-	return resp, nil
-
+	c.JSON(200, u)
 }
 
 func GetAccount(c *gin.Context) {
 	user, _ := c.Get("user")
 
-	acc := services.GetUserAccount(user.(*clerk.User).ID)
+	acc := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
 
 	c.JSON(200, acc)
 
 }
 
-func DeleteUser(u *clerk.User) error {
+func DeleteUser(c *gin.Context) {
+	user, _ := c.Get("user")
+
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user.FindCurrentUser(dbConfig.Client, u.ID)
+	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		return err
+		fmt.Println("Error finding user: ", err)
+		c.String(500, err.Error())
+		return
 	}
 
 	var cus_sub *stripe.Subscription
@@ -125,7 +124,9 @@ func DeleteUser(u *clerk.User) error {
 		cus, err := customer.Get(domainUser.CustomerId, params)
 
 		if err != nil {
-			return err
+			fmt.Println("Error getting customer: ", err)
+			c.String(500, err.Error())
+			return
 		}
 
 		if len(cus.Subscriptions.Data) > 0 {
@@ -134,7 +135,9 @@ func DeleteUser(u *clerk.User) error {
 			})
 
 			if err != nil {
-				return err
+				fmt.Println("Error updating subscription: ", err)
+				c.String(500, err.Error())
+				return
 			}
 
 			cus_sub = sub
@@ -155,25 +158,29 @@ func DeleteUser(u *clerk.User) error {
 
 		if err != nil {
 			fmt.Println("Error deleting user: ", err)
-			return err
+			c.String(500, err.Error())
 		}
 
 		if res.Deleted {
-			services.DeleteUser(&domainUser)
+			user_service.DeleteUser(&domainUser)
 		}
 
 	}
 
-	return nil
+	c.String(200, "success")
 }
 
-func RestoreUser(u *clerk.User) error {
+func RestoreUser(c *gin.Context) {
+	user, _ := c.Get("user")
+
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
-	domainUser, err := user.FindCurrentUser(dbConfig.Client, u.ID)
+	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		return err
+		fmt.Println("Error finding user: ", err)
+		c.String(500, err.Error())
+		return
 	}
 
 	if domainUser.CustomerId != "" {
@@ -183,7 +190,9 @@ func RestoreUser(u *clerk.User) error {
 		cus, err := customer.Get(domainUser.CustomerId, params)
 
 		if err != nil {
-			return err
+			fmt.Println("Error getting customer: ", err)
+			c.String(500, err.Error())
+			return
 		}
 
 		_, err = subscription.Update(cus.Subscriptions.Data[0].ID, &stripe.SubscriptionParams{
@@ -191,7 +200,9 @@ func RestoreUser(u *clerk.User) error {
 		})
 
 		if err != nil {
-			return err
+			fmt.Println("Error updating subscription: ", err)
+			c.String(500, err.Error())
+			return
 		}
 
 	}
@@ -202,7 +213,5 @@ func RestoreUser(u *clerk.User) error {
 	}
 
 	domainUser.Update(dbConfig.Client)
-
-	return nil
 
 }

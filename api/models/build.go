@@ -1,4 +1,4 @@
-package build
+package models
 
 import (
 	"time"
@@ -25,14 +25,6 @@ type Build struct {
 	FeaturedOn    time.Time      `json:"featured_on"`
 }
 
-type Trip struct {
-	ID      int    `gorm:"primaryKey" json:"id"`
-	Uuid    string `gorm:"type:uuid;default:gen_random_uuid()" json:"uuid"`
-	Name    string `gorm:"type:varchar(255)" json:"name"`
-	Year    string `gorm:"type:varchar(255)" json:"year"`
-	BuildId int    `json:"build_id"`
-}
-
 type Vehicle struct {
 	Model string `gorm:"type:varchar(255)" json:"model"`
 	Make  string `gorm:"type:varchar(255)" json:"make"`
@@ -46,13 +38,4 @@ type Modification struct {
 	Name        string `gorm:"type:varchar(255)" json:"name"`
 	Price       string `gorm:"type:varchar(255)" json:"price"`
 	BuildId     int    `json:"build_id"`
-}
-
-type Media struct {
-	ID       int    `gorm:"primaryKey" json:"id"`
-	BuildId  string `gorm:"type:uuid;" json:"build_id"`
-	Name     string `gorm:"type:varchar(255)" json:"name"`
-	Type     string `gorm:"type:varchar(255)" json:"type"`
-	MimeType string `gorm:"type:varchar(255)" json:"mime_type"`
-	Url      string `json:"url"`
 }

@@ -1,10 +1,15 @@
-package build
+package build_service
 
 import (
+	"api/models"
 	"fmt"
 
 	"gorm.io/gorm"
 )
+
+type Build struct {
+	models.Build
+}
 
 func (b *Build) Create(db *gorm.DB) error {
 
@@ -64,7 +69,7 @@ func GetById(db *gorm.DB, uuid string) (Build, error) {
 }
 
 func RemoveImage(db *gorm.DB, build_id, media_id string) error {
-	db.Table("media").Where("id = ? AND build_id = ?", media_id, build_id).Delete(&Media{})
+	db.Table("media").Where("id = ? AND build_id = ?", media_id, build_id).Delete(&models.Media{})
 
 	return nil
 }
