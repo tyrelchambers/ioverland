@@ -10,6 +10,7 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -198,14 +199,33 @@ const Account = () => {
         </div>
       )}
       {!account?.deleted_at && (
-        <Button
-          variant="destructiveMuted"
-          className="mt-6"
-          onClick={deleteHandler}
-          type="button"
-        >
-          {deleteUser.isPending ? "Deleting..." : "Delete account"}
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="destructiveMuted" className="mt-6" type="button">
+              Delete Account
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete account</DialogTitle>
+              <DialogDescription>
+                Delete your account forever. If you are subscribed to a plan, it
+                will delete at the end of the billing cycle and you can use your
+                account until then. Otherwise, it will delete instantly.
+              </DialogDescription>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="button" onClick={deleteHandler}>
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

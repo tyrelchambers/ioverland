@@ -185,7 +185,9 @@ func main() {
 
 				if len(usersToDelete) > 0 {
 					dbConfig.Client.Unscoped().Delete(&usersToDelete)
+					fmt.Println("Deleted", len(usersToDelete), "users")
 				}
+
 			},
 		),
 	)

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/customer"
 	"gorm.io/gorm"
@@ -137,4 +138,12 @@ func GetUserAccount(user_id string) AccountResponse {
 	resp.MaxPublicBuilds = domainUser.MaxPublicBuilds
 
 	return resp
+}
+
+func DeleteUser(user *user.User) {
+	dbConfig.Client.Unscoped().Delete(&user)
+}
+
+func DeleteUserFromClerk(user *clerk.User) {
+	utils.ClerkClient.Users().Delete(user.ID)
 }

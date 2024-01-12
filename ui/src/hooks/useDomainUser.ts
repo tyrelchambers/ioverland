@@ -105,6 +105,7 @@ export const useDomainUser = (id?: string) => {
       });
       context.invalidateQueries({ queryKey: ["me"] });
       context.invalidateQueries({ queryKey: ["account"] });
+      window.location.href = "/";
     },
   });
 
