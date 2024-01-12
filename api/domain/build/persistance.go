@@ -111,6 +111,6 @@ func AllBuildsCount(db *gorm.DB) (int64, error) {
 
 func Search(db *gorm.DB, query string) ([]Build, error) {
 	var builds []Build
-	err := db.Where("name ILIKE ?", "%"+query+"%").Preload("Banner", "type='banner'").Find(&builds).Error
+	err := db.Where("name ILIKE ? AND public = true", "%"+query+"%").Preload("Banner", "type='banner'").Find(&builds).Error
 	return builds, err
 }
