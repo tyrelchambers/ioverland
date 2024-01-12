@@ -721,7 +721,6 @@ const Edit = () => {
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      disabled={!editSettings.data?.can_be_public}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">

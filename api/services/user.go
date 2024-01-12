@@ -59,6 +59,7 @@ var Plan_limits = map[string]PlanLimit{
 }
 
 func GetUserAccount(user_id string) AccountResponse {
+	var resp AccountResponse
 
 	utils.StripeClientInit()
 
@@ -68,11 +69,18 @@ func GetUserAccount(user_id string) AccountResponse {
 		fmt.Println(err)
 	}
 
-	userBuilds, err := domainUser.BuildCount(dbConfig.Client)
+	userBuildsCount, err := domainUser.BuildCount(dbConfig.Client)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	userBuilds, err := build.AllByUser(dbConfig.Client, user_id)
 
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	resp.Builds = userBuilds
 
 	var cus stripe.Customer
 
@@ -89,8 +97,6 @@ func GetUserAccount(user_id string) AccountResponse {
 		cus = *customer
 	}
 
-	var resp AccountResponse
-
 	if cus.Subscriptions != nil && cus.Subscriptions.TotalCount > 0 {
 		resp.HasSubscription = true
 		resp.Subscription.ID = cus.Subscriptions.Data[0].ID
@@ -105,7 +111,7 @@ func GetUserAccount(user_id string) AccountResponse {
 
 	resp.DeletedAt = &domainUser.DeletedAt
 
-	resp.TotalBuilds = userBuilds
+	resp.TotalBuilds = userBuildsCount
 
 	if resp.HasSubscription {
 		pl := Plan_limits[cus.Subscriptions.Data[0].Plan.Product.Name]
@@ -114,11 +120,11 @@ func GetUserAccount(user_id string) AccountResponse {
 		if pl.MaxBuilds == -1 {
 			resp.BuildsRemaining = -1
 		} else {
-			resp.BuildsRemaining = pl.MaxBuilds - userBuilds
+			resp.BuildsRemaining = pl.MaxBuilds - userBuildsCount
 		}
 
 	} else {
-		remainingBuilds := 1 - userBuilds
+		remainingBuilds := 1 - userBuildsCount
 		resp.PlanLimits = Plan_limits["Free"]
 
 		if remainingBuilds < 0 {

@@ -17,16 +17,18 @@ type EditResponse struct {
 
 func countVisibleBuilds(user services.AccountResponse) int {
 	count := 0
+
 	for _, build := range user.Builds {
 		if build.Public {
 			count++
 		}
 	}
+
 	return count
 }
 
 func canBePublic(user services.AccountResponse) bool {
-	return countVisibleBuilds(user) <= user.MaxPublicBuilds
+	return countVisibleBuilds(user) < user.MaxPublicBuilds || user.MaxPublicBuilds == -1
 }
 
 func Build(newBuild build.Build, clerk_user *clerk.User) (build.Build, error) {
@@ -105,6 +107,12 @@ func GetById(id string) (build.Build, error) {
 }
 
 func UpdateBuild(id string, data build.Build) (build.Build, error) {
+
+	can_be_public := canBePublic(services.GetUserAccount(data.UserId))
+
+	if !can_be_public && data.Public {
+		return build.Build{}, errors.New("You have reached your public build limit")
+	}
 
 	err := data.Update(dbConfig.Client)
 
@@ -196,7 +204,7 @@ func BuildEditSettings(id string, data build.Build) (EditResponse, error) {
 
 	can_toggle := canBePublic(account)
 
-	fmt.Println(countVisibleBuilds(account) <= account.MaxPublicBuilds)
+	fmt.Println(canBePublic(account))
 
 	resp.Can_be_public = can_toggle
 
