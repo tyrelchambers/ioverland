@@ -20,10 +20,13 @@ import {
 } from "../ui/dialog";
 import PricingBlock from "../PricingBlock";
 import { plans } from "@/constants";
+import BuildTotals, { BuildTotalsSkeleton } from "./BuildTotals";
+import Subscription, { SubscriptionSekelton } from "./Subscription";
+import NoSubscription from "./NoSubscription";
 
 const Account = () => {
   const {
-    account: { data: account },
+    account: { data: account, isLoading },
     createPortal,
     deleteUser,
     restoreUser,
@@ -62,31 +65,11 @@ const Account = () => {
           plan type.
         </p>
 
-        <div className="p-6 rounded-xl border border-border mt-6">
-          <p className="text-muted-foreground">
-            You have{" "}
-            <span className="font-black text-foreground">
-              {account?.total_builds} builds
-            </span>{" "}
-            in total.
-            {account?.builds_remaining !== -1 && (
-              <p>
-                You also have{" "}
-                <span className="font-black text-foreground">
-                  {account?.builds_remaining} builds remaining.
-                </span>{" "}
-              </p>
-            )}
-          </p>
-
-          {!account?.has_subscription && (
-            <p className="text-muted-foreground text-sm mt-4 italic">
-              Since you&apos;re on the free plan, you can only have one build.
-              If you&apos;d like to create more, please sign up for the Pro
-              subscription.
-            </p>
-          )}
-        </div>
+        {isLoading ? (
+          <BuildTotalsSkeleton />
+        ) : (
+          <BuildTotals account={account} />
+        )}
       </section>
       <Separator className="my-10" />
       <section className="w-full max-w-2xl">
@@ -100,75 +83,12 @@ const Account = () => {
           to swap between which one build will be public.
         </p>
 
-        {account?.has_subscription ? (
-          <div className="mt-10 flex flex-col p-6 rounded-xl w-full bg-gradient-to-tr from-blue-900 to-blue-500 shadow-lg">
-            <Zap className="text-white mb-4" />
-            <p className="text-white text-xl">
-              You are currently subscribed to the {account.subscription.name}{" "}
-              plan!
-            </p>
-            <p className="text-white text-2xl my-4 font-black">
-              ${account.subscription.price / 100}/month
-            </p>
-            <Badge variant="outline" className="text-sm  text-background w-fit">
-              Next invoice date:{" "}
-              {format(
-                new Date(account.subscription.next_invoice_date),
-                "MMMM dd, yyyy"
-              )}
-            </Badge>
-            <Button
-              type="button"
-              variant="secondary"
-              className="mt-3"
-              onClick={getPortalLink}
-            >
-              Manage subscription
-            </Button>
-          </div>
+        {isLoading ? (
+          <SubscriptionSekelton />
+        ) : account?.has_subscription ? (
+          <Subscription account={account} getPortalLink={getPortalLink} />
         ) : (
-          <div className="mt-10 flex flex-col p-6 rounded-xl w-full  bg-card ">
-            <Zap className="text-muted-foreground" />
-            <p className="font-bold mt-6">
-              Not currently subscribed to any plan.
-            </p>
-            <p className="text-muted-foreground text-sm">
-              If you&apos;d like to experience all iOverland has to offer,
-              please purchase a plan.
-            </p>
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="mt-4">Choose a plan</Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[1280px]">
-                <div className="max-w-[1280px] w-full mx-auto">
-                  <DialogHeader>
-                    <DialogTitle>Choose a plan</DialogTitle>
-                    <DialogDescription>
-                      Paid on a monthly basis.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-4 lg:p-0 mt-4">
-                    {plans.map((plan) => (
-                      <PricingBlock
-                        plan={plan}
-                        key={plan.name}
-                        checkoutLink={getCheckoutLink}
-                      />
-                    ))}
-                  </div>
-                  <DialogFooter className="flex !flex-col items-center">
-                    <DrawerClose asChild className="text-muted-foreground mt-4">
-                      <Button type="button" variant="outline">
-                        Cancel
-                      </Button>
-                    </DrawerClose>
-                  </DialogFooter>
-                </div>
-              </DialogContent>
-            </Dialog>
-          </div>
+          <NoSubscription getCheckoutLink={getCheckoutLink} />
         )}
       </section>
       <Separator className="my-10" />

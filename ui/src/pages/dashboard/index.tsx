@@ -1,4 +1,4 @@
-import BuildItem from "@/components/BuildItem";
+import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
 import Header from "@/components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
@@ -67,7 +67,14 @@ const Dashboard = () => {
           <section className="mt-10">
             <TabsContent value="builds">
               <H2 className="mb-10">My Builds</H2>
-              {builds && builds.length > 0 ? (
+
+              {user.isLoading ? (
+                <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
+                  <BuildSkeleton />
+                  <BuildSkeleton />
+                  <BuildSkeleton />
+                </ul>
+              ) : builds && builds.length > 0 ? (
                 <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
                   {builds
                     ?.toSorted((a, b) => (a.name > b.name ? 1 : -1))
@@ -97,7 +104,13 @@ const Dashboard = () => {
             </TabsContent>
             <TabsContent value="bookmarks">
               <H2>Bookmarks</H2>
-              {bookmarks && bookmarks.length > 0 ? (
+              {user.isLoading ? (
+                <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
+                  <BuildSkeleton />
+                  <BuildSkeleton />
+                  <BuildSkeleton />
+                </ul>
+              ) : bookmarks && bookmarks.length > 0 ? (
                 <ul className="grid grid-cols-1 lg:grid-cols-3 p-4 lg:p-0 gap-6">
                   {bookmarks?.map((build) => (
                     <BuildItem build={build} key={build.uuid} />
