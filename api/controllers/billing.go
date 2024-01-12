@@ -9,7 +9,6 @@ import (
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/stripe/stripe-go/v76"
-	portal "github.com/stripe/stripe-go/v76/billingportal/session"
 	"github.com/stripe/stripe-go/v76/checkout/session"
 )
 
@@ -60,15 +59,13 @@ func CreateCustomerPortal(id string) string {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	params := &stripe.BillingPortalSessionParams{
-		Customer: stripe.String(id),
+	var portal_link string
+
+	if os.Getenv("NODE_ENV") == "production" {
+		portal_link = "https://billing.stripe.com/p/login/14k7t3531aoXbM45kk"
+	} else {
+		portal_link = "https://billing.stripe.com/p/login/test_bIYcQJgy61JH5UY000"
 	}
 
-	result, err := portal.New(params)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return result.URL
+	return portal_link
 }

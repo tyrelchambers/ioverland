@@ -125,6 +125,47 @@ func StripeWebhooks(c *gin.Context) {
 	}
 
 	switch event.Type {
+	case "customer.subscription.updated":
+		var data stripe.Subscription
+		if err := json.Unmarshal(event.Data.Raw, &data); err != nil {
+			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+			c.String(400, "Bad Request")
+			return
+		}
+
+		usr, err := user.FindUserByCustomerId(dbConfig.Client, data.Customer.ID)
+
+		if err != nil {
+			fmt.Println("Error getting user in Stripe webhook event: ", err)
+			c.String(500, "Something went wrong")
+			return
+		}
+
+		usr.CustomerId = data.Customer.ID
+
+		cus_params := &stripe.CustomerParams{}
+		cus_params.AddExpand("subscriptions")
+		stripe_cus, err := customer.Get(usr.CustomerId, cus_params)
+
+		if err != nil {
+			fmt.Println("Error getting customer in Stripe webhook event: ", err)
+			c.String(500, "Something went wrong")
+			return
+		}
+
+		params := &stripe.SubscriptionParams{}
+		params.AddExpand("items.data.price.product")
+
+		stripe_sub, err := subscription.Get(stripe_cus.Subscriptions.Data[0].ID, params)
+		if err != nil {
+			fmt.Println("Error getting customer in Stripe webhook event: ", err)
+			c.String(500, "Something went wrong")
+			return
+		}
+		usr.MaxPublicBuilds = int(services.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
+
+		usr.Update(dbConfig.Client)
+
 	case "checkout.session.completed":
 		var data stripe.CheckoutSession
 
