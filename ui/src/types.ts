@@ -118,6 +118,17 @@ const explore = z.object({
 
 export type Explore = z.infer<typeof explore>;
 
+const publicProfile = z.object({
+  username: z.string(),
+  avatar: z.string(),
+  builds: z.array(buildSchema),
+  created_at: z.date(),
+  views: z.number(),
+  followers: z.number(),
+  bio: z.string(),
+});
+
+export type PublicProfile = z.infer<typeof publicProfile>;
 export interface EditBuildResponse {
   build: Build;
   can_be_public: boolean;

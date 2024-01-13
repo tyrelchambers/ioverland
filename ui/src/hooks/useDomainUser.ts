@@ -1,9 +1,12 @@
 import { request } from "@/lib/axios";
-import { Account, DomainUser } from "@/types";
+import { Account, DomainUser, PublicProfile } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-export const useDomainUser = (id?: string) => {
+export const useDomainUser = ({
+  id,
+  username,
+}: { id?: string; username?: string } = {}) => {
   const { getToken, userId } = useAuth();
 
   const context = useQueryClient();
@@ -154,6 +157,14 @@ export const useDomainUser = (id?: string) => {
     },
   });
 
+  const getPublicUser = useQuery({
+    queryKey: ["user", username],
+    queryFn: async (): Promise<PublicProfile> => {
+      return request.get(`/api/user/${username}`).then((res) => res.data);
+    },
+    enabled: !!username,
+  });
+
   return {
     user: query,
     bookmark,
@@ -163,5 +174,6 @@ export const useDomainUser = (id?: string) => {
     deleteUser,
     restoreUser,
     createCheckoutLink,
+    publicUser: getPublicUser,
   };
 };

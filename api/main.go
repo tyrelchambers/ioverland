@@ -162,6 +162,7 @@ func main() {
 	userG.GET("/me/account", AuthRequired, controllers.GetAccount)
 	userG.DELETE("/me", AuthRequired, controllers.DeleteUser)
 	userG.POST("/me/restore", AuthRequired, controllers.RestoreUser)
+	userG.GET("/:username", controllers.GetUserPublicProfile)
 
 	webhooksG.POST("", controllers.Webhooks)
 	webhooksG.POST("/stripe", controllers.StripeWebhooks)

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	dbConfig "api/db"
+	"api/models"
 	"api/services/build_service"
 	"api/services/user_service"
 	"api/utils"
@@ -310,4 +311,55 @@ func RestoreUser(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "success")
+}
+
+func GetUserPublicProfile(c *gin.Context) {
+	type UserResp struct {
+		Username  *string        `json:"username"`
+		Avatar    string         `json:"avatar"`
+		Builds    []models.Build `json:"builds"`
+		CreatedAt time.Time      `json:"created_at"`
+		Views     int            `json:"views"`
+		Followers int            `json:"followers"`
+	}
+
+	username := c.Param("username")
+
+	clerk_user_list, err := utils.ClerkClient.Users().ListAll(clerk.ListAllUsersParams{Usernames: []string{username}})
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETUSERPUBLICPROFILE] Error getting user list from Clerk",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if len(clerk_user_list) == 0 {
+		c.String(http.StatusNotFound, "User not found")
+		return
+	}
+
+	user, err := user_service.GetUserByUuid(dbConfig.Client, clerk_user_list[0].ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETUSERPUBLICPROFILE] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	userResp := UserResp{
+		Username:  clerk_user_list[0].Username,
+		Avatar:    clerk_user_list[0].ProfileImageURL,
+		Builds:    user.Builds,
+		CreatedAt: user.CreatedAt,
+		Views:     user.Views,
+		Followers: 0,
+	}
+
+	c.JSON(http.StatusOK, userResp)
 }
