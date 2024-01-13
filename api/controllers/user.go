@@ -5,7 +5,7 @@ import (
 	"api/services/build_service"
 	"api/services/user_service"
 	"api/utils"
-	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -22,7 +22,7 @@ func Bookmark(c *gin.Context) {
 	}
 
 	if err := c.Bind(&body); err != nil {
-		c.String(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -31,20 +31,37 @@ func Bookmark(c *gin.Context) {
 	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [BOOKMARK] Error getting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [BOOKMARK] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	u.Bookmark(dbConfig.Client, build)
+	err = u.Bookmark(dbConfig.Client, build)
 
-	c.String(200, "success")
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [BOOKMARK] Error bookmarking build",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 
 }
 
@@ -54,7 +71,7 @@ func Unbookmark(c *gin.Context) {
 	}
 
 	if err := c.Bind(&body); err != nil {
-		c.String(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -63,20 +80,37 @@ func Unbookmark(c *gin.Context) {
 	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UNBOOKMARK] Error getting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UNBOOKMARK] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	u.Unbookmark(dbConfig.Client, build)
+	err = u.Unbookmark(dbConfig.Client, build)
 
-	c.String(200, "success")
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UNBOOKMARK] Error unbookmarking build",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }
 
 func GetCurrentUser(c *gin.Context) {
@@ -85,19 +119,32 @@ func GetCurrentUser(c *gin.Context) {
 	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETCURRENTUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(200, u)
+	c.JSON(http.StatusOK, u)
 }
 
 func GetAccount(c *gin.Context) {
 	user, _ := c.Get("user")
 
-	acc := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
+	acc, err := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
 
-	c.JSON(200, acc)
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETACCOUNT] Error getting account",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, acc)
 
 }
 
@@ -110,8 +157,11 @@ func DeleteUser(c *gin.Context) {
 	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		fmt.Println("Error finding user: ", err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [DELETEUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -124,8 +174,11 @@ func DeleteUser(c *gin.Context) {
 		cus, err := customer.Get(domainUser.CustomerId, params)
 
 		if err != nil {
-			fmt.Println("Error getting customer: ", err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [USER] [DELETEUSER] Error getting customer",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -135,8 +188,11 @@ func DeleteUser(c *gin.Context) {
 			})
 
 			if err != nil {
-				fmt.Println("Error updating subscription: ", err)
-				c.String(500, err.Error())
+				utils.CaptureError(c, &utils.CaptureErrorParams{
+					Message: "[CONTROLLERS] [USER] [DELETEUSER] Error deleting subscription",
+					Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+				})
+				c.String(http.StatusInternalServerError, err.Error())
 				return
 			}
 
@@ -151,23 +207,44 @@ func DeleteUser(c *gin.Context) {
 			Time:  time.Unix(cus_sub.CurrentPeriodEnd, 0),
 		}
 
-		domainUser.Update(dbConfig.Client)
+		err = domainUser.Update(dbConfig.Client)
+
+		if err != nil {
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [USER] [DELETEUSER] Error updating user with DeletedAt field during subscription delete",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 	} else {
 		res, err := utils.ClerkClient.Users().Delete(domainUser.Uuid)
 
 		if err != nil {
-			fmt.Println("Error deleting user: ", err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [USER] [DELETEUSER] Error deleting user from clerk",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		if res.Deleted {
-			user_service.DeleteUser(&domainUser)
+			err := user_service.DeleteUser(&domainUser)
+
+			if err != nil {
+				utils.CaptureError(c, &utils.CaptureErrorParams{
+					Message: "[CONTROLLERS] [USER] [DELETEUSER] Error deleting user from database",
+					Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+				})
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 
 	}
 
-	c.String(200, "success")
+	c.String(http.StatusOK, "success")
 }
 
 func RestoreUser(c *gin.Context) {
@@ -178,8 +255,11 @@ func RestoreUser(c *gin.Context) {
 	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
-		fmt.Println("Error finding user: ", err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -190,8 +270,11 @@ func RestoreUser(c *gin.Context) {
 		cus, err := customer.Get(domainUser.CustomerId, params)
 
 		if err != nil {
-			fmt.Println("Error getting customer: ", err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error getting customer",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -200,8 +283,11 @@ func RestoreUser(c *gin.Context) {
 		})
 
 		if err != nil {
-			fmt.Println("Error updating subscription: ", err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error restoring subscription",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "subscription_id": cus.Subscriptions.Data[0].ID},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -212,6 +298,16 @@ func RestoreUser(c *gin.Context) {
 		Time:  time.Unix(0, 0),
 	}
 
-	domainUser.Update(dbConfig.Client)
+	err = domainUser.Update(dbConfig.Client)
 
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error updating user with DeletedAt field during subscription restore",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }

@@ -155,8 +155,9 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	return resp, nil
 }
 
-func DeleteUser(user *User) {
-	dbConfig.Client.Unscoped().Delete(&user)
+func DeleteUser(user *User) error {
+	err := dbConfig.Client.Unscoped().Delete(&user).Error
+	return err
 }
 
 func DeleteUserFromClerk(user *clerk.User) {

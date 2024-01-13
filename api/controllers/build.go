@@ -4,6 +4,7 @@ import (
 	dbConfig "api/db"
 	"api/models"
 	"api/services/build_service"
+	"api/services/media_service"
 	"api/services/user_service"
 	"api/utils"
 	"fmt"
@@ -302,12 +303,12 @@ func DeleteBuild(c *gin.Context) {
 	photos := build.Photos
 
 	if banner.Url != "" {
-		DeleteImageFromStorage(banner.Url)
+		media_service.DeleteImageFromStorage(banner.Url)
 	}
 
 	if len(photos) > 0 {
 		for _, v := range photos {
-			DeleteImageFromStorage(v.Url)
+			media_service.DeleteImageFromStorage(v.Url)
 		}
 	}
 
