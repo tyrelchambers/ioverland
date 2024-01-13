@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -78,13 +79,27 @@ type CaptureErrorParams struct {
 	Message string
 }
 
-func CaptureError(c *gin.Context, params CaptureErrorParams) {
+// CaptureError captures an error message and sends it to the Sentry error tracking service.
+//
+// Parameters:
+// - c: The gin.Context object representing the current HTTP request.
+// - params: The CaptureErrorParams struct containing the error message and additional parameters.
+//
+// No return value.
+func CaptureError(c *gin.Context, params *CaptureErrorParams) {
+	fmt.Println(params)
 	if hub := sentrygin.GetHubFromContext(c); hub != nil {
 		hub.WithScope(func(scope *sentry.Scope) {
-			setExtraKeys(scope, params.Extra)
+			if hasExtraKeys(params.Extra) {
+				setExtraKeys(scope, params.Extra)
+			}
 			hub.CaptureMessage(params.Message)
 		})
 	}
+}
+
+func hasExtraKeys(extra map[string]interface{}) bool {
+	return len(extra) > 0
 }
 
 func setExtraKeys(scope *sentry.Scope, extra map[string]interface{}) {

@@ -6,6 +6,7 @@ import (
 	"api/services/build_service"
 	"api/services/user_service"
 	"fmt"
+	"net/http"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
@@ -48,7 +49,7 @@ func CreateBuild(c *gin.Context) {
 	acc := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
 
 	if acc.BuildsRemaining == 0 {
-		c.JSON(400, gin.H{"error": "You have reached your build limit"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You have reached your build limit"})
 		return
 	}
 
