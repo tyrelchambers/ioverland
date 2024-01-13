@@ -1,7 +1,11 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func Health(c *gin.Context) {
-	c.String(200, "OK")
+	c.String(http.StatusOK, "OK")
 }
