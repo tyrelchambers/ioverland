@@ -17,10 +17,13 @@ import { Badge } from "@/components/ui/badge";
 import Account from "@/components/dashboard/Account";
 import { H2 } from "@/components/Heading";
 import EmptyListText from "@/components/EmptyListText";
+import { useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const Dashboard = () => {
   const router = useRouter();
-
+  const { user: clerkUser } = useUser();
   const { user } = useDomainUser();
 
   const builds = user.data?.builds;
@@ -45,8 +48,8 @@ const Dashboard = () => {
         value={router.query.tab as string}
         onValueChange={updateUrl}
       >
-        <header className="w-full bg-card ">
-          <div className="max-w-screen-2xl mx-auto w-full flex justify-center">
+        <header className="w-full bg-card py-2">
+          <div className="max-w-screen-2xl mx-auto w-full flex justify-between items-center">
             <TabsList>
               <TabsTrigger value="builds">
                 <Grid2X2 size={18} className="mr-2" />
@@ -61,8 +64,22 @@ const Dashboard = () => {
                 Account
               </TabsTrigger>
             </TabsList>
+
+            <div className="flex gap-3">
+              <Link href="/build/new">
+                <Button type="button" variant="outline">
+                  New build
+                </Button>
+              </Link>
+              <Link href={`/user/${clerkUser?.username}`}>
+                <Button type="button" size="sm">
+                  View profile
+                </Button>
+              </Link>
+            </div>
           </div>
         </header>
+
         <section className="max-w-screen-2xl mx-auto my-10">
           <section className="mt-10">
             <TabsContent value="builds">
