@@ -68,7 +68,7 @@ var Plan_limits = map[string]PlanLimit{
 	},
 }
 
-func GetUserAccount(db *gorm.DB, user_id string) AccountResponse {
+func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	var resp AccountResponse
 
 	utils.StripeClientInit()
@@ -77,6 +77,7 @@ func GetUserAccount(db *gorm.DB, user_id string) AccountResponse {
 
 	if err != nil {
 		fmt.Println(err)
+		return resp, err
 	}
 
 	var userBuildsCount int64
@@ -84,12 +85,14 @@ func GetUserAccount(db *gorm.DB, user_id string) AccountResponse {
 
 	if err != nil {
 		fmt.Println(err)
+		return resp, err
 	}
 
 	userBuilds, err := build_service.AllByUser(dbConfig.Client, user_id)
 
 	if err != nil {
 		fmt.Println(err)
+		return resp, err
 	}
 
 	resp.Builds = userBuilds
@@ -104,6 +107,7 @@ func GetUserAccount(db *gorm.DB, user_id string) AccountResponse {
 
 		if err != nil {
 			fmt.Println(err)
+			return resp, err
 		}
 
 		cus = *customer
@@ -148,11 +152,12 @@ func GetUserAccount(db *gorm.DB, user_id string) AccountResponse {
 
 	resp.MaxPublicBuilds = domainUser.MaxPublicBuilds
 
-	return resp
+	return resp, nil
 }
 
-func DeleteUser(user *User) {
-	dbConfig.Client.Unscoped().Delete(&user)
+func DeleteUser(user *User) error {
+	err := dbConfig.Client.Unscoped().Delete(&user).Error
+	return err
 }
 
 func DeleteUserFromClerk(user *clerk.User) {

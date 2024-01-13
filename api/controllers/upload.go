@@ -27,7 +27,7 @@ func ProcessUpload(c *gin.Context) {
 	current_path_query := c.Query("patch")
 
 	if err := c.BindHeader(&request); err != nil {
-		c.String(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -40,12 +40,16 @@ func ProcessUpload(c *gin.Context) {
 			os.Mkdir(uploadDir, 0755)
 		}
 
-		c.String(200, rand_string)
+		c.String(http.StatusOK, rand_string)
 		return
 	}
 
 	payload, err := io.ReadAll(c.Request.Body)
 	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error reading body",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -57,23 +61,32 @@ func ProcessUpload(c *gin.Context) {
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
-		fmt.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error creating file",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 	}
 	defer f.Close()
 
 	// Seek to the specified offset
 	_, err = f.Seek(request.UploadOffset, 0)
 	if err != nil {
-		fmt.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error seeking within file",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	// Write the received bytes to the file
 	_, err = f.Write(payload)
 	if err != nil {
-		fmt.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error writing to file",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	node_env := os.Getenv("NODE_ENV")
@@ -90,7 +103,11 @@ func ProcessUpload(c *gin.Context) {
 	file_stat, err := f.Stat()
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error getting file stat",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	size := file_stat.Size()
@@ -99,8 +116,11 @@ func ProcessUpload(c *gin.Context) {
 		new_file, err := os.Open(path)
 
 		if err != nil {
-			fmt.Println(err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error opening file",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 		}
 		req, _ := http.NewRequest("PUT", endpoint, new_file)
 
@@ -111,31 +131,36 @@ func ProcessUpload(c *gin.Context) {
 		res, err := http.DefaultClient.Do(req)
 
 		if err != nil {
-			fmt.Println(err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error uploading file",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 		}
 
 		// read res body
-		body, err := io.ReadAll(res.Body)
+		_, err = io.ReadAll(res.Body)
 
 		if err != nil {
-			fmt.Println(err)
-			c.String(500, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [UPLOAD] [PROCESSUPLOAD] Error reading body from Bunny API",
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
 		}
-
-		fmt.Println(string(body))
 
 		defer os.RemoveAll(fmt.Sprintf("%s/%s", temp_dir, current_path_query))
 
 	}
 
+	c.String(http.StatusOK, "success")
 }
 
 func Revert(c *gin.Context) {
 	body, err := io.ReadAll(c.Request.Body)
 
 	if err != nil {
-		c.String(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -149,9 +174,13 @@ func Revert(c *gin.Context) {
 	_, err = utils.BunnyClient.Delete(c.Request.Context(), path, filename)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [UPLOAD] [REVERT] Error deleting image from storage",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.String(200, "success")
+	c.String(http.StatusOK, "success")
 }

@@ -7,11 +7,9 @@ import (
 	"api/services/user_service"
 	"api/utils"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
@@ -35,6 +33,10 @@ func Webhooks(c *gin.Context) {
 	wh, err := svix.NewWebhook(wh_secret)
 
 	if err != nil {
+		c.String(http.StatusInternalServerError, "Error creating webhook")
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [CLERK] Error creating webhook",
+		})
 		log.Fatal(err)
 	}
 
@@ -46,14 +48,20 @@ func Webhooks(c *gin.Context) {
 	err = wh.Verify(payload, headers)
 
 	if err != nil {
-		c.String(401, "Unauthorized - Could not verify webhook signature")
+		c.String(http.StatusUnauthorized, "Unauthorized - Could not verify webhook signature")
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [CLERK] Unauthorized - Could not verify webhook signature",
+		})
 		return
 	}
 
 	evtType := utils.GetProperty(body, "type")
 
 	if evtType == nil {
-		c.String(202, "No event")
+		c.String(http.StatusAccepted, "No event")
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [CLERK] No event",
+		})
 		return
 	}
 
@@ -68,7 +76,10 @@ func Webhooks(c *gin.Context) {
 		}
 
 		if err := json.Unmarshal(payload, &data); err != nil {
-			c.String(400, "Bad Request")
+			c.String(http.StatusBadRequest, "Bad Request")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [CLERK] Could not unmarshal payload",
+			})
 			return
 		}
 
@@ -80,15 +91,21 @@ func Webhooks(c *gin.Context) {
 		err := user_service.Create(dbConfig.Client, &newUser)
 
 		if err != nil {
-			c.String(500, err.Error())
+			c.String(http.StatusInternalServerError, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [CLERK] Could not create user",
+				Extra: map[string]interface{}{
+					"error": err.Error(),
+				},
+			})
 			return
 		}
 
-		c.String(200, "success")
+		c.String(http.StatusOK, "success")
 		return
 	}
 
-	c.String(202, "success")
+	c.String(http.StatusAccepted, "success")
 	return
 
 }
@@ -101,16 +118,26 @@ func StripeWebhooks(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, MaxBodyBytes)
 	payload, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading request body: %v\n", err)
-		c.String(400, "Bad Request")
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [STRIPE] Could not read request body",
+			Extra: map[string]interface{}{
+				"error": err.Error(),
+			},
+		})
+		c.String(http.StatusBadRequest, "Bad Request")
 		return
 	}
 
 	event := stripe.Event{}
 
 	if err := json.Unmarshal(payload, &event); err != nil {
-		fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
-		c.String(400, "Bad Request")
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [STRIPE] Could not unmarshal payload",
+			Extra: map[string]interface{}{
+				"error": err.Error(),
+			},
+		})
+		c.String(http.StatusBadRequest, "Bad Request")
 		return
 	}
 
@@ -119,8 +146,13 @@ func StripeWebhooks(c *gin.Context) {
 	event, err = webhook.ConstructEvent(payload, signatureHeader, endpointSecret)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "⚠️  Webhook signature verification failed. %v\n", err)
-		c.String(400, "Bad Request")
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [STRIPE] Could not construct event",
+			Extra: map[string]interface{}{
+				"error": err.Error(),
+			},
+		})
+		c.String(http.StatusBadRequest, "Bad Request")
 		return
 	}
 
@@ -128,16 +160,27 @@ func StripeWebhooks(c *gin.Context) {
 	case "customer.subscription.updated":
 		var data stripe.Subscription
 		if err := json.Unmarshal(event.Data.Raw, &data); err != nil {
-			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
-			c.String(400, "Bad Request")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.updated] Could not read request body",
+				Extra: map[string]interface{}{
+					"error": err.Error(),
+				},
+			})
+			c.String(http.StatusBadRequest, "Bad Request")
 			return
 		}
 
 		usr, err := user_service.FindUserByCustomerId(dbConfig.Client, data.Customer.ID)
 
 		if err != nil {
-			fmt.Println("Error getting user in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.updated] Could not find user",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 
@@ -148,8 +191,14 @@ func StripeWebhooks(c *gin.Context) {
 		stripe_cus, err := customer.Get(usr.CustomerId, cus_params)
 
 		if err != nil {
-			fmt.Println("Error getting customer in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.updated] Could not find user from Stripe API",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 
@@ -158,8 +207,14 @@ func StripeWebhooks(c *gin.Context) {
 
 		stripe_sub, err := subscription.Get(stripe_cus.Subscriptions.Data[0].ID, params)
 		if err != nil {
-			fmt.Println("Error getting customer in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.updated] Could not find subscription from Stripe API",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 		usr.MaxPublicBuilds = int(user_service.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
@@ -170,16 +225,27 @@ func StripeWebhooks(c *gin.Context) {
 		var data stripe.CheckoutSession
 
 		if err := json.Unmarshal(event.Data.Raw, &data); err != nil {
-			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
-			c.String(400, "Bad Request")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [checkout.session.completed] Could not read request body",
+				Extra: map[string]interface{}{
+					"error": err.Error(),
+				},
+			})
+			c.String(http.StatusBadRequest, "Bad Request")
 			return
 		}
 
 		usr, err := user_service.FindCurrentUser(dbConfig.Client, data.Metadata["clerk_user_id"])
 
 		if err != nil {
-			fmt.Println("Error getting user in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [checkout.session.completed] Could not find user from user_service",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 
@@ -190,8 +256,14 @@ func StripeWebhooks(c *gin.Context) {
 		stripe_cus, err := customer.Get(usr.CustomerId, cus_params)
 
 		if err != nil {
-			fmt.Println("Error getting customer in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [checkout.session.completed] Could not find user from Stripe API",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 
@@ -200,8 +272,14 @@ func StripeWebhooks(c *gin.Context) {
 
 		stripe_sub, err := subscription.Get(stripe_cus.Subscriptions.Data[0].ID, params)
 		if err != nil {
-			fmt.Println("Error getting customer in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [checkout.session.completed] Could not find subscription from Stripe API",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 		usr.MaxPublicBuilds = int(user_service.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
@@ -212,24 +290,41 @@ func StripeWebhooks(c *gin.Context) {
 		var subscriptionData stripe.Subscription
 
 		if err := json.Unmarshal(event.Data.Raw, &subscriptionData); err != nil {
-			fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
-			c.String(400, "Bad Request")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.deleted] Could not read request body",
+				Extra: map[string]interface{}{
+					"error": err.Error(),
+				},
+			})
+			c.String(http.StatusInternalServerError, "Bad Request")
 			return
 		}
 
 		usr, err := user_service.FindUserByCustomerId(dbConfig.Client, subscriptionData.Customer.ID)
 
 		if err != nil {
-			fmt.Println("Error getting user in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.deleted] Could not find user from user_service",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 
 		builds, err := build_service.AllByUser(dbConfig.Client, usr.Uuid)
 
 		if err != nil {
-			fmt.Println("Error getting builds in Stripe webhook event: ", err)
-			c.String(500, "Something went wrong")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.deleted] Could not find builds for user from build_service",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
 
@@ -244,5 +339,5 @@ func StripeWebhooks(c *gin.Context) {
 
 		usr.Update(dbConfig.Client)
 	}
-	c.String(200, "success")
+	c.String(http.StatusOK, "success")
 }

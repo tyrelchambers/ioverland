@@ -3,7 +3,8 @@ package controllers
 import (
 	dbConfig "api/db"
 	"api/services/build_service"
-	"log"
+	"api/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,10 +15,13 @@ func Search(c *gin.Context) {
 	result, err := build_service.Search(dbConfig.Client, query)
 
 	if err != nil {
-		log.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [SEARCH] [SEARCH] Error searching",
+			Extra:   map[string]interface{}{"error": err.Error(), "query": query},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(200, result)
+	c.JSON(http.StatusOK, result)
 }

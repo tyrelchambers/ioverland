@@ -15,6 +15,10 @@ func Authorize(c *gin.Context) (*clerk.User, error) {
 	sessClaims, err := utils.ClerkClient.VerifyToken(authToken[1])
 
 	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[MIDDLEWARE] [AUTHORIZATION] [VERIFY TOKEN] ",
+			Extra:   map[string]interface{}{"error": err.Error()},
+		})
 		return nil, err
 	}
 
@@ -22,6 +26,10 @@ func Authorize(c *gin.Context) (*clerk.User, error) {
 	user, err := utils.ClerkClient.Users().Read(sessClaims.Claims.Subject)
 
 	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[MIDDLEWARE] [AUTHORIZATION] [GET USER] ",
+			Extra:   map[string]interface{}{"error": err.Error()},
+		})
 		panic(err)
 	}
 

@@ -7,6 +7,9 @@ import (
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
+	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/stripe/stripe-go"
 )
@@ -68,4 +71,40 @@ func StripeClientInit() {
 	stripe_key := GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
+}
+
+type CaptureErrorParams struct {
+	Extra   map[string]interface{}
+	Message string
+}
+
+// CaptureError captures an error message and sends it to the Sentry error tracking service.
+//
+// Parameters:
+// - c: The gin.Context object representing the current HTTP request.
+// - params: The CaptureErrorParams struct containing the error message and additional parameters.
+//
+// No return value.
+func CaptureError(c *gin.Context, params *CaptureErrorParams) {
+	if os.Getenv("NODE_ENV") == "development" {
+		return
+	}
+	if hub := sentrygin.GetHubFromContext(c); hub != nil {
+		hub.WithScope(func(scope *sentry.Scope) {
+			if hasExtraKeys(params.Extra) {
+				setExtraKeys(scope, params.Extra)
+			}
+			hub.CaptureMessage(params.Message)
+		})
+	}
+}
+
+func hasExtraKeys(extra map[string]interface{}) bool {
+	return len(extra) > 0
+}
+
+func setExtraKeys(scope *sentry.Scope, extra map[string]interface{}) {
+	for key, value := range extra {
+		scope.SetExtra(key, value)
+	}
 }

@@ -15,6 +15,8 @@ import (
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
+	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron/v2"
@@ -36,14 +38,17 @@ func UploadAuth(c *gin.Context) {
 	user_id := c.Request.Header.Get("Clerk-User-Id")
 
 	if user_id == "" {
-		c.String(401, "Unauthorized - no header")
+		c.String(http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	_, err := utils.ClerkClient.Users().Read(user_id)
 
 	if err != nil {
-		c.String(401, "Unauthorized")
+		c.String(http.StatusInternalServerError, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[MIDDLEWARE] [AUTHENTICATION] [NO CLERK USER] " + err.Error(),
+		})
 		return
 	}
 
@@ -53,6 +58,17 @@ func UploadAuth(c *gin.Context) {
 }
 
 func main() {
+	// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:           utils.GoDotEnvVariable("SENTRY_DSN"),
+		EnableTracing: true,
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	}); err != nil {
+		fmt.Printf("Sentry initialization failed: %v", err)
+	}
 
 	dbConfig.Init()
 	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Vehicle{}, &models.Modification{}, &models.Media{}, &models.User{})
@@ -63,12 +79,14 @@ func main() {
 	utils.ClerkClient = client
 
 	if err != nil {
+		sentry.CaptureMessage("[MAIN] [CLERK INIT] " + err.Error())
 		os.Exit(1)
 	}
 
 	wh_secret := utils.GoDotEnvVariable("CLERK_WH_SECRET")
 
 	if wh_secret == "" {
+		sentry.CaptureMessage("[MAIN] [WH SECRET] " + err.Error())
 		os.Exit(1)
 	}
 
@@ -91,6 +109,7 @@ func main() {
 	utils.BunnyClient = bunnyClient
 
 	if err != nil {
+		sentry.CaptureMessage("[MAIN] [BUNNY INIT] " + err.Error())
 		log.Fatal(err)
 	}
 
@@ -103,6 +122,10 @@ func main() {
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
+
+	r.Use(sentrygin.New(sentrygin.Options{
+		Repanic: true,
+	}))
 
 	api := r.Group("/api")
 	buildG := api.Group("/build")

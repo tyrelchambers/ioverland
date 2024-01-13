@@ -5,6 +5,7 @@ import (
 	"api/services/user_service"
 	"api/utils"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -56,7 +57,8 @@ func CreateCheckout(c *gin.Context) {
 
 	if err != nil {
 		log.Fatal(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{Message: "[CONTROLLER] [BILLING] [CREATECHECKOUT] " + err.Error()})
+		c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	c.String(200, result.URL)

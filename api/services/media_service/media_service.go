@@ -1,4 +1,4 @@
-package controllers
+package media_service
 
 import (
 	"api/utils"
@@ -16,6 +16,10 @@ func DeleteImageFromStorage(url string) error {
 	_, err := utils.BunnyClient.Delete(context.Background(), path, filename)
 
 	if err != nil {
+		utils.CaptureError(nil, &utils.CaptureErrorParams{
+			Message: "[SERVICE] [MEDIA] [DELETEIMAGEFROMSTORAGE] Error deleting image from storage",
+			Extra:   map[string]interface{}{"error": err.Error(), "url": url},
+		})
 		return err
 	}
 
