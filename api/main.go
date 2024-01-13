@@ -15,6 +15,8 @@ import (
 
 	"git.sr.ht/~jamesponddotco/bunnystorage-go"
 	"github.com/clerkinc/clerk-sdk-go/clerk"
+	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron/v2"
@@ -66,6 +68,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:           utils.GoDotEnvVariable("SENTRY_DSN"),
+		EnableTracing: true,
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	}); err != nil {
+		fmt.Printf("Sentry initialization failed: %v", err)
+	}
+
 	wh_secret := utils.GoDotEnvVariable("CLERK_WH_SECRET")
 
 	if wh_secret == "" {
@@ -103,6 +117,10 @@ func main() {
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
+
+	r.Use(sentrygin.New(sentrygin.Options{
+		Repanic: true,
+	}))
 
 	api := r.Group("/api")
 	buildG := api.Group("/build")
