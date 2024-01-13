@@ -94,7 +94,63 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-screen-xl w-full flex flex-col lg:flex-row mx-auto mb-20 lg:mb-40 p-6">
+      <section className="my-20 max-w-screen-xl mx-auto">
+        <div className="flex items-center flex-col-reverse lg:flex-row p-4 lg:p-0">
+          <div className="flex flex-col lg:p-20 p-6">
+            <H2 className="lg:text-6xl text-4xl mb-10">
+              We would love to see your build
+            </H2>
+            <p className="text-muted-foreground max-w-3xl text-xl leading-relaxed">
+              Welcome to iOverland, the ultimate platform to showcase and
+              celebrate your thrilling overlanding builds. Whether you&apos;re
+              an avid adventurer, a DIY enthusiast, or simply passionate about
+              creating the perfect off-road vehicle, our app has everything you
+              need to document, share, and connect.
+            </p>
+            <Link href="/sign-up" className="mt-10">
+              <Button type="button" size="lg">
+                Sign up
+              </Button>
+            </Link>
+          </div>
+          <div className="lg:h-[600px] lg:w-[700px] w-full h-[400px] relative overflow-hidden rounded-xl shadow-xl">
+            <Image
+              src="/group car 1.jpg"
+              alt=""
+              fill
+              className="scale-105 object-cover"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="relative">
+        <Image
+          src="/topographical.jpg"
+          fill
+          alt=""
+          className="object-cover opacity-10"
+        />
+        <section className="max-w-screen-xl w-full mx-auto lg:py-20 py-20 relative p-6">
+          <header className="max-w-2xl w-full">
+            <H2 className="mb-5 text-4xl">Want to see some cool builds?</H2>
+            <p className="text-muted-foreground mb-8">
+              Discover awe-inspiring overlanding builds from across the globe.
+              Immerse yourself in a world of customized vehicles, epic trips,
+              and awesome modifications that will fuel your desire and inspire
+              your own overlanding adventures.
+            </p>
+
+            <Link href="/explore">
+              <Button type="button" size="lg">
+                Checkout some builds
+              </Button>
+            </Link>
+          </header>
+        </section>
+      </section>
+
+      <section className="max-w-screen-xl w-full flex flex-col lg:flex-row mx-auto mb-20 lg:py-40 p-6">
         <div className="lg:h-[600px] lg:w-[600px] w-full h-[400px]  relative overflow-hidden rounded-xl shadow-xl mb-10 lg:mb-0">
           <Image src="/car by water.jpg" alt="" fill className="object-cover" />
         </div>
@@ -149,7 +205,7 @@ export default function Home() {
           alt=""
           className="object-cover opacity-10"
         />
-        <section className="max-w-screen-xl w-full mx-auto lg:mb-40 py-20 relative p-6">
+        <section className="max-w-screen-xl w-full mx-auto lg:py-20 py-20 relative p-6">
           <header className="max-w-2xl w-full">
             <H2 className="mb-5 text-4xl">Roadmap</H2>
             <p className="text-muted-foreground">
@@ -188,35 +244,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </section>
-
-      <section className="my-20 max-w-screen-xl mx-auto">
-        <div className="flex items-center flex-col-reverse lg:flex-row p-4 lg:p-0">
-          <div className="flex flex-col lg:p-20 p-6">
-            <H2 className="lg:text-6xl text-4xl mb-10">
-              We would love to see your build
-            </H2>
-            <p className="text-muted-foreground max-w-3xl text-xl leading-relaxed">
-              Overlanding is an ever-growing recreational activity and we all
-              need a place where we can show off the love and care we have put
-              into our Overland builds. We would love to see your build on
-              iOverland so it can be appreciated in all it&apos;s glory!
-            </p>
-            <Link href="/sign-up" className="mt-10">
-              <Button type="button" size="lg">
-                Sign up
-              </Button>
-            </Link>
-          </div>
-          <div className="lg:h-[600px] lg:w-[700px] w-full h-[400px] relative overflow-hidden rounded-xl shadow-xl">
-            <Image
-              src="/group car 1.jpg"
-              alt=""
-              fill
-              className="scale-105 object-cover"
-            />
-          </div>
-        </div>
       </section>
     </main>
   );
