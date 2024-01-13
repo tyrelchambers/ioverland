@@ -5,6 +5,7 @@ import (
 	"api/models"
 	"api/services/build_service"
 	"api/services/user_service"
+	"api/utils"
 	"fmt"
 	"net/http"
 
@@ -40,13 +41,22 @@ func CreateBuild(c *gin.Context) {
 
 	if err := c.Bind(&reqBody); err != nil {
 		fmt.Println(err)
-		c.String(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	reqBody.UserId = user.(*clerk.User).ID
 
-	acc := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
+	acc, err := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [CREATE BUILD] Error getting account in create build: ",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	if acc.BuildsRemaining == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You have reached your build limit"})
@@ -54,7 +64,7 @@ func CreateBuild(c *gin.Context) {
 	}
 
 	if reqBody.Name == "" {
-		c.JSON(400, gin.H{"error": "Name is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Name is required"})
 		return
 	}
 
@@ -102,15 +112,19 @@ func CreateBuild(c *gin.Context) {
 		},
 	}
 
-	err := buildEntity.Create(dbConfig.Client)
+	err = buildEntity.Create(dbConfig.Client)
 
 	if err != nil {
-		fmt.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [CREATE BUILD] Error creating build: ",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(200, buildEntity)
+	c.JSON(http.StatusOK, buildEntity)
 }
 
 func GetById(c *gin.Context) {
@@ -119,13 +133,15 @@ func GetById(c *gin.Context) {
 	buildEntity, err := build_service.GetById(dbConfig.Client, build_id)
 
 	if err != nil {
-		fmt.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [GETBUILDBYID] Error getting build: ",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	fmt.Println(buildEntity)
-	c.JSON(200, buildEntity)
+	c.JSON(http.StatusOK, buildEntity)
 
 }
 
@@ -134,34 +150,58 @@ func UpdateBuild(c *gin.Context) {
 	var reqBody build_service.Build
 
 	if err := c.Bind(&reqBody); err != nil {
-		c.String(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	can_be_public := canBePublic(user_service.GetUserAccount(dbConfig.Client, reqBody.UserId))
-
-	if !can_be_public && reqBody.Public {
-		c.JSON(400, gin.H{"error": "You cannot make this build public"})
-		return
-	}
-
-	err := reqBody.Update(dbConfig.Client)
+	usr, err := user_service.GetUserAccount(dbConfig.Client, reqBody.UserId)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [UPDATEBUILD] Error getting account from user_service",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": reqBody.UserId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(200, reqBody)
+	can_be_public := canBePublic(usr)
+
+	if !can_be_public && reqBody.Public {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You cannot make this build public"})
+		return
+	}
+
+	err = reqBody.Update(dbConfig.Client)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [GETBUILDBYID] Error updating build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": reqBody.ID, "user_id": reqBody.UserId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, reqBody)
 }
 
 func RemoveImage(c *gin.Context) {
 	media_id := c.Param("media_id")
 	build_id := c.Param("build_id")
 
-	build_service.RemoveImage(dbConfig.Client, build_id, media_id)
+	err := build_service.RemoveImage(dbConfig.Client, build_id, media_id)
 
-	c.String(200, "success")
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [REMOVEIMAGE] Error removing image",
+			Extra:   map[string]interface{}{"error": err.Error(), "media_id": media_id, "build_id": build_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }
 
 func IncrementViews(c *gin.Context) {
@@ -170,13 +210,28 @@ func IncrementViews(c *gin.Context) {
 	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
-		c.String(500, err.Error())
+
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [INCREMENTVIEWS] Error getting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	build.IncrementViews(dbConfig.Client)
+	err = build.IncrementViews(dbConfig.Client)
 
-	c.String(200, "success")
+	if err != nil {
+
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [INCREMENTVIEWS] Error incrementing views",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }
 
 func Like(c *gin.Context) {
@@ -187,13 +242,27 @@ func Like(c *gin.Context) {
 	build, err := build_service.GetById(dbConfig.Client, build_id)
 
 	if err != nil {
-		c.String(500, err.Error())
+
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [LIKE] Error getting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	build.Like(dbConfig.Client, user.(*clerk.User).ID)
+	err = build.Like(dbConfig.Client, user.(*clerk.User).ID)
 
-	c.String(200, "success")
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [LIKE] Error liking build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }
 
 func Dislike(c *gin.Context) {
@@ -203,16 +272,30 @@ func Dislike(c *gin.Context) {
 	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [DISLIKE] Error getting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	build.DisLike(dbConfig.Client, user.(*clerk.User).ID)
+	err = build.DisLike(dbConfig.Client, user.(*clerk.User).ID)
 
-	c.String(200, "success")
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [DISLIKE] Error disliking build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }
 func DeleteBuild(c *gin.Context) {
 	id := c.Param("build_id")
+	user, _ := c.Get("user")
 
 	build, err := build_service.GetById(dbConfig.Client, id)
 	banner := build.Banner
@@ -229,47 +312,60 @@ func DeleteBuild(c *gin.Context) {
 	}
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [DELETEBUILD] Error getting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 	err = build.Delete(dbConfig.Client)
 
 	if err != nil {
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [DELETEBUILD] Error deleting build",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.String(200, "success")
+	c.String(http.StatusOK, "success")
 }
 
 func BuildEditSettings(c *gin.Context) {
 	id := c.Param("build_id")
+	user, _ := c.Get("user")
 
 	var resp EditResponse
 
 	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
-		fmt.Println("Error getting build in edit settings: ", err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [BUILDEDITSETTINGS] Error getting build in edit settings",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	account := user_service.GetUserAccount(dbConfig.Client, build.UserId)
+	account, err := user_service.GetUserAccount(dbConfig.Client, build.UserId)
 
 	if err != nil {
-		fmt.Println("[BUILD CONTROLLER] [BUILD EDIT SETTINGS] [ACCOUNT] Error getting account in edit settings: ", err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [BUILDEDITSETTINGS] Error getting account in edit settings",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	can_toggle := canBePublic(account)
 
-	fmt.Println(canBePublic(account))
-
 	resp.Can_be_public = can_toggle
 
 	resp.Build = build
 
-	c.JSON(200, resp)
+	c.JSON(http.StatusOK, resp)
 }
