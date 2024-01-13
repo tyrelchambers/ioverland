@@ -3,7 +3,8 @@ package controllers
 import (
 	dbConfig "api/db"
 	"api/services/build_service"
-	"fmt"
+	"api/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,8 +20,11 @@ func Explore(c *gin.Context) {
 	count, err := build_service.AllBuildsCount(dbConfig.Client)
 
 	if err != nil {
-		fmt.Println(err)
-		c.String(500, err.Error())
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [EXPLORE] Error getting build count",
+			Extra:   map[string]interface{}{"error": err.Error()},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -32,6 +36,6 @@ func Explore(c *gin.Context) {
 
 	res.BuildCount = count
 
-	c.JSON(200, res)
+	c.JSON(http.StatusOK, res)
 
 }
