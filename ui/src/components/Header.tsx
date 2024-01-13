@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 
-const routes = [
+export const routes = [
   {
     href: "/",
     label: "Home",
@@ -45,7 +45,7 @@ const routes = [
   },
 ];
 
-const authRoutes = [
+export const authRoutes = [
   {
     href: "/dashboard",
     label: "Dashboard",

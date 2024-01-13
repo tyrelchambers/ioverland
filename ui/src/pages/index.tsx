@@ -1,7 +1,7 @@
-import Header from "@/components/Header";
+import Header, { authRoutes, routes } from "@/components/Header";
 import { H2 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@clerk/nextjs";
+import { SignedIn, useAuth } from "@clerk/nextjs";
 import {
   Bookmark,
   Heart,
@@ -245,6 +245,37 @@ export default function Home() {
           </div>
         </section>
       </section>
+      <footer>
+        <footer className=" p-4 dark:bg-gray-800">
+          <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+            <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+              © 2023 iOverland. All Rights Reserved.
+            </span>
+            <ul className="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+              {routes.map((route) => (
+                <li key={route.label}>
+                  <a href={route.href} className="hover:underline me-4 md:me-6">
+                    {route.label}
+                  </a>
+                </li>
+              ))}
+
+              <SignedIn>
+                {authRoutes.map((route) => (
+                  <li key={route.label}>
+                    <a
+                      href={route.href}
+                      className="hover:underline me-4 md:me-6"
+                    >
+                      {route.label}
+                    </a>
+                  </li>
+                ))}
+              </SignedIn>
+            </ul>
+          </div>
+        </footer>
+      </footer>
     </main>
   );
 }
