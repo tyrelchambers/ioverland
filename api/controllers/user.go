@@ -363,3 +363,93 @@ func GetUserPublicProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, userResp)
 }
+
+func UpdateUser(c *gin.Context) {
+	var body struct {
+		Bio    string       `json:"bio"`
+		Banner models.Media `json:"banner"`
+	}
+
+	user, _ := c.Get("user")
+
+	if err := c.Bind(&body); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u.Bio = body.Bio
+	u.Banner = &body.Banner
+
+	err = u.Update(dbConfig.Client)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error updating user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+}
+
+func RemoveBanner(c *gin.Context) {
+	var body struct {
+		MediaId int `json:"media_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user, _ := c.Get("user")
+
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = user_service.RemoveImage(dbConfig.Client, body.MediaId)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [REMOVEIMAGE] Error removing image",
+			Extra:   map[string]interface{}{"error": err.Error(), "media_id": body.MediaId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u.Banner = nil
+
+	err = u.Update(dbConfig.Client)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error updating user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+}

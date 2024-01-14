@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   carModels,
+  folderRoot,
   modificationCategories,
   popularCarBrands,
 } from "@/constants";
@@ -156,8 +157,7 @@ const Index = () => {
       modifications: modificationsToArray,
       user_id: user.id,
     };
-    const folderRoot =
-      process.env.NODE_ENV === "development" ? "development" : "production";
+
     try {
       if (banner[0]) {
         payload.banner = {

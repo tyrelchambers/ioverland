@@ -30,9 +30,8 @@ type PlanLimit struct {
 	MaxFileSize  string `json:"max_file_size"`
 }
 type AccountResponse struct {
-	models.User
 	HasSubscription bool `json:"has_subscription"`
-	Subscription    struct {
+	Subscription    *struct {
 		ID              string     `json:"id"`
 		Name            string     `json:"name"`
 		Price           int64      `json:"price"`
@@ -45,6 +44,11 @@ type AccountResponse struct {
 	PlanLimits      PlanLimit             `json:"plan_limits"`
 	MaxBuilds       int64                 `json:"max_builds"`
 	Builds          []build_service.Build `json:"builds"`
+	MaxPublicBuilds int                   `json:"max_public_builds"`
+	User            struct {
+		Bio    string        `json:"bio"`
+		Banner *models.Media `json:"banner"`
+	} `json:"user"`
 }
 
 var Plan_limits = map[string]PlanLimit{
@@ -151,6 +155,8 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	}
 
 	resp.MaxPublicBuilds = domainUser.MaxPublicBuilds
+	resp.User.Bio = domainUser.Bio
+	resp.User.Banner = domainUser.Banner
 
 	return resp, nil
 }
@@ -196,12 +202,13 @@ func (u User) Unbookmark(db *gorm.DB, build build_service.Build) error {
 
 func FindCurrentUser(db *gorm.DB, uuid string) (User, error) {
 	var user User
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Unscoped().Where("uuid = ?", uuid).First(&user).Error
+
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }
 
-func (u User) Update(db *gorm.DB) error {
-	return db.Save(u).Error
+func (u *User) Update(db *gorm.DB) error {
+	return db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&u).Error
 }
 
 func FindUserByCustomerId(db *gorm.DB, customerId string) (User, error) {
@@ -265,4 +272,10 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 
 	return resp, nil
 
+}
+
+func RemoveImage(db *gorm.DB, media_id int) error {
+	db.Table("media").Where("id = ?", media_id).Delete(&models.Media{})
+
+	return nil
 }

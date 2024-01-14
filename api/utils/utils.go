@@ -86,9 +86,7 @@ type CaptureErrorParams struct {
 //
 // No return value.
 func CaptureError(c *gin.Context, params *CaptureErrorParams) {
-	if os.Getenv("NODE_ENV") == "development" {
-		return
-	}
+
 	if hub := sentrygin.GetHubFromContext(c); hub != nil {
 		hub.WithScope(func(scope *sentry.Scope) {
 			if hasExtraKeys(params.Extra) {

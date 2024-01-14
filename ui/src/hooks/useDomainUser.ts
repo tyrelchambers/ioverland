@@ -1,5 +1,11 @@
 import { request } from "@/lib/axios";
-import { Account, DomainUser, PublicProfile } from "@/types";
+import {
+  Account,
+  DomainUser,
+  Media,
+  PublicProfile,
+  UpdateProfileWithBanner,
+} from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -165,6 +171,48 @@ export const useDomainUser = ({
     enabled: !!username,
   });
 
+  const update = useMutation({
+    mutationFn: async (data: UpdateProfileWithBanner) => {
+      return request
+        .patch(`/api/user/me/update`, data, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+    onSuccess: () => {
+      toast.success("Profile updated");
+      context.invalidateQueries({ queryKey: ["me"] });
+      context.invalidateQueries({ queryKey: ["account"] });
+    },
+    onError: () => {
+      toast.error("Failed to update profile");
+    },
+  });
+
+  const removeBanner = useMutation({
+    mutationFn: async ({ media_id }: { media_id: string }) => {
+      return request
+        .post(
+          `/api/user/me/remove-banner`,
+          {
+            media_id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res) => res.data);
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["me"] });
+      context.invalidateQueries({ queryKey: ["account"] });
+    },
+  });
+
   return {
     user: query,
     bookmark,
@@ -175,5 +223,7 @@ export const useDomainUser = ({
     restoreUser,
     createCheckoutLink,
     publicUser: getPublicUser,
+    update,
+    removeBanner,
   };
 };

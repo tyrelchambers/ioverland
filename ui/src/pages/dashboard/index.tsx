@@ -10,6 +10,7 @@ import {
   Grid2X2,
   Heart,
   Truck,
+  User,
 } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
@@ -20,6 +21,7 @@ import EmptyListText from "@/components/EmptyListText";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Profile from "@/components/dashboard/Profile";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -62,6 +64,10 @@ const Dashboard = () => {
               <TabsTrigger value="account">
                 <Fingerprint size={18} className="mr-2" />
                 Account
+              </TabsTrigger>
+              <TabsTrigger value="profile">
+                <User size={18} className="mr-2" />
+                Profile
               </TabsTrigger>
             </TabsList>
 
@@ -142,6 +148,10 @@ const Dashboard = () => {
 
             <TabsContent value="account" className="p-4">
               <Account />
+            </TabsContent>
+
+            <TabsContent value="profile" className="p-4">
+              <Profile />
             </TabsContent>
           </section>
         </section>

@@ -16,4 +16,5 @@ type User struct {
 	Views           int            `gorm:"default:0" json:"views"`
 	CreatedAt       time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	Bio             string         `gorm:"type:text" json:"bio"`
+	Banner          *Media         `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:UserId;references:Uuid" json:"banner"`
 }

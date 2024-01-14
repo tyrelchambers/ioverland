@@ -35,19 +35,16 @@ export const newBuildSchema = z.object({
   }),
   modifications: z.record(z.string(), modification).optional(),
   public: z.boolean(),
-  views: z.number().optional(),
-  likes: z.array(z.string()).optional().nullable(),
 });
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;
 
 export type NewBuildSchemaWithoutUserId = Omit<NewBuildSchema, "user_id">;
 
-const media = z.object({
+export const media = z.object({
   id: z.string().optional(),
   url: z.string(),
   type: z.string(),
-  uuid: z.string(),
   mime_type: z.string(),
   name: z.string(),
 });
@@ -105,6 +102,10 @@ const account = z.object({
     max_builds: z.number(),
     video_support: z.boolean(),
   }),
+  user: z.object({
+    banner: media.optional(),
+    bio: z.string().optional(),
+  }),
 });
 
 export type Account = z.infer<typeof account>;
@@ -129,6 +130,16 @@ const publicProfile = z.object({
 });
 
 export type PublicProfile = z.infer<typeof publicProfile>;
+
+export const updateProfile = z.object({
+  bio: z.string().optional(),
+});
+
+export type UpdateProfile = z.infer<typeof updateProfile>;
+
+export interface UpdateProfileWithBanner extends UpdateProfile {
+  banner?: Omit<Media, "uuid">;
+}
 export interface EditBuildResponse {
   build: Build;
   can_be_public: boolean;
