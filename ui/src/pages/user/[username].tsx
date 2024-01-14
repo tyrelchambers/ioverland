@@ -1,4 +1,5 @@
 import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
 import LargeHeader from "@/components/public-user-page/LargeHeader";
@@ -50,6 +51,7 @@ const Profile = () => {
           </p>
         )}
       </section>
+      <Footer />
     </div>
   );
 };
