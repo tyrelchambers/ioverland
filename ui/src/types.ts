@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 const trip = z.object({
   name: z.string().optional(),
   year: z.string().optional(),
@@ -167,3 +166,37 @@ export interface Plan {
   plan_id?: string;
   redirect_link: string;
 }
+
+export interface User {
+  uuid: string;
+  builds: Build[];
+  bookmarks: Build[];
+  customer_id: string;
+  deleted_at: Date;
+  max_public_builds: number;
+  views: number;
+  created_at: Date;
+  bio: string;
+  banner: Media | undefined;
+  username?: string;
+}
+
+export const isBuild = (obj: any): obj is Build => {
+  if ("name" in obj) {
+    return true;
+  }
+
+  return false;
+};
+
+export interface ClerkUser {
+  image_url: string;
+  username: string;
+}
+export const isClerkUser = (obj: any): obj is ClerkUser => {
+  if ("email_addresses" in obj) {
+    return true;
+  }
+
+  return false;
+};
