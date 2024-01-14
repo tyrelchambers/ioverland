@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export const useSearch = () => {
   const [value, setValue] = useState<string>("");
-  const [results, setResults] = useState<Build[] | ClerkUser[] | "">("");
+  const [results, setResults] = useState<Build[] | ClerkUser[]>([]);
 
   useEffect(() => {
     const fn = async () => {
@@ -19,7 +19,7 @@ export const useSearch = () => {
 
         setResults(data.data);
       } else {
-        setResults("");
+        setResults([]);
       }
     };
 

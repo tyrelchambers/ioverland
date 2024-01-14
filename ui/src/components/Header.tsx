@@ -1,31 +1,8 @@
-import Link from "next/link";
 import React, { useEffect } from "react";
-import { Button } from "./ui/button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-import { useViewportWidth } from "@/hooks/useViewportWidth";
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import {
-  BadgeDollarSign,
-  Home,
-  LayoutDashboard,
-  Mountain,
-  Search as SearchIcon,
-} from "lucide-react";
-import { Input } from "./ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { BadgeDollarSign, Home, LayoutDashboard, Mountain } from "lucide-react";
 import { useSearch } from "@/hooks/useSearch";
-import Image from "next/image";
-import RenderMedia from "./RenderMedia";
 import MobileNav from "./header/MobileNav";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
 import Search from "./header/Search";
 import MobileSearch from "./header/MobileSearch";
 
