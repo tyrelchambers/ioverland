@@ -24,7 +24,7 @@ func CreateCheckout(c *gin.Context) {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, u.ID)
+	domainUser, err := user_service.FindUser(dbConfig.Client, u.ID)
 	success_url := os.Getenv("APP_URL")
 
 	if redirect_to != "" {

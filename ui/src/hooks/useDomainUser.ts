@@ -213,6 +213,31 @@ export const useDomainUser = ({
     },
   });
 
+  const follow = useMutation({
+    mutationFn: async ({
+      username,
+      user_id,
+    }: {
+      username: string;
+      user_id: string;
+    }) => {
+      return request
+        .post(
+          `/api/user/${username}/follow`,
+          { user_id },
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res) => res.data);
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+
   return {
     user: query,
     bookmark,
@@ -225,5 +250,6 @@ export const useDomainUser = ({
     publicUser: getPublicUser,
     update,
     removeBanner,
+    follow,
   };
 };

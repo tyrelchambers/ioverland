@@ -77,7 +77,7 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 
 	utils.StripeClientInit()
 
-	domainUser, err := FindCurrentUser(dbConfig.Client, user_id)
+	domainUser, err := FindUser(dbConfig.Client, user_id)
 
 	if err != nil {
 		fmt.Println(err)
@@ -200,7 +200,7 @@ func Unbookmark(db *gorm.DB, u models.User, build build_service.Build) error {
 	return nil
 }
 
-func FindCurrentUser(db *gorm.DB, uuid string) (models.User, error) {
+func FindUser(db *gorm.DB, uuid string) (models.User, error) {
 	var user models.User
 
 	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
@@ -245,7 +245,7 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 
 	stripe.Key = stripe_key
 
-	domainUser, err := FindCurrentUser(dbConfig.Client, id)
+	domainUser, err := FindUser(dbConfig.Client, id)
 
 	if err != nil {
 		return resp, err
@@ -272,6 +272,20 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 
 func RemoveImage(db *gorm.DB, media_id int) error {
 	db.Table("media").Where("id = ?", media_id).Delete(&models.Media{})
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
+func Follow(db *gorm.DB, user models.User, other models.User) error {
+	db.Model(&user).Association("Followers").Append(&other)
+
+	if db.Error != nil {
+		return db.Error
+	}
 
 	return nil
 }

@@ -235,7 +235,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		usr, err := user_service.FindCurrentUser(dbConfig.Client, data.Metadata["clerk_user_id"])
+		usr, err := user_service.FindUser(dbConfig.Client, data.Metadata["clerk_user_id"])
 
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
