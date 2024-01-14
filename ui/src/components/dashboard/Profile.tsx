@@ -32,7 +32,7 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    if (account.data) {
+    if (account.data?.user) {
       form.reset({
         bio: account.data.user.bio,
       });
@@ -67,7 +67,7 @@ const Profile = () => {
       <H2 className="mb-10">Profile</H2>
 
       <div>
-        {account.data?.user.banner ? (
+        {account.data?.user?.banner ? (
           <div className="w-full aspect-video h-[250px] overflow-hidden rounded-xl relative">
             <Image
               src={account.data.user.banner.url}

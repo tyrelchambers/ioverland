@@ -73,12 +73,12 @@ const Dashboard = () => {
 
             <div className="flex gap-3">
               <Link href="/build/new">
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" size="sm">
                   New build
                 </Button>
               </Link>
               <Link href={`/user/${clerkUser?.username}`}>
-                <Button type="button" size="sm">
+                <Button type="button" size="sm" variant="outline">
                   View profile
                 </Button>
               </Link>
