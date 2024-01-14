@@ -12,10 +12,16 @@ import { ScrollArea } from "../ui/scroll-area";
 
 interface Props {
   searchValue: string;
-  search: (value: string) => void;
-  results: Build[] | ClerkUser[];
+  setSearchValue: (value: string) => void;
+  searchResults: Build[] | ClerkUser[];
+  isLoading: boolean;
 }
-const Search = ({ searchValue, search, results }: Props) => {
+const Search = ({
+  searchValue,
+  setSearchValue,
+  searchResults,
+  isLoading,
+}: Props) => {
   const { width } = useViewportWidth();
 
   return (
@@ -26,8 +32,7 @@ const Search = ({ searchValue, search, results }: Props) => {
             type="search"
             placeholder="Search for a build"
             className="w-[400px]"
-            value={searchValue}
-            onChange={(e) => search(e.target.value)}
+            onChange={(e) => setSearchValue(e.target.value)}
           />
 
           <PopoverContent
@@ -37,12 +42,14 @@ const Search = ({ searchValue, search, results }: Props) => {
           >
             <ScrollArea className="max-h-[400px] h-full flex flex-col gap-3">
               <div className="flex flex-col gap-3">
-                {results &&
-                  results?.map((res, id) => <SearchItem res={res} key={id} />)}
+                {searchResults &&
+                  searchResults?.map((res, id) => (
+                    <SearchItem res={res} key={id} />
+                  ))}
 
-                {(!results || results?.length === 0) && (
+                {!isLoading && searchResults?.length === 0 && (
                   <p className="text-muted-foreground">
-                    Can&apos;t find any builds with the name{" "}
+                    Can&apos;t find anything with the name{" "}
                     <span className="font-bold text-foreground">
                       {searchValue}
                     </span>

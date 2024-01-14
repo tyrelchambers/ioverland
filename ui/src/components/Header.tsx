@@ -39,7 +39,8 @@ interface Props {
 }
 
 const Header = ({ on, className, stickyOnScroll }: Props) => {
-  const { searchValue, search, results } = useSearch();
+  const [searchValue, setSearchValue] = React.useState("");
+  const { search } = useSearch(searchValue);
 
   useEffect(() => {
     const header = document.querySelector(".header");
@@ -69,15 +70,21 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
         {/* this is the mobile nav */}
         <div className="gap-8 flex lg:hidden">
           <MobileSearch
+            searchResults={search.data ?? []}
+            setSearchValue={setSearchValue}
             searchValue={searchValue}
-            search={search}
-            results={results}
+            isLoading={search.isFetching}
           />
           <MobileNav routes={routes} authRoutes={authRoutes} />
         </div>
 
         {/* this is the desktop nav */}
-        <Search searchValue={searchValue} search={search} results={results} />
+        <Search
+          searchResults={search.data ?? []}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          isLoading={search.isFetching}
+        />
       </div>
     </header>
   );

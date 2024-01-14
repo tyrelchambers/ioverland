@@ -14,12 +14,18 @@ import SearchItem from "./SearchItem";
 import { ScrollArea } from "../ui/scroll-area";
 
 interface Props {
+  searchResults: Build[] | ClerkUser[];
+  setSearchValue: (value: string) => void;
   searchValue: string;
-  search: (value: string) => void;
-  results: Build[] | ClerkUser[];
+  isLoading: boolean;
 }
 
-const MobileSearch = ({ searchValue, search, results }: Props) => {
+const MobileSearch = ({
+  searchResults,
+  setSearchValue,
+  searchValue,
+  isLoading,
+}: Props) => {
   return (
     <Dialog>
       <DialogTrigger>
@@ -35,13 +41,21 @@ const MobileSearch = ({ searchValue, search, results }: Props) => {
           type="search"
           placeholder="Search for a build"
           className="w-full"
-          value={searchValue}
-          onChange={(e) => search(e.target.value)}
+          onChange={(e) => setSearchValue(e.target.value)}
         />
         <ScrollArea className="max-h-[200px] h-full flex flex-col gap-3">
           <div className="flex flex-col gap-3">
-            {results &&
-              results?.map((res, id) => <SearchItem res={res} key={id} />)}
+            {searchResults &&
+              searchResults?.map((res, id) => (
+                <SearchItem res={res} key={id} />
+              ))}
+
+            {!isLoading && searchResults?.length === 0 && (
+              <p className="text-muted-foreground">
+                Can&apos;t find anything with the name{" "}
+                <span className="font-bold text-foreground">{searchValue}</span>
+              </p>
+            )}
           </div>
         </ScrollArea>
       </DialogContent>
