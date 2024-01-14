@@ -1,9 +1,18 @@
 import { request } from "@/lib/axios";
-import { Account, DomainUser } from "@/types";
+import {
+  Account,
+  DomainUser,
+  Media,
+  PublicProfile,
+  UpdateProfileWithBanner,
+} from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-export const useDomainUser = (id?: string) => {
+export const useDomainUser = ({
+  id,
+  username,
+}: { id?: string; username?: string } = {}) => {
   const { getToken, userId } = useAuth();
 
   const context = useQueryClient();
@@ -154,6 +163,56 @@ export const useDomainUser = (id?: string) => {
     },
   });
 
+  const getPublicUser = useQuery({
+    queryKey: ["user", username],
+    queryFn: async (): Promise<PublicProfile> => {
+      return request.get(`/api/user/${username}`).then((res) => res.data);
+    },
+    enabled: !!username,
+  });
+
+  const update = useMutation({
+    mutationFn: async (data: UpdateProfileWithBanner) => {
+      return request
+        .patch(`/api/user/me/update`, data, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+    onSuccess: () => {
+      toast.success("Profile updated");
+      context.invalidateQueries({ queryKey: ["me"] });
+      context.invalidateQueries({ queryKey: ["account"] });
+    },
+    onError: () => {
+      toast.error("Failed to update profile");
+    },
+  });
+
+  const removeBanner = useMutation({
+    mutationFn: async ({ media_id }: { media_id: string }) => {
+      return request
+        .post(
+          `/api/user/me/remove-banner`,
+          {
+            media_id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res) => res.data);
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["me"] });
+      context.invalidateQueries({ queryKey: ["account"] });
+    },
+  });
+
   return {
     user: query,
     bookmark,
@@ -163,5 +222,8 @@ export const useDomainUser = (id?: string) => {
     deleteUser,
     restoreUser,
     createCheckoutLink,
+    publicUser: getPublicUser,
+    update,
+    removeBanner,
   };
 };

@@ -19,7 +19,7 @@ type User struct {
 }
 
 type GetCurrentUserWithStripeResponse struct {
-	User     User             `json:"user"`
+	User     models.User      `json:"user"`
 	Customer *stripe.Customer `json:"customer"`
 }
 
@@ -30,7 +30,6 @@ type PlanLimit struct {
 	MaxFileSize  string `json:"max_file_size"`
 }
 type AccountResponse struct {
-	models.User
 	HasSubscription bool `json:"has_subscription"`
 	Subscription    struct {
 		ID              string     `json:"id"`
@@ -45,6 +44,11 @@ type AccountResponse struct {
 	PlanLimits      PlanLimit             `json:"plan_limits"`
 	MaxBuilds       int64                 `json:"max_builds"`
 	Builds          []build_service.Build `json:"builds"`
+	MaxPublicBuilds int                   `json:"max_public_builds"`
+	User            struct {
+		Bio    string        `json:"bio"`
+		Banner *models.Media `json:"banner"`
+	} `json:"user"`
 }
 
 var Plan_limits = map[string]PlanLimit{
@@ -151,12 +155,14 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	}
 
 	resp.MaxPublicBuilds = domainUser.MaxPublicBuilds
+	resp.User.Bio = domainUser.Bio
+	resp.User.Banner = domainUser.Banner
 
 	return resp, nil
 }
 
-func DeleteUser(user *User) error {
-	err := dbConfig.Client.Unscoped().Delete(&user).Error
+func DeleteUser(db *gorm.DB, user models.User) error {
+	err := db.Unscoped().Delete(&user).Error
 	return err
 }
 
@@ -166,7 +172,7 @@ func DeleteUserFromClerk(user *clerk.User) {
 
 func GetUserByUuid(db *gorm.DB, id string) (User, error) {
 	var user User
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Unscoped().Where("uuid = ?", id).First(&user).Error
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", id).First(&user).Error
 	return user, err
 }
 
@@ -174,7 +180,7 @@ func Create(db *gorm.DB, user *models.User) error {
 	return db.Create(user).Error
 }
 
-func (u User) Bookmark(db *gorm.DB, build build_service.Build) error {
+func Bookmark(db *gorm.DB, u models.User, build build_service.Build) error {
 	db.Model(&u).Association("Bookmarks").Append(&build)
 
 	if db.Error != nil {
@@ -184,7 +190,7 @@ func (u User) Bookmark(db *gorm.DB, build build_service.Build) error {
 	return nil
 }
 
-func (u User) Unbookmark(db *gorm.DB, build build_service.Build) error {
+func Unbookmark(db *gorm.DB, u models.User, build build_service.Build) error {
 	db.Model(&u).Association("Bookmarks").Delete(&build)
 
 	if db.Error != nil {
@@ -194,24 +200,21 @@ func (u User) Unbookmark(db *gorm.DB, build build_service.Build) error {
 	return nil
 }
 
-func FindCurrentUser(db *gorm.DB, uuid string) (User, error) {
-	var user User
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Unscoped().Where("uuid = ?", uuid).First(&user).Error
+func FindCurrentUser(db *gorm.DB, uuid string) (models.User, error) {
+	var user models.User
+
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }
 
-func (u User) Update(db *gorm.DB) error {
-	return db.Save(u).Error
+func Update(db *gorm.DB, u models.User) error {
+	return db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&u).Error
 }
 
-func FindUserByCustomerId(db *gorm.DB, customerId string) (User, error) {
-	var user User
+func FindUserByCustomerId(db *gorm.DB, customerId string) (models.User, error) {
+	var user models.User
 	err := db.Where("customer_id = ?", customerId).First(&user).Error
 	return user, err
-}
-
-func (u User) Delete(db *gorm.DB) error {
-	return db.Delete(u).Error
 }
 
 func (u User) BuildCount(db *gorm.DB) (int64, error) {
@@ -265,4 +268,10 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 
 	return resp, nil
 
+}
+
+func RemoveImage(db *gorm.DB, media_id int) error {
+	db.Table("media").Where("id = ?", media_id).Delete(&models.Media{})
+
+	return nil
 }

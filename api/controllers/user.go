@@ -2,6 +2,7 @@ package controllers
 
 import (
 	dbConfig "api/db"
+	"api/models"
 	"api/services/build_service"
 	"api/services/user_service"
 	"api/utils"
@@ -50,7 +51,7 @@ func Bookmark(c *gin.Context) {
 		return
 	}
 
-	err = u.Bookmark(dbConfig.Client, build)
+	err = user_service.Bookmark(dbConfig.Client, u, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -99,7 +100,7 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	err = u.Unbookmark(dbConfig.Client, build)
+	err = user_service.Bookmark(dbConfig.Client, u, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -207,7 +208,7 @@ func DeleteUser(c *gin.Context) {
 			Time:  time.Unix(cus_sub.CurrentPeriodEnd, 0),
 		}
 
-		err = domainUser.Update(dbConfig.Client)
+		err = user_service.Update(dbConfig.Client, domainUser)
 
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -230,7 +231,7 @@ func DeleteUser(c *gin.Context) {
 		}
 
 		if res.Deleted {
-			err := user_service.DeleteUser(&domainUser)
+			err := user_service.DeleteUser(dbConfig.Client, domainUser)
 
 			if err != nil {
 				utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -298,11 +299,157 @@ func RestoreUser(c *gin.Context) {
 		Time:  time.Unix(0, 0),
 	}
 
-	err = domainUser.Update(dbConfig.Client)
+	err = user_service.Update(dbConfig.Client, domainUser)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error updating user with DeletedAt field during subscription restore",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+}
+
+func GetUserPublicProfile(c *gin.Context) {
+	type UserResp struct {
+		Username  *string        `json:"username"`
+		Avatar    string         `json:"avatar"`
+		Builds    []models.Build `json:"builds"`
+		CreatedAt time.Time      `json:"created_at"`
+		Views     int            `json:"views"`
+		Followers int            `json:"followers"`
+		Banner    *models.Media  `json:"banner"`
+	}
+
+	username := c.Param("username")
+
+	clerk_user_list, err := utils.ClerkClient.Users().ListAll(clerk.ListAllUsersParams{Usernames: []string{username}})
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETUSERPUBLICPROFILE] Error getting user list from Clerk",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if len(clerk_user_list) == 0 {
+		c.String(http.StatusNotFound, "User not found")
+		return
+	}
+
+	user, err := user_service.GetUserByUuid(dbConfig.Client, clerk_user_list[0].ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETUSERPUBLICPROFILE] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	userResp := UserResp{
+		Username:  clerk_user_list[0].Username,
+		Avatar:    clerk_user_list[0].ProfileImageURL,
+		Builds:    user.Builds,
+		CreatedAt: user.CreatedAt,
+		Views:     user.Views,
+		Followers: 0,
+		Banner:    user.Banner,
+	}
+
+	c.JSON(http.StatusOK, userResp)
+}
+
+func UpdateUser(c *gin.Context) {
+	var body struct {
+		Bio    string       `json:"bio"`
+		Banner models.Media `json:"banner"`
+	}
+
+	user, _ := c.Get("user")
+
+	if err := c.Bind(&body); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u.Bio = body.Bio
+
+	if body.Banner.ID != 0 {
+		u.Banner = &body.Banner
+	}
+
+	err = user_service.Update(dbConfig.Client, u)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error updating user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+}
+
+func RemoveBanner(c *gin.Context) {
+	var body struct {
+		MediaId int `json:"media_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user, _ := c.Get("user")
+
+	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = user_service.RemoveImage(dbConfig.Client, body.MediaId)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [REMOVEIMAGE] Error removing image",
+			Extra:   map[string]interface{}{"error": err.Error(), "media_id": body.MediaId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u.Banner = nil
+
+	err = user_service.Update(dbConfig.Client, u)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error updating user",
 			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
 		})
 		c.String(http.StatusInternalServerError, err.Error())

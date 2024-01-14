@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 const trip = z.object({
   name: z.string().optional(),
   year: z.string().optional(),
@@ -35,19 +34,16 @@ export const newBuildSchema = z.object({
   }),
   modifications: z.record(z.string(), modification).optional(),
   public: z.boolean(),
-  views: z.number().optional(),
-  likes: z.array(z.string()).optional().nullable(),
 });
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;
 
 export type NewBuildSchemaWithoutUserId = Omit<NewBuildSchema, "user_id">;
 
-const media = z.object({
+export const media = z.object({
   id: z.string().optional(),
   url: z.string(),
   type: z.string(),
-  uuid: z.string(),
   mime_type: z.string(),
   name: z.string(),
 });
@@ -105,6 +101,10 @@ const account = z.object({
     max_builds: z.number(),
     video_support: z.boolean(),
   }),
+  user: z.object({
+    banner: media.optional(),
+    bio: z.string().optional(),
+  }),
 });
 
 export type Account = z.infer<typeof account>;
@@ -118,6 +118,28 @@ const explore = z.object({
 
 export type Explore = z.infer<typeof explore>;
 
+const publicProfile = z.object({
+  username: z.string(),
+  avatar: z.string(),
+  builds: z.array(buildSchema),
+  created_at: z.date(),
+  views: z.number(),
+  followers: z.number(),
+  bio: z.string(),
+  banner: media.optional(),
+});
+
+export type PublicProfile = z.infer<typeof publicProfile>;
+
+export const updateProfile = z.object({
+  bio: z.string().optional(),
+});
+
+export type UpdateProfile = z.infer<typeof updateProfile>;
+
+export interface UpdateProfileWithBanner extends UpdateProfile {
+  banner?: Omit<Media, "uuid">;
+}
 export interface EditBuildResponse {
   build: Build;
   can_be_public: boolean;
@@ -144,3 +166,37 @@ export interface Plan {
   plan_id?: string;
   redirect_link: string;
 }
+
+export interface User {
+  uuid: string;
+  builds: Build[];
+  bookmarks: Build[];
+  customer_id: string;
+  deleted_at: Date;
+  max_public_builds: number;
+  views: number;
+  created_at: Date;
+  bio: string;
+  banner: Media | undefined;
+  username?: string;
+}
+
+export const isBuild = (obj: any): obj is Build => {
+  if ("name" in obj) {
+    return true;
+  }
+
+  return false;
+};
+
+export interface ClerkUser {
+  image_url: string;
+  username: string;
+}
+export const isClerkUser = (obj: any): obj is ClerkUser => {
+  if ("email_addresses" in obj) {
+    return true;
+  }
+
+  return false;
+};

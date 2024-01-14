@@ -66,6 +66,7 @@ func main() {
 		// of transactions for performance monitoring.
 		// We recommend adjusting this value in production,
 		TracesSampleRate: 1.0,
+		Environment:      utils.GoDotEnvVariable("NODE_ENV"),
 	}); err != nil {
 		fmt.Printf("Sentry initialization failed: %v", err)
 	}
@@ -162,6 +163,9 @@ func main() {
 	userG.GET("/me/account", AuthRequired, controllers.GetAccount)
 	userG.DELETE("/me", AuthRequired, controllers.DeleteUser)
 	userG.POST("/me/restore", AuthRequired, controllers.RestoreUser)
+	userG.GET("/:username", controllers.GetUserPublicProfile)
+	userG.PATCH("/me/update", AuthRequired, controllers.UpdateUser)
+	userG.POST("/me/remove-banner", AuthRequired, controllers.RemoveBanner)
 
 	webhooksG.POST("", controllers.Webhooks)
 	webhooksG.POST("/stripe", controllers.StripeWebhooks)

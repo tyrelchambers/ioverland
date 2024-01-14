@@ -219,7 +219,7 @@ func StripeWebhooks(c *gin.Context) {
 		}
 		usr.MaxPublicBuilds = int(user_service.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
 
-		usr.Update(dbConfig.Client)
+		user_service.Update(dbConfig.Client, usr)
 
 	case "checkout.session.completed":
 		var data stripe.CheckoutSession
@@ -284,7 +284,7 @@ func StripeWebhooks(c *gin.Context) {
 		}
 		usr.MaxPublicBuilds = int(user_service.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
 
-		usr.Update(dbConfig.Client)
+		user_service.Update(dbConfig.Client, usr)
 
 	case "customer.subscription.deleted":
 		var subscriptionData stripe.Subscription
@@ -337,7 +337,7 @@ func StripeWebhooks(c *gin.Context) {
 
 		usr.MaxPublicBuilds = 1
 
-		usr.Update(dbConfig.Client)
+		user_service.Update(dbConfig.Client, usr)
 	}
 	c.String(http.StatusOK, "success")
 }

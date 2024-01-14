@@ -2,6 +2,8 @@ import { Plan } from "./types";
 
 export const MAX_FILE_SIZE = "400MB";
 export const MAX_FILE_SIZE_PRO = "1GB";
+export const folderRoot =
+  process.env.NODE_ENV === "development" ? "development" : "production";
 
 const testPrices = {
   explorer: "price_1OXQNUEPapIiG0WqFCMtKQUM",
