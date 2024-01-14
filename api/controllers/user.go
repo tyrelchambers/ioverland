@@ -391,7 +391,10 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	u.Bio = body.Bio
-	u.Banner = &body.Banner
+
+	if body.Banner.ID != 0 {
+		u.Banner = &body.Banner
+	}
 
 	err = user_service.Update(dbConfig.Client, u)
 
