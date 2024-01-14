@@ -31,7 +31,7 @@ type PlanLimit struct {
 }
 type AccountResponse struct {
 	HasSubscription bool `json:"has_subscription"`
-	Subscription    *struct {
+	Subscription    struct {
 		ID              string     `json:"id"`
 		Name            string     `json:"name"`
 		Price           int64      `json:"price"`
