@@ -127,6 +127,7 @@ const publicProfile = z.object({
   views: z.number(),
   followers: z.number(),
   bio: z.string(),
+  banner: media.optional(),
 });
 
 export type PublicProfile = z.infer<typeof publicProfile>;

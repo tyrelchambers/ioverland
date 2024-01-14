@@ -321,6 +321,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		CreatedAt time.Time      `json:"created_at"`
 		Views     int            `json:"views"`
 		Followers int            `json:"followers"`
+		Banner    *models.Media  `json:"banner"`
 	}
 
 	username := c.Param("username")
@@ -359,6 +360,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		CreatedAt: user.CreatedAt,
 		Views:     user.Views,
 		Followers: 0,
+		Banner:    user.Banner,
 	}
 
 	c.JSON(http.StatusOK, userResp)

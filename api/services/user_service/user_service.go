@@ -172,7 +172,7 @@ func DeleteUserFromClerk(user *clerk.User) {
 
 func GetUserByUuid(db *gorm.DB, id string) (User, error) {
 	var user User
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Unscoped().Where("uuid = ?", id).First(&user).Error
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", id).First(&user).Error
 	return user, err
 }
 
