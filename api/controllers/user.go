@@ -51,7 +51,7 @@ func Bookmark(c *gin.Context) {
 		return
 	}
 
-	err = u.Bookmark(dbConfig.Client, build)
+	err = user_service.Bookmark(dbConfig.Client, u, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -100,7 +100,7 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	err = u.Unbookmark(dbConfig.Client, build)
+	err = user_service.Bookmark(dbConfig.Client, u, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -208,7 +208,7 @@ func DeleteUser(c *gin.Context) {
 			Time:  time.Unix(cus_sub.CurrentPeriodEnd, 0),
 		}
 
-		err = domainUser.Update(dbConfig.Client)
+		err = user_service.Update(dbConfig.Client, domainUser)
 
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -231,7 +231,7 @@ func DeleteUser(c *gin.Context) {
 		}
 
 		if res.Deleted {
-			err := user_service.DeleteUser(&domainUser)
+			err := user_service.DeleteUser(dbConfig.Client, domainUser)
 
 			if err != nil {
 				utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -299,7 +299,7 @@ func RestoreUser(c *gin.Context) {
 		Time:  time.Unix(0, 0),
 	}
 
-	err = domainUser.Update(dbConfig.Client)
+	err = user_service.Update(dbConfig.Client, domainUser)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -393,7 +393,7 @@ func UpdateUser(c *gin.Context) {
 	u.Bio = body.Bio
 	u.Banner = &body.Banner
 
-	err = u.Update(dbConfig.Client)
+	err = user_service.Update(dbConfig.Client, u)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -442,7 +442,7 @@ func RemoveBanner(c *gin.Context) {
 
 	u.Banner = nil
 
-	err = u.Update(dbConfig.Client)
+	err = user_service.Update(dbConfig.Client, u)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
