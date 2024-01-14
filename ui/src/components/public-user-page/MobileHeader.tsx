@@ -60,9 +60,9 @@ const MobileHeader = ({
           </div>
         </div>
 
-        {/* <div className="flex h-12 mt-3 p-3">
+        <div className="flex h-12 mt-3 p-3">
           <Button>Follow</Button>
-        </div> */}
+        </div>
       </div>
     </header>
   );

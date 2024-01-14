@@ -58,10 +58,10 @@ const LargeHeader = ({
             </p>
           )}
         </div>
-        {/* 
+
         <div className="flex h-12 mt-3 w-[350px] justify-end">
-          <Button>Follow</Button>
-        </div> */}
+          {/* <Button>Follow</Button> */}
+        </div>
       </div>
     </header>
   );
