@@ -8,6 +8,7 @@ import {
 } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { toast } from "sonner";
 export const useDomainUser = ({
   id,
@@ -211,6 +212,9 @@ export const useDomainUser = ({
       context.invalidateQueries({ queryKey: ["me"] });
       context.invalidateQueries({ queryKey: ["account"] });
     },
+    onError: () => {
+      toast.error("Failed to remove banner");
+    },
   });
 
   const follow = useMutation({
@@ -234,7 +238,42 @@ export const useDomainUser = ({
         .then((res) => res.data);
     },
     onSuccess: () => {
-      context.invalidateQueries({ queryKey: ["user"] });
+      context.invalidateQueries({ queryKey: ["account"] });
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
+    },
+  });
+
+  const unfollow = useMutation({
+    mutationFn: async ({
+      username,
+      user_id,
+    }: {
+      username: string;
+      user_id: string;
+    }) => {
+      return request
+        .post(
+          `/api/user/${username}/unfollow`,
+          { user_id },
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res) => res.data);
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["account"] });
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
     },
   });
 
@@ -251,5 +290,6 @@ export const useDomainUser = ({
     update,
     removeBanner,
     follow,
+    unfollow,
   };
 };

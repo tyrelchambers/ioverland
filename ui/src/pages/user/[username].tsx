@@ -5,6 +5,7 @@ import { H2 } from "@/components/Heading";
 import LargeHeader from "@/components/public-user-page/LargeHeader";
 import MobileHeader from "@/components/public-user-page/MobileHeader";
 import { useDomainUser } from "@/hooks/useDomainUser";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
 

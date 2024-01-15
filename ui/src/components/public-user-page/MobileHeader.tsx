@@ -52,7 +52,7 @@ const MobileHeader = ({
 
               <span className="flex gap-2 text-muted-foreground items-center">
                 <span className="font-bold text-base text-foreground">
-                  {data.followers}
+                  {data.followers?.length}
                 </span>
                 followers
               </span>

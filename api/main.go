@@ -165,6 +165,7 @@ func main() {
 	userG.POST("/me/restore", AuthRequired, controllers.RestoreUser)
 	userG.GET("/:username", controllers.GetUserPublicProfile)
 	userG.POST("/:username/follow", AuthRequired, controllers.FollowUser)
+	userG.POST("/:username/unfollow", AuthRequired, controllers.UnfollowUser)
 	userG.PATCH("/me/update", AuthRequired, controllers.UpdateUser)
 	userG.POST("/me/remove-banner", AuthRequired, controllers.RemoveBanner)
 

@@ -7,7 +7,7 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { useUser } from "@clerk/nextjs";
+import FollowBtn from "../FollowBtn";
 
 const LargeHeader = ({
   data,
@@ -16,8 +16,6 @@ const LargeHeader = ({
   data: PublicProfile;
   banner: Media | undefined;
 }) => {
-  const { follow } = useDomainUser();
-  const { user } = useUser();
   return (
     <header className="max-w-screen-xl mx-auto w-full my-6  flex-col items-center hidden lg:flex p-4">
       {banner?.url ? (
@@ -38,7 +36,7 @@ const LargeHeader = ({
 
           <span className="flex gap-2 text-muted-foreground items-center">
             <span className="font-bold text-base text-foreground">
-              {data.followers}
+              {data.followers?.length}
             </span>
             followers
           </span>
@@ -64,19 +62,7 @@ const LargeHeader = ({
         </div>
 
         <div className="flex h-12 mt-3 w-[350px] justify-end">
-          {user?.id !== data.uuid && (
-            <Button
-              type="button"
-              onClick={() =>
-                follow.mutate({
-                  user_id: data.uuid,
-                  username: data.username,
-                })
-              }
-            >
-              Follow
-            </Button>
-          )}
+          <FollowBtn data={data} />
         </div>
       </div>
     </header>
