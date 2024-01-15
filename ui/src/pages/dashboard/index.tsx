@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import {
+  ArrowBigDownDash,
   Bookmark,
   Car,
   CarFront,
@@ -25,8 +26,17 @@ import Link from "next/link";
 import Profile from "@/components/dashboard/Profile";
 import Following from "@/components/dashboard/Following";
 import Followers from "@/components/dashboard/Followers";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import DesktopTabs from "@/components/dashboard/DesktopTabs";
+import MobileTabs from "@/components/dashboard/MobileTabs";
+import { useViewportWidth } from "@/hooks/useViewportWidth";
 
 const Dashboard = () => {
+  const { width } = useViewportWidth();
   const router = useRouter();
   const { user: clerkUser } = useUser();
   const { user } = useDomainUser();
@@ -53,34 +63,9 @@ const Dashboard = () => {
         value={router.query.tab as string}
         onValueChange={updateUrl}
       >
-        <header className="w-full bg-card py-2">
-          <div className="max-w-screen-2xl mx-auto w-full flex justify-between items-center">
-            <TabsList>
-              <TabsTrigger value="builds">
-                <Grid2X2 size={18} className="mr-2" />
-                Builds
-              </TabsTrigger>
-              <TabsTrigger value="bookmarks">
-                <Bookmark size={18} className="mr-2" />
-                Bookmarks
-              </TabsTrigger>
-              <TabsTrigger value="account">
-                <Fingerprint size={18} className="mr-2" />
-                Account
-              </TabsTrigger>
-              <TabsTrigger value="profile">
-                <User size={18} className="mr-2" />
-                Profile
-              </TabsTrigger>
-              <TabsTrigger value="follows">
-                <Sparkle size={18} className="mr-2" />
-                Following
-              </TabsTrigger>
-              <TabsTrigger value="followers">
-                <Sparkle size={18} className="mr-2" />
-                Followers
-              </TabsTrigger>
-            </TabsList>
+        <header className="w-full bg-card py-2 px-4">
+          <div className="max-w-screen-2xl mx-auto w-full flex flex-col justify-between items-center lg:flex-row">
+            {width > 768 ? <DesktopTabs /> : <MobileTabs />}
 
             <div className="flex gap-3">
               <Link href="/build/new">
