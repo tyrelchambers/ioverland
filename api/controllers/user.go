@@ -323,6 +323,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Followers []models.User  `json:"followers"`
 		Banner    *models.Media  `json:"banner"`
 		Uuid      string         `json:"uuid"`
+		Bio       string         `json:"bio"`
 	}
 
 	username := c.Param("username")
@@ -358,6 +359,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Followers: followers,
 		Banner:    user.Banner,
 		Uuid:      user.Uuid,
+		Bio:       user.Bio,
 	}
 
 	c.JSON(http.StatusOK, userResp)

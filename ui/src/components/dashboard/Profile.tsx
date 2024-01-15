@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { H2, H3 } from "../Heading";
 import Uploader from "../Uploader";
 import { FilePondFile } from "filepond";
-import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Trash, User } from "lucide-react";
 import { useDomainUser } from "@/hooks/useDomainUser";
@@ -18,7 +17,6 @@ import {
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Media, UpdateProfileWithBanner, updateProfile } from "@/types";
 import { folderRoot } from "@/constants";
@@ -26,6 +24,7 @@ import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 const Profile = () => {
   const { account, update, removeBanner } = useDomainUser();
@@ -161,7 +160,20 @@ const Profile = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="bio">Bio</FormLabel>
+                <FormDescription>Max 255 characters</FormDescription>
                 <Textarea {...field} />
+                <FormMessage />
+                <p className="text-muted-foreground text-sm flex justify-end">
+                  <span
+                    className={cn(
+                      "font-bold",
+                      field.value.length > 255 && "text-red-500"
+                    )}
+                  >
+                    {field.value.length}
+                  </span>
+                  /255
+                </p>
               </FormItem>
             )}
           />

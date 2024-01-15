@@ -139,7 +139,7 @@ const publicProfile = z.object({
 export type PublicProfile = z.infer<typeof publicProfile>;
 
 export const updateProfile = z.object({
-  bio: z.string().optional(),
+  bio: z.string().max(255).optional(),
   username: z.string().min(1),
 });
 

@@ -48,10 +48,12 @@ const LargeHeader = ({
             </AvatarFallback>
             <AvatarImage src={data.avatar} fetchPriority="high" />
           </Avatar>
-          <H1 className="mt-6">{data.username}</H1>
+          <H1 className="mt-6 mb-3">{data.username}</H1>
 
           {data.bio && (
-            <p className="text-muted-foreground text-sm">{data.bio}</p>
+            <p className="text-muted-foreground text-sm text-center mb-3">
+              {data.bio}
+            </p>
           )}
 
           {data.created_at && (
