@@ -19,7 +19,7 @@ const MobileHeader = ({
     <header className="max-w-screen-xl mx-auto w-full my-6 flex flex-col items-center p-4 lg:hidden">
       {banner?.url ? (
         <div className="w-full aspect-video h-[450px]  rounded-xl relative overflow-hidden">
-          <Image src={banner.url} alt="" fill objectFit="cover" />
+          <Image src={banner.url} alt="" fill objectFit="cover" priority />
         </div>
       ) : (
         <div className="w-full aspect-video h-[450px] bg-gradient-to-t from-zinc-200 to-zinc-100 rounded-xl"></div>
@@ -30,7 +30,7 @@ const MobileHeader = ({
             <AvatarFallback>
               <User />
             </AvatarFallback>
-            <AvatarImage src={data.avatar} />
+            <AvatarImage src={data.avatar} fetchPriority="high" />
           </Avatar>
           <div className="flex flex-col">
             <H1>{data.username}</H1>

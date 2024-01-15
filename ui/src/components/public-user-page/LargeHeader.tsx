@@ -20,7 +20,7 @@ const LargeHeader = ({
     <header className="max-w-screen-xl mx-auto w-full my-6  flex-col items-center hidden lg:flex p-4">
       {banner?.url ? (
         <div className="w-full aspect-video h-[450px]  rounded-xl relative overflow-hidden">
-          <Image src={banner.url} alt="" fill objectFit="cover" />
+          <Image src={banner.url} alt="" fill objectFit="cover" priority />
         </div>
       ) : (
         <div className="w-full aspect-video h-[450px] bg-gradient-to-t from-zinc-200 to-zinc-100 rounded-xl"></div>
@@ -46,7 +46,7 @@ const LargeHeader = ({
             <AvatarFallback>
               <User />
             </AvatarFallback>
-            <AvatarImage src={data.avatar} />
+            <AvatarImage src={data.avatar} fetchPriority="high" />
           </Avatar>
           <H1 className="mt-6">{data.username}</H1>
 

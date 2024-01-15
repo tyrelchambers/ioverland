@@ -68,9 +68,16 @@ const Profile = () => {
   const removeBannerHandler = () => {
     if (!account.data?.user.banner?.id) return;
 
-    removeBanner.mutate({
-      media_id: account.data?.user.banner?.id,
-    });
+    removeBanner.mutate(
+      {
+        media_id: account.data?.user.banner?.id,
+      },
+      {
+        onSuccess: () => {
+          setBanner([]);
+        },
+      }
+    );
   };
 
   return (
