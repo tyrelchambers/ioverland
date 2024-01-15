@@ -14,11 +14,11 @@ const Followers = () => {
       <H2>Followers</H2>
 
       <section className="mt-6">
-        {account.data?.followers.length === 0 ? (
+        {account.data?.followers?.length === 0 ? (
           <EmptyListText text="No followers" />
         ) : (
           <ul className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {account.data?.followers.map((user) => (
+            {account.data?.followers?.map((user) => (
               <FollowItem user={user} key={user.uuid} />
             ))}
           </ul>

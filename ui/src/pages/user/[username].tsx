@@ -8,6 +8,7 @@ import { useDomainUser } from "@/hooks/useDomainUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
+import Custom404 from "../404";
 
 const Profile = () => {
   const { username } = useRouter().query;

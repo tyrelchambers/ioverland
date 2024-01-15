@@ -9,7 +9,7 @@ const FollowBtn = ({ data }: { data: PublicProfile }) => {
 
   return (
     <>
-      {user.data?.uuid !== data.uuid && (
+      {user.data && user.data?.uuid !== data.uuid && (
         <>
           {account.data?.following?.find((d) => d.uuid === data.uuid) ? (
             <Button

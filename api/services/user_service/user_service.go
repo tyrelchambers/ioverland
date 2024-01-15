@@ -315,7 +315,7 @@ func Unfollow(db *gorm.DB, user models.User, other models.User) error {
 
 func GetFollowers(db *gorm.DB, user models.User) ([]models.User, error) {
 	var followers []models.User
-	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.follow_uuid WHERE follow_uuid = ?", user.Uuid).Scan(&followers).Error
+	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.user_uuid WHERE follow_uuid = ?", user.Uuid).Scan(&followers).Error
 
 	return followers, err
 }
