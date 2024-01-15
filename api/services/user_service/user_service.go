@@ -5,6 +5,7 @@ import (
 	"api/models"
 	"api/services/build_service"
 	"api/utils"
+	"fmt"
 	"time"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -97,6 +98,8 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	if err != nil {
 		return resp, err
 	}
+
+	fmt.Println(domainUser.Banner)
 
 	resp.Builds = userBuilds
 

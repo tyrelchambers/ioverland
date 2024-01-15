@@ -391,7 +391,7 @@ func UpdateUser(c *gin.Context) {
 	u.Bio = body.Bio
 	u.Username = body.Username
 
-	if body.Banner.ID != 0 {
+	if body.Banner.Url != "" {
 		u.Banner = &body.Banner
 	}
 
