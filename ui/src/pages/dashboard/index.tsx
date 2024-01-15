@@ -1,36 +1,19 @@
 import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
 import Header from "@/components/Header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import {
-  ArrowBigDownDash,
-  Bookmark,
-  Car,
-  CarFront,
-  Fingerprint,
-  Grid2X2,
-  Heart,
-  Sparkle,
-  Truck,
-  User,
-} from "lucide-react";
+import { Heart } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import Account from "@/components/dashboard/Account";
 import { H2 } from "@/components/Heading";
-import EmptyListText from "@/components/EmptyListText";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Profile from "@/components/dashboard/Profile";
 import Following from "@/components/dashboard/Following";
 import Followers from "@/components/dashboard/Followers";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import DesktopTabs from "@/components/dashboard/DesktopTabs";
 import MobileTabs from "@/components/dashboard/MobileTabs";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
@@ -167,7 +150,7 @@ const Dashboard = () => {
               <Profile />
             </TabsContent>
 
-            <TabsContent value="follows">
+            <TabsContent value="following">
               <Following />
             </TabsContent>
 
