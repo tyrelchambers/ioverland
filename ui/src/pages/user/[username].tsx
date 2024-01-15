@@ -15,6 +15,7 @@ const Profile = () => {
 
   const { publicUser } = useDomainUser({ username: username as string });
 
+  if (publicUser.isError) return <Custom404 />;
   if (!publicUser.data) return null;
 
   return (

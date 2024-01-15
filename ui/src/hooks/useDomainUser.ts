@@ -170,6 +170,7 @@ export const useDomainUser = ({
       return request.get(`/api/user/${username}`).then((res) => res.data);
     },
     enabled: !!username,
+    retry: false,
   });
 
   const update = useMutation({
