@@ -45,8 +45,9 @@ type AccountResponse struct {
 	Builds          []build_service.Build `json:"builds"`
 	MaxPublicBuilds int                   `json:"max_public_builds"`
 	User            struct {
-		Bio    string        `json:"bio"`
-		Banner *models.Media `json:"banner"`
+		Bio      string        `json:"bio"`
+		Banner   *models.Media `json:"banner"`
+		Username *string       `json:"username"`
 	} `json:"user"`
 	Followers []models.User `json:"followers"`
 	Following []models.User `json:"following"`
@@ -170,6 +171,7 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	resp.MaxPublicBuilds = domainUser.MaxPublicBuilds
 	resp.User.Bio = domainUser.Bio
 	resp.User.Banner = domainUser.Banner
+	resp.User.Username = &domainUser.Username
 
 	return resp, nil
 }

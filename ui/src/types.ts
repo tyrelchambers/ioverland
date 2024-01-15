@@ -106,6 +106,7 @@ const account = z.object({
   user: z.object({
     banner: media.optional(),
     bio: z.string().optional(),
+    username: z.string().optional(),
   }),
   followers: z.array(domainUser),
   following: z.array(domainUser),
@@ -139,6 +140,7 @@ export type PublicProfile = z.infer<typeof publicProfile>;
 
 export const updateProfile = z.object({
   bio: z.string().optional(),
+  username: z.string().min(1),
 });
 
 export type UpdateProfile = z.infer<typeof updateProfile>;

@@ -6,8 +6,15 @@ import { Label } from "../ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Trash, User } from "lucide-react";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Form, FormField, FormItem, FormLabel } from "../ui/form";
-import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -17,6 +24,8 @@ import { Media, UpdateProfileWithBanner, updateProfile } from "@/types";
 import { folderRoot } from "@/constants";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import { Input } from "../ui/input";
+import { useForm } from "react-hook-form";
 
 const Profile = () => {
   const { account, update, removeBanner } = useDomainUser();
@@ -28,6 +37,7 @@ const Profile = () => {
     resolver: zodResolver(updateProfile),
     defaultValues: {
       bio: "",
+      username: "",
     },
   });
 
@@ -35,6 +45,7 @@ const Profile = () => {
     if (account.data?.user) {
       form.reset({
         bio: account.data.user.bio,
+        username: account.data.user.username,
       });
     }
   }, [account.data]);
@@ -101,7 +112,7 @@ const Profile = () => {
       <Form {...form}>
         <form
           className="flex flex-col gap-4 mt-10"
-          onSubmit={form.handleSubmit(submitHandler)}
+          onSubmit={form.handleSubmit(submitHandler, console.log)}
         >
           <H3>Info</H3>
 
@@ -115,6 +126,28 @@ const Profile = () => {
               maxFiles={1}
             />
           </div>
+
+          <FormField
+            name="username"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormDescription>
+                  Username can only contain letters, numbers, hyphens and
+                  underscores.
+                </FormDescription>
+                <FormControl>
+                  <Input
+                    placeholder="Add a username"
+                    pattern="^[a-zA-Z0-9\-_]+$"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             name="bio"

@@ -365,8 +365,9 @@ func GetUserPublicProfile(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 	var body struct {
-		Bio    string       `json:"bio"`
-		Banner models.Media `json:"banner"`
+		Bio      string       `json:"bio"`
+		Banner   models.Media `json:"banner"`
+		Username string       `json:"username"`
 	}
 
 	user, _ := c.Get("user")
@@ -388,6 +389,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	u.Bio = body.Bio
+	u.Username = body.Username
 
 	if body.Banner.ID != 0 {
 		u.Banner = &body.Banner
@@ -403,6 +405,19 @@ func UpdateUser(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	_, err = utils.ClerkClient.Users().Update(user.(*clerk.User).ID, &clerk.UpdateUser{Username: &body.Username})
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error updating user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 
 }
 

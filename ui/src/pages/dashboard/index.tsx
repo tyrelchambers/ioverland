@@ -98,6 +98,15 @@ const Dashboard = () => {
         </header>
 
         <section className="max-w-screen-2xl mx-auto my-10">
+          {!user.data?.username && (
+            <div className="p-4 bg-gray-700">
+              <p>No username set for your profile</p>
+              <p>
+                Please update your profile with a username either via the avatar
+                menu in the top right, or via the Profile tab.
+              </p>
+            </div>
+          )}
           <section className="mt-10 p-4 lg:p-0">
             <TabsContent value="builds">
               <H2 className="mb-10">My Builds</H2>
