@@ -36,7 +36,7 @@ const LargeHeader = ({
 
           <span className="flex gap-2 text-muted-foreground items-center">
             <span className="font-bold text-base text-foreground">
-              {data.followers?.length}
+              {data.followers?.length ?? 0}
             </span>
             followers
           </span>
