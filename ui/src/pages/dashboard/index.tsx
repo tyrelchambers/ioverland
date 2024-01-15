@@ -99,12 +99,20 @@ const Dashboard = () => {
 
         <section className="max-w-screen-2xl mx-auto my-10">
           {!user.data?.username && (
-            <div className="p-4 bg-gray-700">
-              <p>No username set for your profile</p>
-              <p>
-                Please update your profile with a username either via the avatar
-                menu in the top right, or via the Profile tab.
-              </p>
+            <div className="p-4 bg-gray-800 text-white rounded-md shadow-md text-sm flex justify-between">
+              <div className="flex flex-col">
+                <p className="font-bold">No username set for your profile</p>
+                <p className="text-white/70">
+                  Please update your profile with a username either via the
+                  avatar menu in the top right, or via the Profile tab.
+                </p>
+              </div>
+
+              <Link href="/dashboard?tab=profile">
+                <Button variant="secondary" type="button">
+                  Go to profile
+                </Button>
+              </Link>
             </div>
           )}
           <section className="mt-10 p-4 lg:p-0">
