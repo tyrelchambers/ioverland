@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -86,7 +87,7 @@ type CaptureErrorParams struct {
 //
 // No return value.
 func CaptureError(c *gin.Context, params *CaptureErrorParams) {
-
+	fmt.Println(params.Message)
 	if hub := sentrygin.GetHubFromContext(c); hub != nil {
 		hub.WithScope(func(scope *sentry.Scope) {
 			if hasExtraKeys(params.Extra) {
