@@ -6,6 +6,7 @@ import { Account, Media, PublicProfile } from "@/types";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
+import FollowBtn from "../FollowBtn";
 
 const MobileHeader = ({
   data,
@@ -61,7 +62,7 @@ const MobileHeader = ({
         </div>
 
         <div className="flex h-12 mt-3 p-3">
-          <Button>Follow</Button>
+          <FollowBtn data={data} />
         </div>
       </div>
     </header>
