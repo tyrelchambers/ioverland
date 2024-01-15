@@ -12,7 +12,9 @@ const Following = () => {
   return (
     <div>
       <H2>Following</H2>
-
+      <p className="text-muted-foreground">
+        {account.data?.following?.length ?? 0} follows
+      </p>
       <section className="mt-6">
         {account.data?.following.length === 0 ? (
           <EmptyListText text="Not following anyone" />

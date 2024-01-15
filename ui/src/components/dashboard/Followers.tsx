@@ -12,7 +12,9 @@ const Followers = () => {
   return (
     <div>
       <H2>Followers</H2>
-
+      <p className="text-muted-foreground">
+        {account.data?.followers?.length ?? 0} followers
+      </p>
       <section className="mt-6">
         {account.data?.followers?.length === 0 ? (
           <EmptyListText text="No followers" />
