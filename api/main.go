@@ -157,13 +157,15 @@ func main() {
 	uploadG.PATCH("", UploadAuth, controllers.ProcessUpload)
 	uploadG.POST("/revert", UploadAuth, controllers.Revert)
 
-	userG.POST("/:build_id/bookmark", AuthRequired, controllers.Bookmark)
-	userG.POST("/:build_id/remove-bookmark", AuthRequired, controllers.Unbookmark)
+	userG.POST("/me/bookmark", AuthRequired, controllers.Bookmark)
+	userG.POST("/me/remove-bookmark", AuthRequired, controllers.Unbookmark)
 	userG.GET("/me", AuthRequired, controllers.GetCurrentUser)
 	userG.GET("/me/account", AuthRequired, controllers.GetAccount)
 	userG.DELETE("/me", AuthRequired, controllers.DeleteUser)
 	userG.POST("/me/restore", AuthRequired, controllers.RestoreUser)
 	userG.GET("/:username", controllers.GetUserPublicProfile)
+	userG.POST("/:username/follow", AuthRequired, controllers.FollowUser)
+	userG.POST("/:username/unfollow", AuthRequired, controllers.UnfollowUser)
 	userG.PATCH("/me/update", AuthRequired, controllers.UpdateUser)
 	userG.POST("/me/remove-banner", AuthRequired, controllers.RemoveBanner)
 

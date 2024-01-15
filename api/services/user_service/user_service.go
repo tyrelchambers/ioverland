@@ -5,7 +5,6 @@ import (
 	"api/models"
 	"api/services/build_service"
 	"api/utils"
-	"fmt"
 	"time"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
@@ -49,6 +48,8 @@ type AccountResponse struct {
 		Bio    string        `json:"bio"`
 		Banner *models.Media `json:"banner"`
 	} `json:"user"`
+	Followers []models.User `json:"followers"`
+	Following []models.User `json:"following"`
 }
 
 var Plan_limits = map[string]PlanLimit{
@@ -77,10 +78,9 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 
 	utils.StripeClientInit()
 
-	domainUser, err := FindCurrentUser(dbConfig.Client, user_id)
+	domainUser, err := FindUser(dbConfig.Client, user_id)
 
 	if err != nil {
-		fmt.Println(err)
 		return resp, err
 	}
 
@@ -88,18 +88,32 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	err = db.Table("builds").Where("user_id = ?", domainUser.Uuid).Count(&userBuildsCount).Error
 
 	if err != nil {
-		fmt.Println(err)
 		return resp, err
 	}
 
 	userBuilds, err := build_service.AllByUser(dbConfig.Client, user_id)
 
 	if err != nil {
-		fmt.Println(err)
 		return resp, err
 	}
 
 	resp.Builds = userBuilds
+
+	followers, err := GetFollowers(dbConfig.Client, domainUser)
+
+	if err != nil {
+		return resp, err
+	}
+
+	resp.Followers = followers
+
+	following, err := GetFollowing(dbConfig.Client, domainUser)
+
+	if err != nil {
+		return resp, err
+	}
+
+	resp.Following = following
 
 	var cus stripe.Customer
 
@@ -110,7 +124,6 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 		customer, err := customer.Get(domainUser.CustomerId, params)
 
 		if err != nil {
-			fmt.Println(err)
 			return resp, err
 		}
 
@@ -170,8 +183,8 @@ func DeleteUserFromClerk(user *clerk.User) {
 	utils.ClerkClient.Users().Delete(user.ID)
 }
 
-func GetUserByUuid(db *gorm.DB, id string) (User, error) {
-	var user User
+func GetUserByUuid(db *gorm.DB, id string) (models.User, error) {
+	var user models.User
 	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", id).First(&user).Error
 	return user, err
 }
@@ -200,7 +213,7 @@ func Unbookmark(db *gorm.DB, u models.User, build build_service.Build) error {
 	return nil
 }
 
-func FindCurrentUser(db *gorm.DB, uuid string) (models.User, error) {
+func FindUser(db *gorm.DB, uuid string) (models.User, error) {
 	var user models.User
 
 	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
@@ -245,7 +258,7 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 
 	stripe.Key = stripe_key
 
-	domainUser, err := FindCurrentUser(dbConfig.Client, id)
+	domainUser, err := FindUser(dbConfig.Client, id)
 
 	if err != nil {
 		return resp, err
@@ -273,5 +286,49 @@ func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, erro
 func RemoveImage(db *gorm.DB, media_id int) error {
 	db.Table("media").Where("id = ?", media_id).Delete(&models.Media{})
 
+	if db.Error != nil {
+		return db.Error
+	}
+
 	return nil
+}
+
+func Follow(db *gorm.DB, user models.User, other models.User) error {
+	db.Model(&user).Association("Follows").Append(&other)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
+func Unfollow(db *gorm.DB, user models.User, other models.User) error {
+	db.Model(&user).Association("Follows").Delete(&other)
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
+}
+
+func GetFollowers(db *gorm.DB, user models.User) ([]models.User, error) {
+	var followers []models.User
+	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.user_uuid WHERE follow_uuid = ?", user.Uuid).Scan(&followers).Error
+
+	return followers, err
+}
+
+func GetFollowing(db *gorm.DB, user models.User) ([]models.User, error) {
+	var following []models.User
+	err := db.Model(&user).Select("users.image_url, users.username, users.uuid").Association("Follows").Find(&following)
+
+	return following, err
+}
+
+func GetByUsername(db *gorm.DB, username string) (models.User, error) {
+	var user models.User
+	err := db.Where("username = ?", username).Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").First(&user).Error
+	return user, err
 }

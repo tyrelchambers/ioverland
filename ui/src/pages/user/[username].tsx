@@ -1,24 +1,21 @@
 import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { H1, H2 } from "@/components/Heading";
+import { H2 } from "@/components/Heading";
 import LargeHeader from "@/components/public-user-page/LargeHeader";
 import MobileHeader from "@/components/public-user-page/MobileHeader";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import axios from "axios";
-import { format } from "date-fns";
-import { Eye, Heart, User } from "lucide-react";
-import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
+import Custom404 from "../404";
 
 const Profile = () => {
   const { username } = useRouter().query;
 
   const { publicUser } = useDomainUser({ username: username as string });
 
+  if (publicUser.isError) return <Custom404 />;
   if (!publicUser.data) return null;
 
   return (

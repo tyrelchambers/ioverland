@@ -66,7 +66,6 @@ func Webhooks(c *gin.Context) {
 	}
 
 	switch evtType {
-
 	case "user.created":
 
 		var data struct {
@@ -78,7 +77,7 @@ func Webhooks(c *gin.Context) {
 		if err := json.Unmarshal(payload, &data); err != nil {
 			c.String(http.StatusBadRequest, "Bad Request")
 			utils.CaptureError(c, &utils.CaptureErrorParams{
-				Message: "[WEBHOOKS] [CLERK] Could not unmarshal payload",
+				Message: "[WEBHOOKS] [CLERK] [user.created] Could not unmarshal payload",
 			})
 			return
 		}
@@ -93,7 +92,34 @@ func Webhooks(c *gin.Context) {
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			utils.CaptureError(c, &utils.CaptureErrorParams{
-				Message: "[WEBHOOKS] [CLERK] Could not create user",
+				Message: "[WEBHOOKS] [CLERK] [user.created] Could not create user",
+				Extra: map[string]interface{}{
+					"error": err.Error(),
+				},
+			})
+			return
+		}
+	case "user.updated":
+		var data struct {
+			Data  clerk.User `json:"data"`
+			Event string     `json:"event"`
+			Type  string     `json:"type"`
+		}
+
+		if err := json.Unmarshal(payload, &data); err != nil {
+			c.String(http.StatusBadRequest, "Bad Request")
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [CLERK] [user.updated] Could not unmarshal payload",
+			})
+			return
+		}
+
+		u, err := user_service.FindUser(dbConfig.Client, data.Data.ID)
+
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [CLERK] [user.updated] Could not find user",
 				Extra: map[string]interface{}{
 					"error": err.Error(),
 				},
@@ -101,8 +127,21 @@ func Webhooks(c *gin.Context) {
 			return
 		}
 
-		c.String(http.StatusOK, "success")
-		return
+		u.Username = *data.Data.Username
+		u.ImageUrl = *data.Data.ImageURL
+
+		err = user_service.Update(dbConfig.Client, u)
+
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [CLERK] [user.updated] Could not update user",
+				Extra: map[string]interface{}{
+					"error": err.Error(),
+				},
+			})
+			return
+		}
 	}
 
 	c.String(http.StatusAccepted, "success")
@@ -235,7 +274,7 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
-		usr, err := user_service.FindCurrentUser(dbConfig.Client, data.Metadata["clerk_user_id"])
+		usr, err := user_service.FindUser(dbConfig.Client, data.Metadata["clerk_user_id"])
 
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{

@@ -2,7 +2,6 @@ package build_service
 
 import (
 	"api/models"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -31,7 +30,6 @@ func (b *Build) Update(db *gorm.DB) error {
 	db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Likes", "Views").Save(&b)
 
 	if db.Error != nil {
-		fmt.Println(db.Error)
 		return db.Error
 	}
 

@@ -9,6 +9,7 @@ import {
   Fingerprint,
   Grid2X2,
   Heart,
+  Sparkle,
   Truck,
   User,
 } from "lucide-react";
@@ -22,6 +23,8 @@ import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Profile from "@/components/dashboard/Profile";
+import Following from "@/components/dashboard/Following";
+import Followers from "@/components/dashboard/Followers";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -69,6 +72,14 @@ const Dashboard = () => {
                 <User size={18} className="mr-2" />
                 Profile
               </TabsTrigger>
+              <TabsTrigger value="follows">
+                <Sparkle size={18} className="mr-2" />
+                Following
+              </TabsTrigger>
+              <TabsTrigger value="followers">
+                <Sparkle size={18} className="mr-2" />
+                Followers
+              </TabsTrigger>
             </TabsList>
 
             <div className="flex gap-3">
@@ -87,7 +98,7 @@ const Dashboard = () => {
         </header>
 
         <section className="max-w-screen-2xl mx-auto my-10">
-          <section className="mt-10">
+          <section className="mt-10 p-4 lg:p-0">
             <TabsContent value="builds">
               <H2 className="mb-10">My Builds</H2>
 
@@ -146,12 +157,20 @@ const Dashboard = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="account" className="p-4">
+            <TabsContent value="account">
               <Account />
             </TabsContent>
 
-            <TabsContent value="profile" className="p-4">
+            <TabsContent value="profile">
               <Profile />
+            </TabsContent>
+
+            <TabsContent value="follows">
+              <Following />
+            </TabsContent>
+
+            <TabsContent value="followers">
+              <Followers />
             </TabsContent>
           </section>
         </section>

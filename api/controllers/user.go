@@ -40,7 +40,7 @@ func Bookmark(c *gin.Context) {
 		return
 	}
 
-	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -89,7 +89,7 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -117,7 +117,7 @@ func Unbookmark(c *gin.Context) {
 func GetCurrentUser(c *gin.Context) {
 	user, _ := c.Get("user")
 
-	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -155,7 +155,7 @@ func DeleteUser(c *gin.Context) {
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	domainUser, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -253,7 +253,7 @@ func RestoreUser(c *gin.Context) {
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
-	domainUser, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	domainUser, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -320,29 +320,14 @@ func GetUserPublicProfile(c *gin.Context) {
 		Builds    []models.Build `json:"builds"`
 		CreatedAt time.Time      `json:"created_at"`
 		Views     int            `json:"views"`
-		Followers int            `json:"followers"`
+		Followers []models.User  `json:"followers"`
 		Banner    *models.Media  `json:"banner"`
+		Uuid      string         `json:"uuid"`
 	}
 
 	username := c.Param("username")
 
-	clerk_user_list, err := utils.ClerkClient.Users().ListAll(clerk.ListAllUsersParams{Usernames: []string{username}})
-
-	if err != nil {
-		utils.CaptureError(c, &utils.CaptureErrorParams{
-			Message: "[CONTROLLERS] [USER] [GETUSERPUBLICPROFILE] Error getting user list from Clerk",
-			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
-		})
-		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if len(clerk_user_list) == 0 {
-		c.String(http.StatusNotFound, "User not found")
-		return
-	}
-
-	user, err := user_service.GetUserByUuid(dbConfig.Client, clerk_user_list[0].ID)
+	user, err := user_service.GetByUsername(dbConfig.Client, username)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -353,14 +338,26 @@ func GetUserPublicProfile(c *gin.Context) {
 		return
 	}
 
+	followers, err := user_service.GetFollowers(dbConfig.Client, user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETUSERPUBLICPROFILE] Error getting followers",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	userResp := UserResp{
-		Username:  clerk_user_list[0].Username,
-		Avatar:    clerk_user_list[0].ProfileImageURL,
+		Username:  &user.Username,
+		Avatar:    user.ImageUrl,
 		Builds:    user.Builds,
 		CreatedAt: user.CreatedAt,
 		Views:     user.Views,
-		Followers: 0,
+		Followers: followers,
 		Banner:    user.Banner,
+		Uuid:      user.Uuid,
 	}
 
 	c.JSON(http.StatusOK, userResp)
@@ -379,7 +376,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -421,7 +418,7 @@ func RemoveBanner(c *gin.Context) {
 
 	user, _ := c.Get("user")
 
-	u, err := user_service.FindCurrentUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -450,6 +447,82 @@ func RemoveBanner(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error updating user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+}
+
+func FollowUser(c *gin.Context) {
+	var body struct {
+		UserToFollow string `json:"user_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user, _ := c.Get("user")
+
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	other_user, err := user_service.FindUser(dbConfig.Client, body.UserToFollow)
+
+	err = user_service.Follow(dbConfig.Client, u, other_user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error following user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+}
+
+func UnfollowUser(c *gin.Context) {
+	var body struct {
+		UserToUnfollow string `json:"user_id"`
+	}
+
+	if err := c.Bind(&body); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user, _ := c.Get("user")
+
+	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	other_user, err := user_service.FindUser(dbConfig.Client, body.UserToUnfollow)
+
+	err = user_service.Unfollow(dbConfig.Client, u, other_user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error following user",
 			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
 		})
 		c.String(http.StatusInternalServerError, err.Error())

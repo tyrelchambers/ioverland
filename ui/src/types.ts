@@ -79,6 +79,8 @@ const domainUser = z.object({
   builds: z.array(buildSchema),
   bookmarks: z.array(buildSchema),
   deleted_on: z.date(),
+  username: z.string(),
+  image_url: z.string(),
 });
 
 export type DomainUser = z.infer<typeof domainUser>;
@@ -105,6 +107,8 @@ const account = z.object({
     banner: media.optional(),
     bio: z.string().optional(),
   }),
+  followers: z.array(domainUser),
+  following: z.array(domainUser),
 });
 
 export type Account = z.infer<typeof account>;
@@ -124,9 +128,11 @@ const publicProfile = z.object({
   builds: z.array(buildSchema),
   created_at: z.date(),
   views: z.number(),
-  followers: z.number(),
+  followers: z.array(domainUser),
+  following: z.array(domainUser),
   bio: z.string(),
   banner: media.optional(),
+  uuid: z.string(),
 });
 
 export type PublicProfile = z.infer<typeof publicProfile>;
