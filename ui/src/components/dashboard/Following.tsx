@@ -16,7 +16,7 @@ const Following = () => {
         {account.data?.following?.length ?? 0} follows
       </p>
       <section className="mt-6">
-        {account.data?.following.length === 0 ? (
+        {account.data?.following?.length === 0 ? (
           <EmptyListText text="Not following anyone" />
         ) : (
           <ul className="grid grid-cols-1 lg:grid-cols-3 gap-6">
