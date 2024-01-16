@@ -32,7 +32,6 @@ func countVisibleBuilds(user user_service.AccountResponse) int {
 }
 
 func canBePublic(user user_service.AccountResponse) bool {
-	fmt.Println(user.MaxPublicBuilds)
 	if user.MaxPublicBuilds == -1 {
 		return true
 	}
@@ -152,7 +151,7 @@ func GetById(c *gin.Context) {
 
 func UpdateBuild(c *gin.Context) {
 
-	var reqBody build_service.Build
+	var reqBody models.Build
 
 	if err := c.Bind(&reqBody); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
@@ -177,7 +176,7 @@ func UpdateBuild(c *gin.Context) {
 		return
 	}
 
-	err = reqBody.Update(dbConfig.Client)
+	err = build_service.Update(dbConfig.Client, reqBody)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{

@@ -370,7 +370,7 @@ func StripeWebhooks(c *gin.Context) {
 		if len(builds) > 1 {
 			for _, build := range builds[1:] {
 				build.Public = false
-				build.Update(dbConfig.Client)
+				build_service.Update(dbConfig.Client, build)
 			}
 		}
 

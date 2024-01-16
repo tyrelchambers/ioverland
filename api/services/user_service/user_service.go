@@ -37,13 +37,13 @@ type AccountResponse struct {
 		DeletedAt       *time.Time `json:"deleted_at"`
 		NextInvoiceDate time.Time  `json:"next_invoice_date"`
 	} `json:"subscription"`
-	DeletedAt       *gorm.DeletedAt       `json:"deleted_at"`
-	TotalBuilds     int64                 `json:"total_builds"`
-	BuildsRemaining int64                 `json:"builds_remaining"`
-	PlanLimits      PlanLimit             `json:"plan_limits"`
-	MaxBuilds       int64                 `json:"max_builds"`
-	Builds          []build_service.Build `json:"builds"`
-	MaxPublicBuilds int                   `json:"max_public_builds"`
+	DeletedAt       *gorm.DeletedAt `json:"deleted_at"`
+	TotalBuilds     int64           `json:"total_builds"`
+	BuildsRemaining int64           `json:"builds_remaining"`
+	PlanLimits      PlanLimit       `json:"plan_limits"`
+	MaxBuilds       int64           `json:"max_builds"`
+	Builds          []models.Build  `json:"builds"`
+	MaxPublicBuilds int             `json:"max_public_builds"`
 	User            struct {
 		Bio      string        `json:"bio"`
 		Banner   *models.Media `json:"banner"`

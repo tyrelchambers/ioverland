@@ -26,7 +26,7 @@ func IncrementViews(db *gorm.DB, b models.Build) error {
 	return nil
 }
 
-func (b *Build) Update(db *gorm.DB) error {
+func Update(db *gorm.DB, b models.Build) error {
 	db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Likes", "Views").Save(&b)
 
 	if db.Error != nil {
@@ -36,9 +36,9 @@ func (b *Build) Update(db *gorm.DB) error {
 	return nil
 }
 
-func AllByUser(db *gorm.DB, user_id string) ([]Build, error) {
+func AllByUser(db *gorm.DB, user_id string) ([]models.Build, error) {
 
-	var builds []Build
+	var builds []models.Build
 
 	err := db.Order("name").Preload("Banner", "type='banner'").Where("user_id = ?", user_id).Find(&builds).Error
 
