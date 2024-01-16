@@ -8,6 +8,7 @@ import { Route } from "@/types";
 import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import { dashboardTabs } from "@/index.routes";
+import { H2, H3 } from "../Heading";
 
 const MobileNav = ({
   routes,
@@ -41,23 +42,13 @@ const MobileNav = ({
             ))}
 
             <SignedIn>
-              {authRoutes.map((route) => (
-                <Link
-                  href={route.href}
-                  key={route.label}
-                  className="flex gap-6 items-center bg-card p-2 px-4 rounded-md hover:text-primary"
-                  onClick={() => setOpen(false)}
-                >
-                  {route.icon} {route.label}
-                </Link>
-              ))}
               <Separator />
 
               {dashboardTabs.map(({ icon: Icon, label, tab }) => (
                 <Link
                   key={label}
                   href={`/dashboard/?tab=${tab}`}
-                  className="flex gap-6 items-center p-2 px-4 rounded-md hover:text-primary"
+                  className="flex gap-6 items-center p-2 px-4 rounded-md hover:text-primary border-border border"
                   onClick={() => setOpen(false)}
                 >
                   <Icon size={18} className="mr-2" />

@@ -45,14 +45,24 @@ const Dashboard = () => {
       >
         <header className="w-full bg-card py-2 px-4">
           <div className="max-w-screen-2xl mx-auto w-full flex flex-col justify-between items-center lg:flex-row">
-            <div className="flex gap-3">
-              <Link href="/build/new">
-                <Button type="button" variant="outline" size="sm">
+            <div className="flex gap-3 w-full">
+              <Link href="/build/new" className="w-full">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full lg:w-fit"
+                >
                   New build
                 </Button>
               </Link>
-              <Link href={`/user/${clerkUser?.username}`}>
-                <Button type="button" size="sm" variant="outline">
+              <Link href={`/user/${clerkUser?.username}`} className="w-full">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="w-full lg:w-fit"
+                >
                   View profile
                 </Button>
               </Link>
