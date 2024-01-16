@@ -27,25 +27,26 @@ func Bookmark(c *gin.Context) {
 		return
 	}
 
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
 	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [BOOKMARK] Error getting build",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "build_id": body.BuildId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [BOOKMARK] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "build_id": body.BuildId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -56,7 +57,7 @@ func Bookmark(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [BOOKMARK] Error bookmarking build",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "build_id": body.BuildId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -76,25 +77,26 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
 	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [UNBOOKMARK] Error getting build",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "build_id": body.BuildId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [UNBOOKMARK] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "build_id": body.BuildId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -105,7 +107,7 @@ func Unbookmark(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [UNBOOKMARK] Error unbookmarking build",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "build_id": body.BuildId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "build_id": body.BuildId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return

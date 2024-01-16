@@ -344,8 +344,8 @@ const BookmarkButton = ({
   removeBookmarkHandler: () => void;
 }) =>
   isBookmarked ? (
-    <Button variant="default" onClick={removeBookmarkHandler}>
-      <BookmarkCheck size={18} className="text-white mr-2" />
+    <Button variant="outline" onClick={removeBookmarkHandler}>
+      <BookmarkCheck size={18} className="mr-2" />
       Bookmarked
     </Button>
   ) : (
