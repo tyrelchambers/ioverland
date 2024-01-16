@@ -329,7 +329,7 @@ func GetFollowing(db *gorm.DB, user models.User) ([]models.User, error) {
 	return following, err
 }
 
-func GetByUsername(db *gorm.DB, username string) (models.User, error) {
+func FindByUsername(db *gorm.DB, username string) (models.User, error) {
 	var user models.User
 	err := db.Where("username = ?", username).Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").First(&user).Error
 	return user, err

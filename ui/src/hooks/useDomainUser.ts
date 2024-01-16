@@ -278,6 +278,22 @@ export const useDomainUser = ({
     },
   });
 
+  const viewProfile = useMutation({
+    mutationFn: async () => {
+      return request
+        .post(
+          `/api/user/${username}/view-profile`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res) => res.data);
+    },
+  });
+
   return {
     user: query,
     bookmark,
@@ -292,5 +308,6 @@ export const useDomainUser = ({
     removeBanner,
     follow,
     unfollow,
+    viewProfile,
   };
 };

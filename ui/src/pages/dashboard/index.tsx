@@ -2,7 +2,7 @@ import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
 import Header from "@/components/Header";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Heart } from "lucide-react";
+import { Eye, Heart } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
@@ -104,6 +104,10 @@ const Dashboard = () => {
                         key={build.uuid}
                         footer={
                           <footer className="flex mt-2 gap-4">
+                            <div className="flex text-muted-foreground items-center">
+                              <Eye size={16} className="mr-1" />
+                              <p className="text-sm">{build.views ?? 0}</p>
+                            </div>
                             <div className="flex text-muted-foreground items-center">
                               <Heart size={16} className="mr-1" />
                               <p className="text-sm">

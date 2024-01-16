@@ -328,7 +328,7 @@ func GetUserPublicProfile(c *gin.Context) {
 
 	username := c.Param("username")
 
-	user, err := user_service.GetByUsername(dbConfig.Client, username)
+	user, err := user_service.FindByUsername(dbConfig.Client, username)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -547,4 +547,34 @@ func UnfollowUser(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "success")
+}
+
+func ViewProfile(c *gin.Context) {
+	username := c.Param("username")
+
+	u, err := user_service.FindByUsername(dbConfig.Client, username)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [VIEWPROFILE] Error getting user",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	u.Views = u.Views + 1
+
+	err = user_service.Update(dbConfig.Client, u)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [VIEWPROFILE] Error updating user",
+			Extra:   map[string]interface{}{"error": err.Error(), "username": username},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, "success")
 }

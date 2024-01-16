@@ -5,15 +5,22 @@ import { H2 } from "@/components/Heading";
 import LargeHeader from "@/components/public-user-page/LargeHeader";
 import MobileHeader from "@/components/public-user-page/MobileHeader";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import Custom404 from "../404";
 
 const Profile = () => {
   const { username } = useRouter().query;
 
-  const { publicUser } = useDomainUser({ username: username as string });
+  const { publicUser, viewProfile } = useDomainUser({
+    username: username as string,
+  });
+
+  useEffect(() => {
+    if (publicUser.data) {
+      viewProfile.mutate();
+    }
+  }, [publicUser.data]);
 
   if (publicUser.isError) return <Custom404 />;
   if (!publicUser.data) return null;
