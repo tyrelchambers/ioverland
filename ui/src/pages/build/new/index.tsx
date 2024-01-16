@@ -137,7 +137,7 @@ const Index = () => {
     form.setValue("links", links);
   };
 
-  const submitHandler = (data: NewBuildSchemaWithoutUserId) => {
+  const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
     if (!user?.id) return;
 
     const modificationsToArray = [];
@@ -190,7 +190,7 @@ const Index = () => {
       console.log(error);
     }
 
-    createBuild.mutate(payload);
+    await createBuild.mutateAsync(payload);
   };
 
   return (
