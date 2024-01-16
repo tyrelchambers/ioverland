@@ -72,7 +72,7 @@ const Dashboard = () => {
 
         <section className="max-w-screen-2xl mx-auto my-10">
           {!user.isLoading && !user.isPending && !user.data?.username && (
-            <div className="p-4 bg-gray-800 text-white rounded-md shadow-md text-sm flex justify-between flex-col gap-4 mx-4">
+            <div className="p-4 bg-gray-800 text-white rounded-md shadow-md text-sm flex justify-between flex-col lg:flex-row gap-4 mx-4 lg:mx-0">
               <div className="flex flex-col">
                 <p className="font-bold text-lg">
                   No username set for your profile
