@@ -195,7 +195,7 @@ func Create(db *gorm.DB, user *models.User) error {
 	return db.Create(user).Error
 }
 
-func Bookmark(db *gorm.DB, u models.User, build build_service.Build) error {
+func Bookmark(db *gorm.DB, u models.User, build models.Build) error {
 	db.Model(&u).Association("Bookmarks").Append(&build)
 
 	if db.Error != nil {
@@ -205,7 +205,7 @@ func Bookmark(db *gorm.DB, u models.User, build build_service.Build) error {
 	return nil
 }
 
-func Unbookmark(db *gorm.DB, u models.User, build build_service.Build) error {
+func Unbookmark(db *gorm.DB, u models.User, build models.Build) error {
 	db.Model(&u).Association("Bookmarks").Delete(&build)
 
 	if db.Error != nil {

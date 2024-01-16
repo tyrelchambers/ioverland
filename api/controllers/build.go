@@ -15,8 +15,8 @@ import (
 )
 
 type EditResponse struct {
-	Build         build_service.Build `json:"build"`
-	Can_be_public bool                `json:"can_be_public"`
+	Build         models.Build `json:"build"`
+	Can_be_public bool         `json:"can_be_public"`
 }
 
 func countVisibleBuilds(user user_service.AccountResponse) int {
@@ -224,7 +224,7 @@ func IncrementViews(c *gin.Context) {
 		return
 	}
 
-	err = build.IncrementViews(dbConfig.Client)
+	err = build_service.IncrementViews(dbConfig.Client, build)
 
 	if err != nil {
 
@@ -256,7 +256,7 @@ func Like(c *gin.Context) {
 		return
 	}
 
-	err = build.Like(dbConfig.Client, user.(*clerk.User).ID)
+	err = build_service.Like(dbConfig.Client, user.(*clerk.User).ID, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -285,7 +285,7 @@ func Dislike(c *gin.Context) {
 		return
 	}
 
-	err = build.DisLike(dbConfig.Client, user.(*clerk.User).ID)
+	err = build_service.DisLike(dbConfig.Client, user.(*clerk.User).ID, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -324,7 +324,7 @@ func DeleteBuild(c *gin.Context) {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
-	err = build.Delete(dbConfig.Client)
+	err = build_service.Delete(dbConfig.Client, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{

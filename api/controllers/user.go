@@ -100,7 +100,7 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	err = user_service.Bookmark(dbConfig.Client, u, build)
+	err = user_service.Unbookmark(dbConfig.Client, u, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{

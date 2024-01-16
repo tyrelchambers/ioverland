@@ -21,7 +21,7 @@ func (b *Build) Create(db *gorm.DB) error {
 	return nil
 }
 
-func (b *Build) IncrementViews(db *gorm.DB) error {
+func IncrementViews(db *gorm.DB, b models.Build) error {
 	db.Model(&b).Where("uuid = ?", b.Uuid).Update("views", b.Views+1)
 	return nil
 }
@@ -49,9 +49,9 @@ func AllByUser(db *gorm.DB, user_id string) ([]Build, error) {
 	return builds, nil
 }
 
-func GetById(db *gorm.DB, uuid string) (Build, error) {
+func GetById(db *gorm.DB, uuid string) (models.Build, error) {
 
-	var build Build
+	var build models.Build
 
 	db.Preload("Trips").Preload("Modifications").Where("uuid = ?", uuid).First(&build)
 
@@ -72,7 +72,7 @@ func RemoveImage(db *gorm.DB, build_id, media_id string) error {
 	return nil
 }
 
-func (b *Build) Like(db *gorm.DB, user_id string) error {
+func Like(db *gorm.DB, user_id string, b models.Build) error {
 	likes := b.Likes
 	likes = append(likes, user_id)
 
@@ -81,7 +81,7 @@ func (b *Build) Like(db *gorm.DB, user_id string) error {
 	return nil
 }
 
-func (b *Build) DisLike(db *gorm.DB, user_id string) error {
+func DisLike(db *gorm.DB, user_id string, b models.Build) error {
 	likes := b.Likes
 	for i, like := range likes {
 		if like == user_id {
@@ -95,7 +95,7 @@ func (b *Build) DisLike(db *gorm.DB, user_id string) error {
 	return nil
 }
 
-func (b *Build) Delete(db *gorm.DB) error {
+func Delete(db *gorm.DB, b models.Build) error {
 
 	err := db.Delete(&b).Error
 
