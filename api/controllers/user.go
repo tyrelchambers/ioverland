@@ -115,14 +115,15 @@ func Unbookmark(c *gin.Context) {
 }
 
 func GetCurrentUser(c *gin.Context) {
-	user, _ := c.Get("user")
+	userParam, _ := c.Get("user")
+	user := userParam.(*models.User)
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [GETCURRENTUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -132,14 +133,15 @@ func GetCurrentUser(c *gin.Context) {
 }
 
 func GetAccount(c *gin.Context) {
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
-	acc, err := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
+	acc, err := user_service.GetUserAccount(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [GETACCOUNT] Error getting account",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -150,17 +152,18 @@ func GetAccount(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
-	user, _ := c.Get("user")
+	userParam, _ := c.Get("user")
+	user := userParam.(*models.User)
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	domainUser, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [DELETEUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -177,7 +180,7 @@ func DeleteUser(c *gin.Context) {
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
 				Message: "[CONTROLLERS] [USER] [DELETEUSER] Error getting customer",
-				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 			})
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -191,7 +194,7 @@ func DeleteUser(c *gin.Context) {
 			if err != nil {
 				utils.CaptureError(c, &utils.CaptureErrorParams{
 					Message: "[CONTROLLERS] [USER] [DELETEUSER] Error deleting subscription",
-					Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+					Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 				})
 				c.String(http.StatusInternalServerError, err.Error())
 				return
@@ -213,7 +216,7 @@ func DeleteUser(c *gin.Context) {
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
 				Message: "[CONTROLLERS] [USER] [DELETEUSER] Error updating user with DeletedAt field during subscription delete",
-				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 			})
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -225,7 +228,7 @@ func DeleteUser(c *gin.Context) {
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
 				Message: "[CONTROLLERS] [USER] [DELETEUSER] Error deleting user from clerk",
-				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 			})
 			c.String(http.StatusInternalServerError, err.Error())
 		}
@@ -236,7 +239,7 @@ func DeleteUser(c *gin.Context) {
 			if err != nil {
 				utils.CaptureError(c, &utils.CaptureErrorParams{
 					Message: "[CONTROLLERS] [USER] [DELETEUSER] Error deleting user from database",
-					Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+					Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 				})
 				c.String(http.StatusInternalServerError, err.Error())
 				return
@@ -249,16 +252,17 @@ func DeleteUser(c *gin.Context) {
 }
 
 func RestoreUser(c *gin.Context) {
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
-	domainUser, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	domainUser, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -273,7 +277,7 @@ func RestoreUser(c *gin.Context) {
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
 				Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error getting customer",
-				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 			})
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -286,7 +290,7 @@ func RestoreUser(c *gin.Context) {
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
 				Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error restoring subscription",
-				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID, "subscription_id": cus.Subscriptions.Data[0].ID},
+				Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid, "subscription_id": cus.Subscriptions.Data[0].ID},
 			})
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -304,7 +308,7 @@ func RestoreUser(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error updating user with DeletedAt field during subscription restore",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -372,19 +376,20 @@ func UpdateUser(c *gin.Context) {
 		Username string       `json:"username"`
 	}
 
-	user, _ := c.Get("user")
+	userParam, _ := c.Get("user")
+	user := userParam.(*models.User)
 
 	if err := c.Bind(&body); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -402,18 +407,18 @@ func UpdateUser(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error updating user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	_, err = utils.ClerkClient.Users().Update(user.(*clerk.User).ID, &clerk.UpdateUser{Username: &body.Username})
+	_, err = utils.ClerkClient.Users().Update(user.Uuid, &clerk.UpdateUser{Username: &body.Username})
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [UPDATEUSER] Error updating user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -433,14 +438,15 @@ func RemoveBanner(c *gin.Context) {
 		return
 	}
 
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -464,7 +470,7 @@ func RemoveBanner(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [REMOVEBANNER] Error updating user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -483,14 +489,15 @@ func FollowUser(c *gin.Context) {
 		return
 	}
 
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -502,7 +509,7 @@ func FollowUser(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error following user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -521,14 +528,15 @@ func UnfollowUser(c *gin.Context) {
 		return
 	}
 
-	user, _ := c.Get("user")
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
-	u, err := user_service.FindUser(dbConfig.Client, user.(*clerk.User).ID)
+	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -540,7 +548,7 @@ func UnfollowUser(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [USER] [FOLLOWUSER] Error following user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return

@@ -18,7 +18,7 @@ type User struct {
 }
 
 type GetCurrentUserWithStripeResponse struct {
-	User     models.User      `json:"user"`
+	User     *models.User     `json:"user"`
 	Customer *stripe.Customer `json:"customer"`
 }
 
@@ -176,7 +176,7 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	return resp, nil
 }
 
-func DeleteUser(db *gorm.DB, user models.User) error {
+func DeleteUser(db *gorm.DB, user *models.User) error {
 	err := db.Unscoped().Delete(&user).Error
 	return err
 }
@@ -195,7 +195,7 @@ func Create(db *gorm.DB, user *models.User) error {
 	return db.Create(user).Error
 }
 
-func Bookmark(db *gorm.DB, u models.User, build models.Build) error {
+func Bookmark(db *gorm.DB, u *models.User, build models.Build) error {
 	db.Model(&u).Association("Bookmarks").Append(&build)
 
 	if db.Error != nil {
@@ -205,7 +205,7 @@ func Bookmark(db *gorm.DB, u models.User, build models.Build) error {
 	return nil
 }
 
-func Unbookmark(db *gorm.DB, u models.User, build models.Build) error {
+func Unbookmark(db *gorm.DB, u *models.User, build models.Build) error {
 	db.Model(&u).Association("Bookmarks").Delete(&build)
 
 	if db.Error != nil {
@@ -215,19 +215,19 @@ func Unbookmark(db *gorm.DB, u models.User, build models.Build) error {
 	return nil
 }
 
-func FindUser(db *gorm.DB, uuid string) (models.User, error) {
-	var user models.User
+func FindUser(db *gorm.DB, uuid string) (*models.User, error) {
+	var user *models.User
 
 	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
 	return user, err
 }
 
-func Update(db *gorm.DB, u models.User) error {
+func Update(db *gorm.DB, u *models.User) error {
 	return db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&u).Error
 }
 
-func FindUserByCustomerId(db *gorm.DB, customerId string) (models.User, error) {
-	var user models.User
+func FindUserByCustomerId(db *gorm.DB, customerId string) (*models.User, error) {
+	var user *models.User
 	err := db.Where("customer_id = ?", customerId).First(&user).Error
 	return user, err
 }
@@ -295,7 +295,7 @@ func RemoveImage(db *gorm.DB, media_id int) error {
 	return nil
 }
 
-func Follow(db *gorm.DB, user models.User, other models.User) error {
+func Follow(db *gorm.DB, user *models.User, other *models.User) error {
 	db.Model(&user).Association("Follows").Append(&other)
 
 	if db.Error != nil {
@@ -305,7 +305,7 @@ func Follow(db *gorm.DB, user models.User, other models.User) error {
 	return nil
 }
 
-func Unfollow(db *gorm.DB, user models.User, other models.User) error {
+func Unfollow(db *gorm.DB, user *models.User, other *models.User) error {
 	db.Model(&user).Association("Follows").Delete(&other)
 
 	if db.Error != nil {
@@ -315,22 +315,29 @@ func Unfollow(db *gorm.DB, user models.User, other models.User) error {
 	return nil
 }
 
-func GetFollowers(db *gorm.DB, user models.User) ([]models.User, error) {
+func GetFollowers(db *gorm.DB, user *models.User) ([]models.User, error) {
 	var followers []models.User
 	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.user_uuid WHERE follow_uuid = ?", user.Uuid).Scan(&followers).Error
 
 	return followers, err
 }
 
-func GetFollowing(db *gorm.DB, user models.User) ([]models.User, error) {
+func GetFollowing(db *gorm.DB, user *models.User) ([]models.User, error) {
 	var following []models.User
 	err := db.Model(&user).Select("users.image_url, users.username, users.uuid").Association("Follows").Find(&following)
 
 	return following, err
 }
 
-func FindByUsername(db *gorm.DB, username string) (models.User, error) {
-	var user models.User
+func FindByUsername(db *gorm.DB, username string) (*models.User, error) {
+	var user *models.User
 	err := db.Where("username = ?", username).Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").First(&user).Error
 	return user, err
+}
+
+func Search(db *gorm.DB, query string) ([]models.User, error) {
+	var users []models.User
+	err := db.Where("username ILIKE ?", "%"+query+"%").Preload("Banner").Find(&users).Error
+
+	return users, err
 }

@@ -1,14 +1,16 @@
 package middleware
 
 import (
+	dbConfig "api/db"
+	"api/models"
+	"api/services/user_service"
 	"api/utils"
 	"strings"
 
-	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 )
 
-func Authorize(c *gin.Context) (*clerk.User, error) {
+func Authorize(c *gin.Context) (*models.User, error) {
 	authToken := strings.Split(c.Request.Header.Get("Authorization"), " ")
 
 	// verify the session
@@ -23,15 +25,7 @@ func Authorize(c *gin.Context) (*clerk.User, error) {
 	}
 
 	// get the user, and say welcome!
-	user, err := utils.ClerkClient.Users().Read(sessClaims.Claims.Subject)
-
-	if err != nil {
-		utils.CaptureError(c, &utils.CaptureErrorParams{
-			Message: "[MIDDLEWARE] [AUTHORIZATION] [GET USER] ",
-			Extra:   map[string]interface{}{"error": err.Error()},
-		})
-		panic(err)
-	}
+	user, err := user_service.FindUser(dbConfig.Client, sessClaims.Claims.Subject)
 
 	return user, nil
 }

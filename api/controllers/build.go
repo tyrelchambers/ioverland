@@ -39,7 +39,8 @@ func canBePublic(user user_service.AccountResponse) bool {
 }
 
 func CreateBuild(c *gin.Context) {
-	user, _ := c.Get("user")
+	userParam, _ := c.Get("user")
+	user := userParam.(*models.User)
 
 	var reqBody models.Build
 
@@ -49,14 +50,14 @@ func CreateBuild(c *gin.Context) {
 		return
 	}
 
-	reqBody.UserId = user.(*clerk.User).ID
+	reqBody.UserId = user.Uuid
 
-	acc, err := user_service.GetUserAccount(dbConfig.Client, user.(*clerk.User).ID)
+	acc, err := user_service.GetUserAccount(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [CREATE BUILD] Error getting account in create build: ",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -121,7 +122,7 @@ func CreateBuild(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [CREATE BUILD] Error creating build: ",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 
 		c.String(http.StatusInternalServerError, err.Error())
@@ -150,6 +151,8 @@ func GetById(c *gin.Context) {
 }
 
 func UpdateBuild(c *gin.Context) {
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
 
 	var reqBody models.Build
 
@@ -158,12 +161,12 @@ func UpdateBuild(c *gin.Context) {
 		return
 	}
 
-	usr, err := user_service.GetUserAccount(dbConfig.Client, reqBody.UserId)
+	usr, err := user_service.GetUserAccount(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [UPDATEBUILD] Error getting account from user_service",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": reqBody.UserId},
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -241,7 +244,8 @@ func IncrementViews(c *gin.Context) {
 func Like(c *gin.Context) {
 	build_id := c.Param("build_id")
 
-	user, _ := c.Get("user")
+	userParam, _ := c.Get("user")
+	user := userParam.(*models.User)
 
 	build, err := build_service.GetById(dbConfig.Client, build_id)
 
@@ -249,18 +253,18 @@ func Like(c *gin.Context) {
 
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [LIKE] Error getting build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = build_service.Like(dbConfig.Client, user.(*clerk.User).ID, build)
+	err = build_service.Like(dbConfig.Client, user.Uuid, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [LIKE] Error liking build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": build_id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return

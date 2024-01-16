@@ -24,6 +24,8 @@ const Search = ({
 }: Props) => {
   const { width } = useViewportWidth();
 
+  console.log(searchResults);
+
   return (
     <div className="gap-8 items-center hidden lg:flex">
       <Popover open={searchValue !== "" && width > 768}>

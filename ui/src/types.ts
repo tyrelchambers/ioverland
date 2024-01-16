@@ -201,8 +201,8 @@ export interface ClerkUser {
   image_url: string;
   username: string;
 }
-export const isClerkUser = (obj: any): obj is ClerkUser => {
-  if ("email_addresses" in obj) {
+export const isUser = (obj: any): obj is ClerkUser => {
+  if ("username" in obj) {
     return true;
   }
 

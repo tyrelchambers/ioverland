@@ -1,4 +1,4 @@
-import { Build, ClerkUser, isBuild, isClerkUser } from "@/types";
+import { Build, ClerkUser, isBuild, isUser } from "@/types";
 import Link from "next/link";
 import React from "react";
 import RenderMedia from "../RenderMedia";
@@ -17,7 +17,7 @@ const SearchItem = ({ res }: { res: Build | ClerkUser }) => {
         </div>
       </Link>
     );
-  } else if (isClerkUser(res)) {
+  } else if (isUser(res)) {
     return (
       <Link key={res.username} href={`/user/${res.username}`}>
         <div className="flex gap-3 items-center">
