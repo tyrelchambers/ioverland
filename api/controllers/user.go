@@ -27,8 +27,7 @@ func Bookmark(c *gin.Context) {
 		return
 	}
 
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
 
@@ -77,8 +76,7 @@ func Unbookmark(c *gin.Context) {
 		return
 	}
 
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	build, err := build_service.GetById(dbConfig.Client, body.BuildId)
 
@@ -135,8 +133,7 @@ func GetCurrentUser(c *gin.Context) {
 }
 
 func GetAccount(c *gin.Context) {
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	acc, err := user_service.GetUserAccount(dbConfig.Client, user.Uuid)
 
@@ -254,8 +251,7 @@ func DeleteUser(c *gin.Context) {
 }
 
 func RestoreUser(c *gin.Context) {
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
@@ -445,8 +441,7 @@ func RemoveBanner(c *gin.Context) {
 		return
 	}
 
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
@@ -496,8 +491,7 @@ func FollowUser(c *gin.Context) {
 		return
 	}
 
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
@@ -535,8 +529,7 @@ func UnfollowUser(c *gin.Context) {
 		return
 	}
 
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"api/models"
 	"fmt"
 	"log"
 	"os"
@@ -106,4 +107,10 @@ func setExtraKeys(scope *sentry.Scope, extra map[string]interface{}) {
 	for key, value := range extra {
 		scope.SetExtra(key, value)
 	}
+}
+
+func UserFromContext(c *gin.Context) *models.User {
+	userParams, _ := c.Get("user")
+	user := userParams.(*models.User)
+	return user
 }

@@ -151,8 +151,7 @@ func GetById(c *gin.Context) {
 }
 
 func UpdateBuild(c *gin.Context) {
-	userParams, _ := c.Get("user")
-	user := userParams.(*models.User)
+	user := utils.UserFromContext(c)
 
 	var reqBody models.Build
 
