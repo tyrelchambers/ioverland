@@ -50,7 +50,7 @@ const MobileSearch = ({
                 <SearchItem res={res} key={id} />
               ))}
 
-            {!isLoading && searchResults?.length === 0 && (
+            {!isLoading && searchValue && searchResults?.length === 0 && (
               <p className="text-muted-foreground">
                 Can&apos;t find anything with the name{" "}
                 <span className="font-bold text-foreground">{searchValue}</span>

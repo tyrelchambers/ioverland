@@ -35,7 +35,9 @@ const MobileHeader = ({
           <div className="flex flex-col">
             <H1>{data.username}</H1>
             {data.bio && (
-              <p className="text-muted-foreground text-sm">{data.bio}</p>
+              <p className="text-muted-foreground text-sm text-center">
+                {data.bio}
+              </p>
             )}
 
             {data.created_at && (
@@ -53,7 +55,7 @@ const MobileHeader = ({
 
               <span className="flex gap-2 text-muted-foreground items-center">
                 <span className="font-bold text-base text-foreground">
-                  {data.followers?.length}
+                  {data.followers?.length ?? 0}
                 </span>
                 followers
               </span>

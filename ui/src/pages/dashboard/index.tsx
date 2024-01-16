@@ -14,13 +14,9 @@ import Link from "next/link";
 import Profile from "@/components/dashboard/Profile";
 import Following from "@/components/dashboard/Following";
 import Followers from "@/components/dashboard/Followers";
-import DesktopTabs from "@/components/dashboard/DesktopTabs";
-import MobileTabs from "@/components/dashboard/MobileTabs";
-import { useViewportWidth } from "@/hooks/useViewportWidth";
 import EmptyListText from "@/components/EmptyListText";
 
 const Dashboard = () => {
-  const { width } = useViewportWidth();
   const router = useRouter();
   const { user: clerkUser } = useUser();
   const { user } = useDomainUser();
@@ -49,8 +45,6 @@ const Dashboard = () => {
       >
         <header className="w-full bg-card py-2 px-4">
           <div className="max-w-screen-2xl mx-auto w-full flex flex-col justify-between items-center lg:flex-row">
-            {width > 768 ? <DesktopTabs /> : <MobileTabs />}
-
             <div className="flex gap-3">
               <Link href="/build/new">
                 <Button type="button" variant="outline" size="sm">
@@ -68,17 +62,23 @@ const Dashboard = () => {
 
         <section className="max-w-screen-2xl mx-auto my-10">
           {!user.isLoading && !user.isPending && !user.data?.username && (
-            <div className="p-4 bg-gray-800 text-white rounded-md shadow-md text-sm flex justify-between">
+            <div className="p-4 bg-gray-800 text-white rounded-md shadow-md text-sm flex justify-between flex-col gap-4 mx-4">
               <div className="flex flex-col">
-                <p className="font-bold">No username set for your profile</p>
-                <p className="text-white/70">
+                <p className="font-bold text-lg">
+                  No username set for your profile
+                </p>
+                <p className="text-white/70 text-sm">
                   Please update your profile with a username either via the
                   avatar menu in the top right, or via the Profile tab.
                 </p>
               </div>
 
               <Link href="/dashboard?tab=profile">
-                <Button variant="secondary" type="button">
+                <Button
+                  variant="secondary"
+                  type="button"
+                  className="w-full lg:w-fit"
+                >
                   Go to profile
                 </Button>
               </Link>

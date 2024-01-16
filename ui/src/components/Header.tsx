@@ -5,6 +5,7 @@ import { useSearch } from "@/hooks/useSearch";
 import MobileNav from "./header/MobileNav";
 import Search from "./header/Search";
 import MobileSearch from "./header/MobileSearch";
+import { UserButton } from "@clerk/nextjs";
 
 export const routes = [
   {
@@ -68,13 +69,16 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
       <div className="max-w-screen-2xl mx-auto flex items-center justify-between w-full">
         <h2 className="text-foreground font-bold font-serif">iOverland</h2>
         {/* this is the mobile nav */}
-        <div className="gap-8 flex lg:hidden">
+        <div className="gap-4 flex lg:hidden">
+          <UserButton afterSignOutUrl="/" />
+
           <MobileSearch
             searchResults={search.data ?? []}
             setSearchValue={setSearchValue}
             searchValue={searchValue}
             isLoading={search.isFetching}
           />
+
           <MobileNav routes={routes} authRoutes={authRoutes} />
         </div>
 
