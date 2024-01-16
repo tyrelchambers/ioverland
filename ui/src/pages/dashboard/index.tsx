@@ -45,7 +45,7 @@ const Dashboard = () => {
       >
         <header className="w-full bg-card py-2 px-4">
           <div className="max-w-screen-2xl mx-auto w-full flex flex-col justify-between items-center lg:flex-row">
-            <div className="flex gap-3 w-full">
+            <div className="flex gap-3 w-full lg:w-fit">
               <Link href="/build/new" className="w-full">
                 <Button
                   type="button"
