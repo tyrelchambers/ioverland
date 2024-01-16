@@ -13,7 +13,7 @@ const SearchItem = ({ res }: { res: Build | ClerkUser }) => {
           <div className="relative h-auto w-[100px] aspect-video rounded-lg overflow-hidden">
             <RenderMedia media={res.banner} />
           </div>
-          <p className="font-bold">{res.name}</p>
+          <p>{res.name}</p>
         </div>
       </Link>
     );
@@ -28,7 +28,7 @@ const SearchItem = ({ res }: { res: Build | ClerkUser }) => {
 
             <AvatarImage src={res?.image_url} />
           </Avatar>
-          <p className="font-bold">{res.username}</p>
+          <p>{res.username}</p>
         </div>
       </Link>
     );

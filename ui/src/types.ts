@@ -1,6 +1,6 @@
 import { z } from "zod";
 const trip = z.object({
-  name: z.string().optional(),
+  name: z.string().min(1, { message: "Trip name is required" }),
   year: z.string().optional(),
   build_id: z.union([z.string(), z.number()]).optional(),
   uuid: z.string().optional(),
@@ -26,7 +26,9 @@ export const newBuildSchema = z.object({
   description: z.string().optional(),
   budget: z.string().optional(),
   trips: z.record(z.string(), trip).optional(),
-  links: z.record(z.string(), z.string().optional()).optional(),
+  links: z
+    .record(z.string(), z.string().min(1, { message: "Link is required" }))
+    .optional(),
   vehicle: z.object({
     model: z.string().optional(),
     make: z.string().optional(),

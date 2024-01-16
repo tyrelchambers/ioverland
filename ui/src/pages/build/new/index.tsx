@@ -44,7 +44,7 @@ import {
   removeModification,
   removeLink,
 } from "@/lib/form/helpers";
-import { H1, H2 } from "@/components/Heading";
+import { H1, H2, H3 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, PlusCircle } from "lucide-react";
 import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
@@ -59,6 +59,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import Info from "@/components/Info";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -196,7 +198,7 @@ const Index = () => {
   return (
     <section>
       <Header />
-      <div className="max-w-screen-md mx-auto my-10">
+      <div className="max-w-screen-md mx-auto my-10 relative h-full">
         {account?.data?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
         <div className="p-4">
           <H1>Let&apos;s build</H1>
@@ -317,7 +319,7 @@ const Index = () => {
               </div>
               <Separator className="my-4" />
               <div className="flex flex-col">
-                <H2>
+                <H3>
                   Trips{" "}
                   <Button
                     type="button"
@@ -327,56 +329,59 @@ const Index = () => {
                   >
                     <PlusCircle />
                   </Button>
-                </H2>
-                <div className="flex flex-col gap-2">
-                  {Object.keys(tripsInput).map((input, index) => {
-                    return (
-                      <div className="bg-card rounded-xl p-4" key={input}>
-                        <header className="flex flex-row justify-between">
-                          <p>Trip #{index + 1}</p>
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="text-red-500"
-                            size="sm"
-                            onClick={() => removeTripHandler(input)}
-                          >
-                            Remove
-                          </Button>
-                        </header>
-                        <div className="flex flex-col lg:flex-row flex-1 gap-4">
-                          <FormField
-                            name={`trips[${input}].name`}
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>Name</FormLabel>
-                                <Input
-                                  placeholder="eg: Valley of the Gods Road, The Alpine Loop"
-                                  {...field}
-                                />
-                              </FormItem>
-                            )}
-                          />
+                </H3>
+                {Object.keys(tripsInput).length > 0 && (
+                  <div className="flex flex-col mt-6 gap-2">
+                    {Object.keys(tripsInput).map((input, index) => {
+                      return (
+                        <div className="bg-card rounded-xl p-4" key={input}>
+                          <header className="flex flex-row justify-between">
+                            <p>Trip #{index + 1}</p>
+                            <Button
+                              type="button"
+                              variant="link"
+                              className="text-red-500"
+                              size="sm"
+                              onClick={() => removeTripHandler(input)}
+                            >
+                              Remove
+                            </Button>
+                          </header>
+                          <div className="flex flex-col lg:flex-row flex-1 gap-4">
+                            <FormField
+                              name={`trips[${input}].name`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormLabel>Name</FormLabel>
+                                  <Input
+                                    placeholder="eg: Valley of the Gods Road, The Alpine Loop"
+                                    {...field}
+                                  />
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                          <FormField
-                            name={`trips[${input}].year`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Year</FormLabel>
-                                <Input type="number" min={0} {...field} />
-                              </FormItem>
-                            )}
-                          />
+                            <FormField
+                              name={`trips[${input}].year`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Year</FormLabel>
+                                  <Input type="number" min={0} {...field} />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               <Separator className="my-4" />
 
               <section className="flex flex-col">
-                <H2>
+                <H3>
                   Modifications{" "}
                   <Button
                     type="button"
@@ -386,139 +391,143 @@ const Index = () => {
                   >
                     <PlusCircle />
                   </Button>
-                </H2>
-                {Object.keys(modifications).map((input, index) => {
-                  const itemKey = form.getValues(`modifications`) as {
-                    [key: string]: Modification;
-                  };
-                  const item = itemKey[input];
-                  const subcategories =
-                    findCategorySubcategories(item.category) ?? [];
+                </H3>
+                {Object.keys(modifications).length > 0 && (
+                  <div className="flex flex-col gap-3 mt-6">
+                    {Object.keys(modifications).map((input, index) => {
+                      const itemKey = form.getValues(`modifications`) as {
+                        [key: string]: Modification;
+                      };
+                      const item = itemKey[input];
+                      const subcategories =
+                        findCategorySubcategories(item.category) ?? [];
 
-                  return (
-                    <div className="bg-card rounded-xl p-4" key={input}>
-                      <header className="flex flex-row justify-between">
-                        <p>Modification #{index + 1}</p>
-                        <Button
-                          type="button"
-                          variant="link"
-                          className="text-red-500"
-                          size="sm"
-                          onClick={() => removeModificationHandler(input)}
-                        >
-                          Remove
-                        </Button>
-                      </header>
-                      <FormField
-                        name={`modifications[${input}].category`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Category</FormLabel>
-
-                            <Select
-                              onValueChange={(value) => {
-                                form.setValue(
-                                  // @ts-ignore
-                                  `modifications[${input}].category`,
-                                  value
-                                );
-                              }}
-                              defaultValue={field.value}
+                      return (
+                        <div className="bg-card rounded-xl p-4" key={input}>
+                          <header className="flex flex-row justify-between">
+                            <p>Modification #{index + 1}</p>
+                            <Button
+                              type="button"
+                              variant="link"
+                              className="text-red-500"
+                              size="sm"
+                              onClick={() => removeModificationHandler(input)}
                             >
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Category" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {modificationCategories.map((category) => (
-                                  <SelectItem
-                                    key={category.label}
-                                    className="w-full"
-                                    value={category.value}
-                                  >
-                                    {category.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormItem>
-                        )}
-                      />
-                      {/* @ts-ignore */}
-                      {form.watch(`modifications[${input}].category`) && (
-                        <FormField
-                          name={`modifications[${input}].subcategory`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Subcategory</FormLabel>
-                              <Select
-                                onValueChange={(value) => {
-                                  form.setValue(
-                                    // @ts-ignore
-                                    `modifications[${input}].subcategory`,
-                                    value
-                                  );
-                                }}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Subcategory" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {subcategories?.map((category) => (
-                                    <SelectItem
-                                      key={category.label}
-                                      className="w-full"
-                                      value={category.value}
-                                    >
-                                      {category.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                      )}
-
-                      <div className="flex flex-col lg:flex-row gap-3">
-                        <FormField
-                          name={`modifications[${input}].name`}
-                          render={({ field }) => (
-                            <div className="flex-1">
+                              Remove
+                            </Button>
+                          </header>
+                          <FormField
+                            name={`modifications[${input}].category`}
+                            render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <Input
-                                  placeholder="What's the name of the modification?"
-                                  {...field}
-                                />
-                              </FormItem>
-                            </div>
-                          )}
-                        />
+                                <FormLabel>Category</FormLabel>
 
-                        <FormField
-                          name={`modifications[${input}].price`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Price</FormLabel>
-                              <Input
-                                type="number"
-                                min={0}
-                                placeholder="What's the name of the modification?"
-                                {...field}
-                              />
-                            </FormItem>
+                                <Select
+                                  onValueChange={(value) => {
+                                    form.setValue(
+                                      // @ts-ignore
+                                      `modifications[${input}].category`,
+                                      value
+                                    );
+                                  }}
+                                  defaultValue={field.value}
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Category" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {modificationCategories.map((category) => (
+                                      <SelectItem
+                                        key={category.label}
+                                        className="w-full"
+                                        value={category.value}
+                                      >
+                                        {category.label}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                          {/* @ts-ignore */}
+                          {form.watch(`modifications[${input}].category`) && (
+                            <FormField
+                              name={`modifications[${input}].subcategory`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Subcategory</FormLabel>
+                                  <Select
+                                    onValueChange={(value) => {
+                                      form.setValue(
+                                        // @ts-ignore
+                                        `modifications[${input}].subcategory`,
+                                        value
+                                      );
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full">
+                                      <SelectValue placeholder="Subcategory" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {subcategories?.map((category) => (
+                                        <SelectItem
+                                          key={category.label}
+                                          className="w-full"
+                                          value={category.value}
+                                        >
+                                          {category.label}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormItem>
+                              )}
+                            />
                           )}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+
+                          <div className="flex flex-col lg:flex-row gap-3">
+                            <FormField
+                              name={`modifications[${input}].name`}
+                              render={({ field }) => (
+                                <div className="flex-1">
+                                  <FormItem>
+                                    <FormLabel>Name</FormLabel>
+                                    <Input
+                                      placeholder="What's the name of the modification?"
+                                      {...field}
+                                    />
+                                  </FormItem>
+                                </div>
+                              )}
+                            />
+
+                            <FormField
+                              name={`modifications[${input}].price`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Price</FormLabel>
+                                  <Input
+                                    type="number"
+                                    min={0}
+                                    placeholder="What's the name of the modification?"
+                                    {...field}
+                                  />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </section>
 
               <Separator className="my-4" />
 
               <section className="flex flex-col">
-                <H2>
+                <H3>
                   Links{" "}
                   <Button
                     type="button"
@@ -528,38 +537,42 @@ const Index = () => {
                   >
                     <PlusCircle />
                   </Button>
-                </H2>
+                </H3>
                 <p className="text-muted-foreground">
                   Include any links you&apos;d like to have included with this
                   build.
                 </p>
 
-                {Object.keys(buildLinks).map((input, index) => {
-                  return (
-                    <div className="bg-card rounded-xl p-4" key={input}>
-                      <header className="flex flex-row justify-between">
-                        <p>Link #{index + 1}</p>
-                        <Button
-                          type="button"
-                          variant="link"
-                          className="text-red-500"
-                          size="sm"
-                          onClick={() => removeLinkHandler(input)}
-                        >
-                          Remove
-                        </Button>
-                      </header>
-                      <FormField
-                        name={`links[${input}]`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <Input placeholder="https://" {...field} />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  );
-                })}
+                {Object.keys(buildLinks).length > 0 && (
+                  <div className="flex flex-col gap-3 mt-6">
+                    {Object.keys(buildLinks).map((input, index) => {
+                      return (
+                        <div className="bg-card rounded-xl p-4" key={input}>
+                          <header className="flex flex-row justify-between">
+                            <p>Link #{index + 1}</p>
+                            <Button
+                              type="button"
+                              variant="link"
+                              className="text-red-500"
+                              size="sm"
+                              onClick={() => removeLinkHandler(input)}
+                            >
+                              Remove
+                            </Button>
+                          </header>
+                          <FormField
+                            name={`links[${input}]`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Input placeholder="https://" {...field} />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </section>
               <Separator className="my-4" />
 
@@ -585,6 +598,14 @@ const Index = () => {
               </div>
 
               <Separator className="my-4" />
+              <H3>Visibility</H3>
+              <Info>
+                <p>
+                  This build will be published as a{" "}
+                  <span className="font-bold">Draft</span> unless it&apos;s
+                  explicitly made public.
+                </p>
+              </Info>
               <FormField
                 control={form.control}
                 name="public"
@@ -606,6 +627,7 @@ const Index = () => {
                   </FormItem>
                 )}
               />
+
               <Button
                 disabled={
                   !form.formState.isValid ||
