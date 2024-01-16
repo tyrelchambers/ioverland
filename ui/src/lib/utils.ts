@@ -16,7 +16,7 @@ export const findCategory = (category: string | undefined) => {
   return modificationCategories.find((d) => d.value === category);
 };
 
-export const findCategorySubcategories = (category: string) => {
+export const findCategorySubcategories = (category: string | undefined) => {
   return modificationCategories.find((d) => d.value === category)
     ?.subcategories;
 };

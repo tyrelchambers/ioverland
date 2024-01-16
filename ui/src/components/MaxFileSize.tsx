@@ -8,12 +8,14 @@ export const MaxFileSizeText = ({
   maxFileSize,
   type,
   remainingPhotos,
+  showLink,
 }: {
-  isProPlan: boolean | undefined;
+  isProPlan?: boolean | undefined;
   maxFileUploads: number | undefined;
   maxFileSize: string | undefined;
   type?: "banner";
   remainingPhotos?: number;
+  showLink?: boolean;
 }) => {
   return (
     <div className="bg-indigo-100 p-4 rounded-md border-2 border-indigo-500 flex flex-col lg:flex-row items-center justify-between mb-3">
@@ -33,7 +35,7 @@ export const MaxFileSizeText = ({
         )}
       </div>
 
-      {!isProPlan && type !== "banner" && (
+      {!isProPlan && type !== "banner" && showLink && (
         <Link
           href="/dashboard?tab=account"
           className="text-indigo-500 text-sm flex gap-2 items-center underline mt-4 lg:mt-0"

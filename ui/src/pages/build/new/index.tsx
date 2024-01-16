@@ -52,6 +52,13 @@ import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -386,7 +393,8 @@ const Index = () => {
                   };
                   const item = itemKey[input];
                   const subcategories =
-                    item.category && findCategorySubcategories(item.category);
+                    findCategorySubcategories(item.category) ?? [];
+
                   return (
                     <div className="bg-card rounded-xl p-4" key={input}>
                       <header className="flex flex-row justify-between">
@@ -406,30 +414,66 @@ const Index = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Category</FormLabel>
-                            <Combobox
-                              defaultLabel="Select a make..."
-                              searchLabel="makes"
-                              notFoundLabel="No makes found"
-                              data={modificationCategories}
-                              {...field}
-                            />
+
+                            <Select
+                              onValueChange={(value) => {
+                                form.setValue(
+                                  // @ts-ignore
+                                  `modifications[${input}].category`,
+                                  value
+                                );
+                              }}
+                              defaultValue={field.value}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {modificationCategories.map((category) => (
+                                  <SelectItem
+                                    key={category.label}
+                                    className="w-full"
+                                    value={category.value}
+                                  >
+                                    {category.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </FormItem>
                         )}
                       />
-
-                      {item.category && subcategories && (
+                      {/* @ts-ignore */}
+                      {form.watch(`modifications[${input}].category`) && (
                         <FormField
                           name={`modifications[${input}].subcategory`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Sub-category</FormLabel>
-                              <Combobox
-                                defaultLabel="Select a sub-category..."
-                                searchLabel="sub-categories"
-                                notFoundLabel="No sub-categories found"
-                                data={subcategories}
-                                {...field}
-                              />
+                              <FormLabel>Subcategory</FormLabel>
+                              <Select
+                                onValueChange={(value) => {
+                                  form.setValue(
+                                    // @ts-ignore
+                                    `modifications[${input}].subcategory`,
+                                    value
+                                  );
+                                }}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Subcategory" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {subcategories?.map((category) => (
+                                    <SelectItem
+                                      key={category.label}
+                                      className="w-full"
+                                      value={category.value}
+                                    >
+                                      {category.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </FormItem>
                           )}
                         />

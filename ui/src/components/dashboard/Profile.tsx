@@ -25,6 +25,7 @@ import Image from "next/image";
 import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
+import { MaxFileSizeText } from "../MaxFileSize";
 
 const Profile = () => {
   const { account, update, removeBanner } = useDomainUser();
@@ -124,11 +125,12 @@ const Profile = () => {
 
           <div className="flex flex-col">
             <FormLabel className="mb-2">Banner image</FormLabel>
+            <MaxFileSizeText maxFileUploads={1} maxFileSize="15MB" />
             <Uploader
               type="profile_banner"
               onUpdate={setBanner}
               allowMultiple={false}
-              maxFileSize="5MB"
+              maxFileSize="15MB"
               maxFiles={1}
             />
           </div>
