@@ -17,7 +17,7 @@ const Photos = ({ photos }: { photos: Media[] | undefined }) => {
             key={photo.id}
             className={cn(
               "relative  w-full aspect-square overflow-hidden shadow-xl ",
-              i % 2 && "mt-[100px]"
+              i % 2 && "lg:mt-[100px]"
             )}
           >
             <Image src={photo.url} alt="" fill className="object-cover" />

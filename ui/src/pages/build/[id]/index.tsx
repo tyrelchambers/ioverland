@@ -285,7 +285,7 @@ const Build = () => {
               </div>
             )}
 
-            <div className="flex mt-10 gap-4">
+            <div className="flex flex-col lg:flex-row mt-10 gap-4">
               <Alert className="max-w-sm w-full">
                 <Truck className="h-4 w-4" />
                 <AlertTitle>Vehicle</AlertTitle>
