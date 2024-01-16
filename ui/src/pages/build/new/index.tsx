@@ -46,7 +46,7 @@ import {
 } from "@/lib/form/helpers";
 import { H1, H2 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
@@ -607,9 +607,17 @@ const Index = () => {
                 )}
               />
               <Button
-                disabled={!form.formState.isValid || form.formState.disabled}
+                disabled={
+                  !form.formState.isValid ||
+                  form.formState.disabled ||
+                  form.formState.isSubmitting
+                }
               >
-                Save build
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Save build"
+                )}
               </Button>
             </form>
           </Form>

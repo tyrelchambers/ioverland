@@ -74,7 +74,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
 import cuid2, { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
-import { ImageIcon, PlusCircle, Trash } from "lucide-react";
+import { ImageIcon, Loader2, PlusCircle, Trash } from "lucide-react";
 import { GetServerSideProps } from "next";
 import { env } from "next-runtime-env";
 import Image from "next/image";
@@ -810,7 +810,13 @@ const Edit = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button>Save changes</Button>
+              <Button disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Save build"
+                )}
+              </Button>
             </div>
           </form>
         </Form>
