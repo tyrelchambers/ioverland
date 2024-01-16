@@ -23,7 +23,16 @@ const queryClient = new QueryClient();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ClerkProvider publishableKey={env("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")}>
+    <ClerkProvider
+      publishableKey={env("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")}
+      appearance={{
+        elements: {
+          profileSection__danger: {
+            display: "none",
+          },
+        },
+      }}
+    >
       <QueryClientProvider client={queryClient}>
         <Component {...pageProps} />
         <Toaster richColors />
