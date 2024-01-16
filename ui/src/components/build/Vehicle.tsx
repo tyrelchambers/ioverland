@@ -11,9 +11,9 @@ const Vehicle = ({
 }) => {
   return (
     <p className="flex gap-2 capitalize">
-      {make && <span className="text-muted-foreground font-bold">{make}</span>}
-      {model && <span className="text-muted-foreground">{model}</span>}
-      {year && <span className="text-muted-foreground font-light">{year}</span>}
+      {make && <span>{make}</span>}
+      {model && <span>{model}</span>}
+      {year && <span>{year}</span>}
     </p>
   );
 };

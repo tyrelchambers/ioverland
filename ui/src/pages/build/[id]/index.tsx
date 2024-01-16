@@ -6,6 +6,7 @@ import Modifications from "@/components/build/Modifications";
 import Photos from "@/components/build/Photos";
 import Trips from "@/components/build/Trips";
 import Vehicle from "@/components/build/Vehicle";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,12 +19,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { copyToClipboard, hasLiked } from "@/lib/utils";
+import { copyToClipboard, formatPrice, hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import {
   Bookmark,
   BookmarkCheck,
   Copy,
+  DollarSign,
   Eye,
   EyeOff,
   Facebook,
@@ -31,6 +33,7 @@ import {
   HeartOff,
   PencilRuler,
   Share,
+  Truck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -265,14 +268,12 @@ const Build = () => {
           </div>
         )}
 
-        <div className="flex gap-10 items-center mt-2 px-4 ">
-          <Vehicle {...build.vehicle} />
-        </div>
         <section className="px-4 ">
-          <div className="flex flex-col py-10">
+          <div className="flex flex-col ">
             <p className="mb-8 max-w-3xl whitespace-pre-wrap leading-relaxed ">
               {build?.description}
             </p>
+
             {user && (
               <div className="flex items-center  w-full max-w-xs  ">
                 <div className="rounded-full relative">
@@ -283,6 +284,26 @@ const Build = () => {
                 <p className="font-bold flex-1">{user.fullName}</p>
               </div>
             )}
+
+            <div className="flex mt-10 gap-4">
+              <Alert className="max-w-sm w-full">
+                <Truck className="h-4 w-4" />
+                <AlertTitle>Vehicle</AlertTitle>
+                <AlertDescription>
+                  <Vehicle {...build.vehicle} />
+                </AlertDescription>
+              </Alert>
+
+              <Alert className="max-w-sm w-full">
+                <DollarSign className="h-4 w-4" />
+                <AlertTitle>Budget</AlertTitle>
+                <AlertDescription>
+                  {Number(build.budget) ? (
+                    <p>{formatPrice(Number(build.budget))}</p>
+                  ) : null}
+                </AlertDescription>
+              </Alert>
+            </div>
           </div>
           <Separator className="my-10" />
 

@@ -32,7 +32,11 @@ func countVisibleBuilds(user user_service.AccountResponse) int {
 }
 
 func canBePublic(user user_service.AccountResponse) bool {
-	return countVisibleBuilds(user) < user.MaxPublicBuilds || user.MaxPublicBuilds == -1
+	fmt.Println(user.MaxPublicBuilds)
+	if user.MaxPublicBuilds == -1 {
+		return true
+	}
+	return countVisibleBuilds(user) < user.MaxPublicBuilds
 }
 
 func CreateBuild(c *gin.Context) {
