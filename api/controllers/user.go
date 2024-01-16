@@ -357,13 +357,18 @@ func GetUserPublicProfile(c *gin.Context) {
 	userResp := UserResp{
 		Username:  &user.Username,
 		Avatar:    user.ImageUrl,
-		Builds:    user.Builds,
 		CreatedAt: user.CreatedAt,
 		Views:     user.Views,
 		Followers: followers,
 		Banner:    user.Banner,
 		Uuid:      user.Uuid,
 		Bio:       user.Bio,
+	}
+
+	for _, build := range user.Builds {
+		if build.Public {
+			userResp.Builds = append(userResp.Builds, build)
+		}
 	}
 
 	c.JSON(http.StatusOK, userResp)
