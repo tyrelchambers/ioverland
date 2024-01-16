@@ -17,6 +17,7 @@ import Followers from "@/components/dashboard/Followers";
 import DesktopTabs from "@/components/dashboard/DesktopTabs";
 import MobileTabs from "@/components/dashboard/MobileTabs";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
+import EmptyListText from "@/components/EmptyListText";
 
 const Dashboard = () => {
   const { width } = useViewportWidth();
@@ -122,7 +123,7 @@ const Dashboard = () => {
               )}
             </TabsContent>
             <TabsContent value="bookmarks">
-              <H2>Bookmarks</H2>
+              <H2 className="mb-4">Bookmarks</H2>
               {user.isLoading ? (
                 <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
                   <BuildSkeleton />
@@ -136,9 +137,7 @@ const Dashboard = () => {
                   ))}
                 </ul>
               ) : (
-                <p className="text-card-foreground bg-card p-4 rounded-xl w-full mt-4">
-                  No bookmarks to see here
-                </p>
+                <EmptyListText text="No bookmarks" />
               )}
             </TabsContent>
 
