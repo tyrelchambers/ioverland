@@ -54,7 +54,7 @@ export const useBuild = (id?: string) => {
         },
       });
     },
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       toast.success("Build updated");
       context.invalidateQueries({ queryKey: ["build_settings", id] });
     },

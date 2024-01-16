@@ -80,6 +80,7 @@ import { ImageIcon, Loader2, PlusCircle, Trash } from "lucide-react";
 import { GetServerSideProps } from "next";
 import { env } from "next-runtime-env";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -147,7 +148,9 @@ const Edit = () => {
       if (data.links && formattedData.links) {
         for (let index = 0; index < data.links.length; index++) {
           const element = data.links[index];
-          formattedData.links[createId()] = element;
+          if (element) {
+            formattedData.links[createId()] = element;
+          }
         }
       }
 
@@ -326,7 +329,14 @@ const Edit = () => {
             className="flex flex-col gap-4"
             onSubmit={form.handleSubmit(submitHandler, console.log)}
           >
-            <H1>Editing &quot;{build?.name}&quot;</H1>
+            <header className="flex justify-between items-center flex-col md:flex-row">
+              <H1>Editing &quot;{build?.name}&quot;</H1>
+              <Link href={`/build/${build?.uuid}`}>
+                <Button variant="outline" type="button">
+                  View build
+                </Button>
+              </Link>
+            </header>
             <div className="flex flex-col">
               <Label className="mb-2">Banner</Label>
               <MaxFileSizeText
@@ -526,7 +536,7 @@ const Edit = () => {
                     };
                     const item = itemKey[input];
                     const subcategories =
-                      findCategorySubcategories(item.category) ?? [];
+                      findCategorySubcategories(item?.category) ?? [];
                     return (
                       <div className="bg-card rounded-xl p-4" key={input}>
                         <header className="flex items-center justify-between">
