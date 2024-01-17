@@ -26,7 +26,39 @@ func IncrementViews(db *gorm.DB, b models.Build) error {
 	return nil
 }
 
-func Update(db *gorm.DB, b models.Build) error {
+func Update(db *gorm.DB, b *models.Build) error {
+
+	if len(b.Trips) > 0 {
+		var old_trips []models.Trip
+		db.Table("trips").Where("build_id = ?", b.ID).Find(&old_trips)
+
+		added, removed := DiffTrips(old_trips, b.Trips)
+
+		for _, r := range removed {
+			db.Table("trips").Where("id = ? AND build_id = ?", r.ID, b.ID).Delete(&models.Trip{})
+		}
+
+		b.Trips = added
+	} else {
+		db.Model(&b).Association("Trips").Clear()
+	}
+
+	if len(b.Modifications) > 0 {
+		var old_mods []models.Modification
+
+		db.Table("modifications").Where("build_id = ?", b.ID).Find(&old_mods)
+
+		added, removed := DiffModifications(old_mods, b.Modifications)
+
+		for _, r := range removed {
+			db.Table("modifications").Where("id = ? AND build_id = ?", r.ID, b.ID).Delete(&models.Trip{})
+		}
+
+		b.Modifications = added
+	} else {
+		db.Model(&b).Association("Modifications").Clear()
+	}
+
 	db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Likes", "Views").Save(&b)
 
 	if db.Error != nil {
@@ -117,4 +149,14 @@ func Search(db *gorm.DB, query string) ([]models.Build, error) {
 
 	err := db.Where("name ILIKE ? AND public = true", "%"+query+"%").Preload("Banner", "type='banner'").Find(&builds).Error
 	return builds, err
+}
+
+func DeleteTrip(db *gorm.DB, build_id, trip_id string) error {
+	db.Table("trips").Where("id = ? AND build_id = ?", trip_id, build_id).Delete(&models.Trip{})
+
+	if db.Error != nil {
+		return db.Error
+	}
+
+	return nil
 }

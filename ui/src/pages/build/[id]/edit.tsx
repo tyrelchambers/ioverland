@@ -5,6 +5,7 @@ import { MaxFileSizeText } from "@/components/MaxFileSize";
 import RenderMedia from "@/components/RenderMedia";
 import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
+import { Alert } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +47,7 @@ import {
 } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
+import { useTrips } from "@/hooks/useTrips";
 import { request } from "@/lib/axios";
 import {
   formattedLinks,
@@ -57,6 +59,7 @@ import {
 } from "@/lib/form/helpers";
 import {
   acceptedFiletypes,
+  cn,
   findCategorySubcategories,
   getMaxFileSize,
 } from "@/lib/utils";
@@ -96,6 +99,7 @@ const Edit = () => {
   const {
     account: { data: account },
   } = useDomainUser();
+
   const [tripsInput, setTripsInput] = useState<{
     [key: string]: Trip;
   }>({});
@@ -141,7 +145,9 @@ const Edit = () => {
       if (data.trips && formattedData.trips) {
         for (let index = 0; index < data.trips.length; index++) {
           const element = data.trips[index];
-          formattedData.trips[createId()] = element;
+          if (element.uuid) {
+            formattedData.trips[element.uuid] = element;
+          }
         }
       }
 
@@ -191,6 +197,7 @@ const Edit = () => {
 
   const removeTripHandler = (id: string) => {
     const newTrips = removeTrip(tripsInput, id);
+
     setTripsInput(newTrips);
     form.setValue("trips", newTrips);
   };
@@ -235,6 +242,7 @@ const Edit = () => {
     for (const key in data.links) {
       linksToArray.push(data.links[key]);
     }
+
     for (const key in data.modifications) {
       modificationsToArray.push({
         ...data.modifications[key],
@@ -469,20 +477,17 @@ const Edit = () => {
               {Object.keys(tripsInput).length > 0 && (
                 <div className="flex flex-col mt-6 gap-2">
                   {Object.keys(tripsInput).map((input, index) => {
+                    // @ts-ignore
+                    const deleteItem = form.getValues(`trips[${input}].delete`);
+
                     return (
-                      <div className="bg-card rounded-xl p-4" key={input}>
-                        <header className="flex flex-row justify-between">
-                          <p>Trip #{index + 1}</p>
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="text-red-500"
-                            size="sm"
-                            onClick={() => removeTripHandler(input)}
-                          >
-                            Remove
-                          </Button>
-                        </header>
+                      <div
+                        className={cn(
+                          "bg-card rounded-xl p-4",
+                          deleteItem && "border-red-500 bg-red-100 border"
+                        )}
+                        key={input}
+                      >
                         <div className="flex flex-1 flex-col lg:flex-row gap-4">
                           <FormField
                             name={`trips[${input}].name`}
@@ -508,6 +513,17 @@ const Edit = () => {
                             )}
                           />
                         </div>
+                        <footer className="flex flex-row justify-end">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="text-red-500"
+                            size="sm"
+                            onClick={() => removeTripHandler(input)}
+                          >
+                            Remove
+                          </Button>
+                        </footer>
                       </div>
                     );
                   })}
@@ -539,18 +555,6 @@ const Edit = () => {
                       findCategorySubcategories(item?.category) ?? [];
                     return (
                       <div className="bg-card rounded-xl p-4" key={input}>
-                        <header className="flex items-center justify-between">
-                          <p>Modification #{index + 1}</p>
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="text-red-500"
-                            size="sm"
-                            onClick={() => removeModificationHandler(input)}
-                          >
-                            Remove
-                          </Button>
-                        </header>
                         <FormField
                           name={`modifications[${input}].category`}
                           render={({ field }) => (
@@ -600,6 +604,7 @@ const Edit = () => {
                                       value
                                     );
                                   }}
+                                  defaultValue={field.value}
                                 >
                                   <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Subcategory" />
@@ -652,6 +657,17 @@ const Edit = () => {
                             )}
                           />
                         </div>
+                        <footer className="flex items-center justify-end">
+                          <Button
+                            type="button"
+                            variant="link"
+                            className="text-red-500"
+                            size="sm"
+                            onClick={() => removeModificationHandler(input)}
+                          >
+                            Remove
+                          </Button>
+                        </footer>
                       </div>
                     );
                   })}

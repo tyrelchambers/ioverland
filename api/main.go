@@ -146,6 +146,7 @@ func main() {
 	buildG.POST("/:build_id/dislike", AuthRequired, controllers.Dislike)
 	buildG.DELETE("/:build_id/delete", AuthRequired, controllers.DeleteBuild)
 	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, controllers.RemoveImage)
+	buildG.DELETE("/:build_id/:trip_id/delete", AuthRequired, controllers.DeleteTrip)
 
 	buildsG.GET("/user/:user_id", AuthRequired, controllers.GetUserBuilds)
 

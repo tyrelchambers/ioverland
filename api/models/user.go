@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	Uuid            string         `gorm:"primaryKey; not null" json:"uuid"`
-	Builds          []Build        `json:"builds"`
+	Builds          []Build        `json:"builds" gorm:"constraint:OnDelete:SET NULL"`
 	Bookmarks       []Build        `gorm:"many2many:user_bookmarks" json:"bookmarks"`
 	CustomerId      string         `json:"customer_id"`
 	DeletedAt       gorm.DeletedAt `gorm:"default:null" json:"deleted_at"`

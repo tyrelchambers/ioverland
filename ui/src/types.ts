@@ -6,7 +6,6 @@ const trip = z.object({
   uuid: z.string().optional(),
   id: z.number().optional(),
 });
-
 export type Trip = z.infer<typeof trip>;
 
 const modification = z.object({
@@ -25,7 +24,7 @@ export const newBuildSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   budget: z.string().optional(),
-  trips: z.record(z.string(), trip).optional(),
+  trips: z.record(z.string(), trip),
   links: z
     .record(z.string(), z.string().min(1, { message: "Link is required" }))
     .optional(),

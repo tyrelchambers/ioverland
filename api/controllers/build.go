@@ -153,7 +153,7 @@ func GetById(c *gin.Context) {
 func UpdateBuild(c *gin.Context) {
 	user := utils.UserFromContext(c)
 
-	var reqBody models.Build
+	var reqBody *models.Build
 
 	if err := c.Bind(&reqBody); err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
@@ -375,4 +375,23 @@ func BuildEditSettings(c *gin.Context) {
 	resp.Build = build
 
 	c.JSON(http.StatusOK, resp)
+}
+
+func DeleteTrip(c *gin.Context) {
+	id := c.Param("build_id")
+	trip_id := c.Param("trip_id")
+	user := utils.UserFromContext(c)
+
+	err := build_service.DeleteTrip(dbConfig.Client, id, trip_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [DELETETRIP] Error deleting trip",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "trip_id": trip_id, "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }
