@@ -1,9 +1,8 @@
 import Header from "@/components/Header";
-import { H1, H2, H3 } from "@/components/Heading";
+import { H1, H3 } from "@/components/Heading";
 import Info from "@/components/Info";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
 import RenderMedia from "@/components/RenderMedia";
-import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
 import AddLink from "@/components/forms/AddLink";
 import AddMod from "@/components/forms/AddMod";
@@ -12,7 +11,6 @@ import LinksList from "@/components/forms/LinksList";
 import ModsList from "@/components/forms/ModsList";
 import PhotosList from "@/components/forms/PhotosList";
 import TripsList from "@/components/forms/TripsList";
-import { Alert } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,47 +32,20 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  carModels,
-  modificationCategories,
-  popularCarBrands,
-} from "@/constants";
+import { carModels, popularCarBrands } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { useTrips } from "@/hooks/useTrips";
 import { request } from "@/lib/axios";
+import { removeLink } from "@/lib/form/helpers";
+import { acceptedFiletypes } from "@/lib/utils";
 import {
-  formattedLinks,
-  formattedModifications,
-  formattedTrips,
-  removeLink,
-  removeModification,
-  removeTrip,
-} from "@/lib/form/helpers";
-import {
-  acceptedFiletypes,
-  cn,
-  findCategorySubcategories,
-  getMaxFileSize,
-} from "@/lib/utils";
-import {
-  Build,
   EditBuildResponse,
   Media,
-  Modification,
   NewBuildSchema,
   NewBuildSchemaWithoutUserId,
   Trip,
@@ -84,17 +55,14 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { zodResolver } from "@hookform/resolvers/zod";
-import cuid2, { createId } from "@paralleldrive/cuid2";
+import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
-import { ImageIcon, Loader2, PlusCircle, Trash } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { GetServerSideProps } from "next";
-import { env } from "next-runtime-env";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 const Edit = () => {
   const router = useRouter();
@@ -107,12 +75,6 @@ const Edit = () => {
     account: { data: account },
   } = useDomainUser();
 
-  const [modifications, setModifications] = useState<{
-    [key: string]: Modification;
-  }>({});
-  const [buildLinks, setBuildLinks] = useState<{
-    [key: string]: string;
-  }>({});
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
@@ -176,13 +138,6 @@ const Edit = () => {
         }
       }
 
-      setBuildLinks(formattedData.links as { [key: string]: string });
-      setModifications(
-        formattedData.modifications as {
-          [key: string]: Modification;
-        }
-      );
-
       form.reset(formattedData);
     }
   }, [id, editSettings.data?.build]);
@@ -194,14 +149,6 @@ const Edit = () => {
   const watchMake = form.watch("vehicle.make");
 
   if (!build || !account) return null;
-
-  const removeLinkHandler = (id: string) => {
-    const links = removeLink(buildLinks, id);
-
-    form.setValue("links", links);
-  };
-
-  console.log(modsWatch);
 
   const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
     if (!user?.id) return;
@@ -467,10 +414,7 @@ const Edit = () => {
                 build.
               </p>
 
-              <LinksList
-                links={linksWatch}
-                removeLinkHandler={removeLinkHandler}
-              />
+              <LinksList links={linksWatch} form={form} />
             </section>
             <Separator className="my-4" />
 

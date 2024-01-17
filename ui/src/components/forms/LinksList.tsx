@@ -3,15 +3,24 @@ import { Button } from "../ui/button";
 
 const LinksList = ({
   links,
-  removeLinkHandler,
+  form,
 }: {
   links:
     | {
         [key: string]: string;
       }
     | {};
-  removeLinkHandler: (id: string) => void;
+  form: any;
 }) => {
+  const removeLinkHandler = (id: string) => {
+    const l = form.getValues("links");
+
+    if (l[id]) {
+      delete l[id];
+    }
+    form.setValue("links", l);
+  };
+
   return (
     <>
       {Object.keys(links).length > 0 && (
