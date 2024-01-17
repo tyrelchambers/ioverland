@@ -7,26 +7,17 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  carModels,
-  folderRoot,
-  modificationCategories,
-  popularCarBrands,
-} from "@/constants";
-import Image from "next/image";
+import { carModels, folderRoot, popularCarBrands } from "@/constants";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import {
-  Modification,
   NewBuildSchemaWithoutUserId,
-  Trip,
   newBuildSchema,
   Media,
   BuildPayload,
@@ -36,30 +27,14 @@ import { useUser } from "@clerk/nextjs";
 import { Label } from "@/components/ui/label";
 import { FilePondFile } from "filepond";
 import Uploader from "@/components/Uploader";
-import {
-  formattedTrips,
-  formattedModifications,
-  formattedLinks,
-  removeTrip,
-  removeModification,
-  removeLink,
-} from "@/lib/form/helpers";
-import { H1, H2, H3 } from "@/components/Heading";
+import { H1, H3 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, PlusCircle } from "lucide-react";
-import { acceptedFiletypes, findCategorySubcategories } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { acceptedFiletypes } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import Info from "@/components/Info";
 import AddTrip from "@/components/forms/AddTrip";
 import TripsList from "@/components/forms/TripsList";
@@ -67,7 +42,6 @@ import AddMod from "@/components/forms/AddMod";
 import ModsList from "@/components/forms/ModsList";
 import AddLink from "@/components/forms/AddLink";
 import LinksList from "@/components/forms/LinksList";
-import PhotosList from "@/components/forms/PhotosList";
 
 const Index = () => {
   const { createBuild } = useBuild();

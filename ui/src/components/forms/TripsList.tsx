@@ -1,10 +1,6 @@
-import { cn } from "@/lib/utils";
-import { Trip, newBuildSchema } from "@/types";
+import { Trip } from "@/types";
 import React from "react";
 import { Button } from "../ui/button";
-import { removeTrip } from "@/lib/form/helpers";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 
 const TripsList = ({ trips, form }: { trips: Trip[] | {}; form: any }) => {
   const removeTripHandler = (id: string) => {

@@ -41,7 +41,6 @@ import { carModels, popularCarBrands } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { request } from "@/lib/axios";
-import { removeLink } from "@/lib/form/helpers";
 import { acceptedFiletypes } from "@/lib/utils";
 import {
   EditBuildResponse,
