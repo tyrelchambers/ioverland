@@ -61,7 +61,7 @@ func main() {
 	// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
 	if err := sentry.Init(sentry.ClientOptions{
 		Dsn:           utils.GoDotEnvVariable("SENTRY_DSN"),
-		EnableTracing: true,
+		EnableTracing: utils.GoDotEnvVariable("NODE_ENV") == "production",
 		// Set TracesSampleRate to 1.0 to capture 100%
 		// of transactions for performance monitoring.
 		// We recommend adjusting this value in production,

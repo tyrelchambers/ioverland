@@ -5,6 +5,13 @@ import { MaxFileSizeText } from "@/components/MaxFileSize";
 import RenderMedia from "@/components/RenderMedia";
 import StyledBlock from "@/components/StyledBlock";
 import Uploader from "@/components/Uploader";
+import AddLink from "@/components/forms/AddLink";
+import AddMod from "@/components/forms/AddMod";
+import AddTrip from "@/components/forms/AddTrip";
+import LinksList from "@/components/forms/LinksList";
+import ModsList from "@/components/forms/ModsList";
+import PhotosList from "@/components/forms/PhotosList";
+import TripsList from "@/components/forms/TripsList";
 import { Alert } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -100,9 +107,6 @@ const Edit = () => {
     account: { data: account },
   } = useDomainUser();
 
-  const [tripsInput, setTripsInput] = useState<{
-    [key: string]: Trip;
-  }>({});
   const [modifications, setModifications] = useState<{
     [key: string]: Modification;
   }>({});
@@ -131,6 +135,11 @@ const Edit = () => {
       modifications: {},
     },
   });
+
+  const tripsWatch = form.watch("trips");
+  const modsWatch = form.watch("modifications");
+  const linksWatch = form.watch("links");
+  const photosWatch = form.watch("photos");
 
   useEffect(() => {
     if (id && build) {
@@ -173,7 +182,6 @@ const Edit = () => {
           [key: string]: Modification;
         }
       );
-      setTripsInput(formattedData.trips as { [key: string]: Trip });
 
       form.reset(formattedData);
     }
@@ -187,50 +195,13 @@ const Edit = () => {
 
   if (!build || !account) return null;
 
-  const addTripHandler = () => {
-    const fTrips = formattedTrips(tripsInput, {
-      build_id: String(build?.id),
-    });
-    setTripsInput(fTrips);
-    form.setValue("trips", fTrips);
-  };
-
-  const removeTripHandler = (id: string) => {
-    const newTrips = removeTrip(tripsInput, id);
-
-    setTripsInput(newTrips);
-    form.setValue("trips", newTrips);
-  };
-
-  const addModification = () => {
-    const mods = formattedModifications(modifications, {
-      build_id: String(build?.id),
-    });
-
-    setModifications(mods);
-    form.setValue("modifications", mods);
-  };
-
-  const removeModificationHandler = (id: string) => {
-    const mods = removeModification(modifications, id);
-
-    setModifications(mods);
-    form.setValue("modifications", mods);
-  };
-
-  const addLink = () => {
-    const links = formattedLinks(buildLinks);
-
-    setBuildLinks(links);
-    form.setValue("links", links);
-  };
-
   const removeLinkHandler = (id: string) => {
     const links = removeLink(buildLinks, id);
 
-    setBuildLinks(links);
     form.setValue("links", links);
   };
+
+  console.log(modsWatch);
 
   const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
     if (!user?.id) return;
@@ -464,315 +435,52 @@ const Edit = () => {
 
             <div className="flex flex-col">
               <H3>
-                Trips{" "}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={addTripHandler}
-                >
-                  <PlusCircle />
-                </Button>
+                Trips <AddTrip form={form} buildId={build.id} />
               </H3>
-              {Object.keys(tripsInput).length > 0 && (
-                <div className="flex flex-col mt-6 gap-2">
-                  {Object.keys(tripsInput).map((input, index) => {
-                    // @ts-ignore
-                    const deleteItem = form.getValues(`trips[${input}].delete`);
+              <p className="text-muted-foreground">
+                Include any trips you&apos;d like to have included with this
+                build.
+              </p>
 
-                    return (
-                      <div
-                        className={cn(
-                          "bg-card rounded-xl p-4",
-                          deleteItem && "border-red-500 bg-red-100 border"
-                        )}
-                        key={input}
-                      >
-                        <div className="flex flex-1 flex-col lg:flex-row gap-4">
-                          <FormField
-                            name={`trips[${input}].name`}
-                            render={({ field }) => (
-                              <FormItem className="flex-1">
-                                <FormLabel>Name</FormLabel>
-                                <Input
-                                  placeholder="eg: Valley of the Gods Road, The Alpine Loop"
-                                  {...field}
-                                />
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            name={`trips[${input}].year`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Year</FormLabel>
-                                <Input type="number" min={0} {...field} />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <footer className="flex flex-row justify-end">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="text-red-500"
-                            size="sm"
-                            onClick={() => removeTripHandler(input)}
-                          >
-                            Remove
-                          </Button>
-                        </footer>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <TripsList trips={tripsWatch} form={form} />
             </div>
             <Separator className="my-4" />
 
             <section className="flex flex-col">
               <H3>
-                Modifications{" "}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={addModification}
-                >
-                  <PlusCircle />
-                </Button>
+                Modifications <AddMod form={form} build_id={build.id} />
               </H3>
-              {Object.keys(modifications).length > 0 && (
-                <div className="flex flex-col gap-3 mt-6">
-                  {Object.keys(modifications).map((input, index) => {
-                    const itemKey = form.getValues(`modifications`) as {
-                      [key: string]: Modification;
-                    };
-                    const item = itemKey[input];
-                    const subcategories =
-                      findCategorySubcategories(item?.category) ?? [];
-                    return (
-                      <div className="bg-card rounded-xl p-4" key={input}>
-                        <FormField
-                          name={`modifications[${input}].category`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Category</FormLabel>
-
-                              <Select
-                                onValueChange={(value) => {
-                                  form.setValue(
-                                    // @ts-ignore
-                                    `modifications[${input}].category`,
-                                    value
-                                  );
-                                }}
-                                defaultValue={field.value}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {modificationCategories.map((category) => (
-                                    <SelectItem
-                                      key={category.label}
-                                      className="w-full"
-                                      value={category.value}
-                                    >
-                                      {category.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        {/* @ts-ignore */}
-                        {form.watch(`modifications[${input}].category`) && (
-                          <FormField
-                            name={`modifications[${input}].subcategory`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Subcategory</FormLabel>
-                                <Select
-                                  onValueChange={(value) => {
-                                    form.setValue(
-                                      // @ts-ignore
-                                      `modifications[${input}].subcategory`,
-                                      value
-                                    );
-                                  }}
-                                  defaultValue={field.value}
-                                >
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Subcategory" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {subcategories?.map((category) => (
-                                      <SelectItem
-                                        key={category.label}
-                                        className="w-full"
-                                        value={category.value}
-                                      >
-                                        {category.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
-                        )}
-
-                        <div className="flex flex-col lg:flex-row gap-3">
-                          <FormField
-                            name={`modifications[${input}].name`}
-                            render={({ field }) => (
-                              <div className="flex-1">
-                                <FormItem>
-                                  <FormLabel>Name</FormLabel>
-                                  <Input
-                                    placeholder="What's the name of the modification?"
-                                    {...field}
-                                  />
-                                </FormItem>
-                              </div>
-                            )}
-                          />
-
-                          <FormField
-                            name={`modifications[${input}].price`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Price</FormLabel>
-                                <Input
-                                  type="number"
-                                  min={0}
-                                  placeholder="What's the name of the modification?"
-                                  {...field}
-                                />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        <footer className="flex items-center justify-end">
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="text-red-500"
-                            size="sm"
-                            onClick={() => removeModificationHandler(input)}
-                          >
-                            Remove
-                          </Button>
-                        </footer>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <p className="text-muted-foreground">
+                Include any modifications you&apos;d like to have included with
+                this build.
+              </p>
+              <ModsList mods={modsWatch} form={form} />
             </section>
             <Separator className="my-4" />
 
             <section className="flex flex-col">
               <H3>
-                Links{" "}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={addLink}
-                >
-                  <PlusCircle />
-                </Button>
+                Links <AddLink form={form} buildId={build.id} />
               </H3>
               <p className="text-muted-foreground">
                 Include any links you&apos;d like to have included with this
                 build.
               </p>
 
-              {Object.keys(buildLinks).length > 0 && (
-                <div className="flex flex-col gap-3 mt-6">
-                  {Object.keys(buildLinks).map((input, index) => {
-                    return (
-                      <div className="bg-card rounded-xl p-4" key={input}>
-                        <header className="flex flex-row justify-between">
-                          <p>Link #{index + 1}</p>
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="text-red-500"
-                            size="sm"
-                            onClick={() => removeLinkHandler(input)}
-                          >
-                            Remove
-                          </Button>
-                        </header>
-                        <FormField
-                          name={`links[${input}]`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Input placeholder="https://" {...field} />
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <LinksList
+                links={linksWatch}
+                removeLinkHandler={removeLinkHandler}
+              />
             </section>
             <Separator className="my-4" />
 
             <div className="flex flex-col">
               <Label className="mb-2">Photos</Label>
 
-              {build?.photos && build?.photos.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {build?.photos?.map((photo, index) => {
-                    return (
-                      <div
-                        className=" flex flex-col items-center gap-4 relative  shadow-xl rounded-xl overflow-hidden"
-                        key={photo.id}
-                      >
-                        {photo.mime_type.includes("image") ? (
-                          <div className="relative w-full h-[200px]">
-                            <Image
-                              src={photo.url}
-                              alt=""
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <video controls className="h-[200px] w-full">
-                            <source src={photo.url} type={photo.mime_type} />
-                          </video>
-                        )}
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={() =>
-                            removeImageHandler(photo.id, photo.url)
-                          }
-                        >
-                          <Trash size={18} />
-                        </Button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <StyledBlock
-                  text="No uploaded photos for this build."
-                  icon={<ImageIcon />}
-                />
-              )}
+              <PhotosList
+                photos={photosWatch}
+                removeImageHandler={removeImageHandler}
+              />
 
               <div className="mt-8">
                 <Label>Upload photos </Label>
