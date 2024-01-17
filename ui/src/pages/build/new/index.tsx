@@ -61,20 +61,20 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import Info from "@/components/Info";
+import AddTrip from "@/components/forms/AddTrip";
+import TripsList from "@/components/forms/TripsList";
+import AddMod from "@/components/forms/AddMod";
+import ModsList from "@/components/forms/ModsList";
+import AddLink from "@/components/forms/AddLink";
+import LinksList from "@/components/forms/LinksList";
+import PhotosList from "@/components/forms/PhotosList";
 
 const Index = () => {
   const { createBuild } = useBuild();
   const { user } = useUser();
-  const { account } = useDomainUser();
-  const [tripsInput, setTripsInput] = useState<{
-    [key: string]: Trip;
-  }>({});
-  const [modifications, setModifications] = useState<{
-    [key: string]: Modification;
-  }>({});
-  const [buildLinks, setBuildLinks] = useState<{
-    [key: string]: string;
-  }>({});
+  const {
+    account: { data: account },
+  } = useDomainUser();
   const [banner, setBanner] = useState<FilePondFile[]>([]);
   const [photos, setPhotos] = useState<FilePondFile[]>([]);
 
@@ -94,50 +94,13 @@ const Index = () => {
       modifications: {},
       public: false,
     },
-    disabled: account.data?.builds_remaining === 0 ? true : false,
+    disabled: account?.builds_remaining === 0 ? true : false,
   });
 
   const watchMake = form.watch("vehicle.make");
-
-  const addTripHandler = () => {
-    const fTrips = formattedTrips(tripsInput);
-    setTripsInput(fTrips);
-    form.setValue("trips", fTrips);
-  };
-
-  const removeTripHandler = (id: string) => {
-    const newTrips = removeTrip(tripsInput, id);
-    setTripsInput(newTrips);
-    form.setValue("trips", newTrips);
-  };
-
-  const addModification = () => {
-    const mods = formattedModifications(modifications);
-
-    setModifications(mods);
-    form.setValue("modifications", mods);
-  };
-
-  const removeModificationHandler = (id: string) => {
-    const mods = removeModification(modifications, id);
-
-    setModifications(mods);
-    form.setValue("modifications", mods);
-  };
-
-  const addLink = () => {
-    const links = formattedLinks(buildLinks);
-
-    setBuildLinks(links);
-    form.setValue("links", links);
-  };
-
-  const removeLinkHandler = (id: string) => {
-    const links = removeLink(buildLinks, id);
-
-    setBuildLinks(links);
-    form.setValue("links", links);
-  };
+  const tripsWatch = form.watch("trips");
+  const modsWatch = form.watch("modifications");
+  const linksWatch = form.watch("links");
 
   const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
     if (!user?.id) return;
@@ -199,7 +162,7 @@ const Index = () => {
     <section>
       <Header />
       <div className="max-w-screen-md mx-auto my-10 relative h-full">
-        {account?.data?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
+        {account?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
         <div className="p-4">
           <H1>Let&apos;s build</H1>
           <p className="text-muted-foreground">
@@ -208,18 +171,34 @@ const Index = () => {
           </p>
           <Form {...form}>
             <form
-              className="w-full mt-10 flex flex-col gap-4"
+              className="flex flex-col gap-4 mt-10"
               onSubmit={form.handleSubmit(submitHandler, console.log)}
             >
-              <H2>The Basics</H2>
-
+              <div className="flex flex-col">
+                <Label className="mb-2">Banner</Label>
+                <MaxFileSizeText
+                  isProPlan={account?.has_subscription}
+                  maxFileUploads={1}
+                  maxFileSize={account?.plan_limits.max_file_size}
+                  type="banner"
+                />
+                <Uploader
+                  onUpdate={setBanner}
+                  acceptedFileTypes={acceptedFiletypes(
+                    account?.has_subscription
+                  )}
+                  allowMultiple={false}
+                  maxFiles={1}
+                  type="banner"
+                  maxFileSize={account?.plan_limits.max_file_size}
+                />
+              </div>
               <FormField
                 name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
-                    <Input placeholder="What's your build name" {...field} />
-                    <FormMessage />
+                    <Input {...field} />
                   </FormItem>
                 )}
               />
@@ -229,10 +208,7 @@ const Index = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
-                    <Textarea
-                      placeholder="What inspired your build?"
-                      {...field}
-                    />
+                    <Textarea {...field} />
                   </FormItem>
                 )}
               />
@@ -242,9 +218,6 @@ const Index = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Budget</FormLabel>
-                    <FormDescription>
-                      How much did you spend on this build, roughly?
-                    </FormDescription>
                     <Input type="number" {...field} />
                   </FormItem>
                 )}
@@ -267,7 +240,7 @@ const Index = () => {
                   )}
                 />
 
-                {form.getValues("vehicle.make") && watchMake && (
+                {form.getValues("vehicle.make") && (
                   <FormField
                     name="vehicle.model"
                     render={({ field }) => (
@@ -297,304 +270,69 @@ const Index = () => {
                   />
                 )}
               </div>
-              <div className="flex flex-col">
-                <Label className="mb-2">Banner</Label>
-                <MaxFileSizeText
-                  isProPlan={account.data?.has_subscription}
-                  maxFileUploads={1}
-                  maxFileSize={account?.data?.plan_limits?.max_file_size}
-                  type="banner"
-                />
-                <Uploader
-                  onUpdate={setBanner}
-                  acceptedFileTypes={acceptedFiletypes(
-                    account.data?.has_subscription
-                  )}
-                  allowMultiple={false}
-                  maxFiles={1}
-                  type="banner"
-                  maxFileSize={account.data?.plan_limits?.max_file_size}
-                  disabled={form.formState.disabled}
-                />
-              </div>
+
               <Separator className="my-4" />
+
               <div className="flex flex-col">
                 <H3>
-                  Trips{" "}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={addTripHandler}
-                  >
-                    <PlusCircle />
-                  </Button>
+                  Trips <AddTrip form={form} />
                 </H3>
-                {Object.keys(tripsInput).length > 0 && (
-                  <div className="flex flex-col mt-6 gap-2">
-                    {Object.keys(tripsInput).map((input, index) => {
-                      return (
-                        <div className="bg-card rounded-xl p-4" key={input}>
-                          <header className="flex flex-row justify-between">
-                            <p>Trip #{index + 1}</p>
-                            <Button
-                              type="button"
-                              variant="link"
-                              className="text-red-500"
-                              size="sm"
-                              onClick={() => removeTripHandler(input)}
-                            >
-                              Remove
-                            </Button>
-                          </header>
-                          <div className="flex flex-col lg:flex-row flex-1 gap-4">
-                            <FormField
-                              name={`trips[${input}].name`}
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormLabel>Name</FormLabel>
-                                  <Input
-                                    placeholder="eg: Valley of the Gods Road, The Alpine Loop"
-                                    {...field}
-                                  />
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                <p className="text-muted-foreground">
+                  Include any trips you&apos;d like to have included with this
+                  build.
+                </p>
 
-                            <FormField
-                              name={`trips[${input}].year`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Year</FormLabel>
-                                  <Input type="number" min={0} {...field} />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <TripsList trips={tripsWatch} form={form} />
               </div>
               <Separator className="my-4" />
 
               <section className="flex flex-col">
                 <H3>
-                  Modifications{" "}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={addModification}
-                  >
-                    <PlusCircle />
-                  </Button>
+                  Modifications <AddMod form={form} />
                 </H3>
-                {Object.keys(modifications).length > 0 && (
-                  <div className="flex flex-col gap-3 mt-6">
-                    {Object.keys(modifications).map((input, index) => {
-                      const itemKey = form.getValues(`modifications`) as {
-                        [key: string]: Modification;
-                      };
-                      const item = itemKey[input];
-                      const subcategories =
-                        findCategorySubcategories(item.category) ?? [];
-
-                      return (
-                        <div className="bg-card rounded-xl p-4" key={input}>
-                          <header className="flex flex-row justify-between">
-                            <p>Modification #{index + 1}</p>
-                            <Button
-                              type="button"
-                              variant="link"
-                              className="text-red-500"
-                              size="sm"
-                              onClick={() => removeModificationHandler(input)}
-                            >
-                              Remove
-                            </Button>
-                          </header>
-                          <FormField
-                            name={`modifications[${input}].category`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Category</FormLabel>
-
-                                <Select
-                                  onValueChange={(value) => {
-                                    form.setValue(
-                                      // @ts-ignore
-                                      `modifications[${input}].category`,
-                                      value
-                                    );
-                                  }}
-                                  defaultValue={field.value}
-                                >
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Category" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {modificationCategories.map((category) => (
-                                      <SelectItem
-                                        key={category.label}
-                                        className="w-full"
-                                        value={category.value}
-                                      >
-                                        {category.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
-                          {/* @ts-ignore */}
-                          {form.watch(`modifications[${input}].category`) && (
-                            <FormField
-                              name={`modifications[${input}].subcategory`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Subcategory</FormLabel>
-                                  <Select
-                                    onValueChange={(value) => {
-                                      form.setValue(
-                                        // @ts-ignore
-                                        `modifications[${input}].subcategory`,
-                                        value
-                                      );
-                                    }}
-                                  >
-                                    <SelectTrigger className="w-full">
-                                      <SelectValue placeholder="Subcategory" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {subcategories?.map((category) => (
-                                        <SelectItem
-                                          key={category.label}
-                                          className="w-full"
-                                          value={category.value}
-                                        >
-                                          {category.label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </FormItem>
-                              )}
-                            />
-                          )}
-
-                          <div className="flex flex-col lg:flex-row gap-3">
-                            <FormField
-                              name={`modifications[${input}].name`}
-                              render={({ field }) => (
-                                <div className="flex-1">
-                                  <FormItem>
-                                    <FormLabel>Name</FormLabel>
-                                    <Input
-                                      placeholder="What's the name of the modification?"
-                                      {...field}
-                                    />
-                                  </FormItem>
-                                </div>
-                              )}
-                            />
-
-                            <FormField
-                              name={`modifications[${input}].price`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Price</FormLabel>
-                                  <Input
-                                    type="number"
-                                    min={0}
-                                    placeholder="What's the name of the modification?"
-                                    {...field}
-                                  />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <p className="text-muted-foreground">
+                  Include any modifications you&apos;d like to have included
+                  with this build.
+                </p>
+                <ModsList mods={modsWatch} form={form} />
               </section>
-
               <Separator className="my-4" />
 
               <section className="flex flex-col">
                 <H3>
-                  Links{" "}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={addLink}
-                  >
-                    <PlusCircle />
-                  </Button>
+                  Links <AddLink form={form} />
                 </H3>
                 <p className="text-muted-foreground">
                   Include any links you&apos;d like to have included with this
                   build.
                 </p>
 
-                {Object.keys(buildLinks).length > 0 && (
-                  <div className="flex flex-col gap-3 mt-6">
-                    {Object.keys(buildLinks).map((input, index) => {
-                      return (
-                        <div className="bg-card rounded-xl p-4" key={input}>
-                          <header className="flex flex-row justify-between">
-                            <p>Link #{index + 1}</p>
-                            <Button
-                              type="button"
-                              variant="link"
-                              className="text-red-500"
-                              size="sm"
-                              onClick={() => removeLinkHandler(input)}
-                            >
-                              Remove
-                            </Button>
-                          </header>
-                          <FormField
-                            name={`links[${input}]`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Input placeholder="https://" {...field} />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                <LinksList links={linksWatch} form={form} />
               </section>
               <Separator className="my-4" />
 
               <div className="flex flex-col">
                 <Label className="mb-2">Photos</Label>
-                <MaxFileSizeText
-                  isProPlan={account.data?.has_subscription}
-                  maxFileUploads={account.data?.plan_limits?.max_files}
-                  maxFileSize={account?.data?.plan_limits?.max_file_size}
-                />
 
-                <Uploader
-                  onUpdate={setPhotos}
-                  acceptedFileTypes={acceptedFiletypes(
-                    account.data?.has_subscription
-                  )}
-                  allowMultiple={true}
-                  maxFiles={account.data?.plan_limits?.max_files}
-                  type="photos"
-                  maxFileSize={account.data?.plan_limits?.max_file_size}
-                  disabled={form.formState.disabled}
-                />
+                <div className="mt-8">
+                  <Label>Upload photos </Label>
+                  <MaxFileSizeText
+                    isProPlan={account?.has_subscription}
+                    maxFileUploads={account?.plan_limits.max_files}
+                    maxFileSize={account?.plan_limits.max_file_size}
+                  />
+                  <Uploader
+                    files={photos as any}
+                    onUpdate={setPhotos}
+                    acceptedFileTypes={acceptedFiletypes(
+                      account?.has_subscription
+                    )}
+                    allowMultiple={true}
+                    maxFiles={account?.plan_limits.max_files}
+                    type="photos"
+                    maxFileSize={account?.plan_limits.max_file_size}
+                  />
+                </div>
               </div>
 
               <Separator className="my-4" />
@@ -618,27 +356,19 @@ const Index = () => {
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>Make this build private?</FormLabel>
+                      <FormLabel>Make this build public?</FormLabel>
                       <FormDescription>
-                        Making this build private will hide it from other users
-                        so no one can see it.
+                        Anyone with the link can access this build.
                       </FormDescription>
                     </div>
                   </FormItem>
                 )}
               />
-
-              <Button
-                disabled={
-                  !form.formState.isValid ||
-                  form.formState.disabled ||
-                  form.formState.isSubmitting
-                }
-              >
+              <Button disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Save build"
+                  "Create build"
                 )}
               </Button>
             </form>

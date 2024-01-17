@@ -25,7 +25,7 @@ import { Input } from "../ui/input";
 
 interface Props {
   form: any;
-  build_id: string | undefined;
+  build_id?: string | undefined;
 }
 const AddMod = ({ form, build_id }: Props) => {
   const [open, setOpen] = useState(false);

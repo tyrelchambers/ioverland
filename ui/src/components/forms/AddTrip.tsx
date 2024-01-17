@@ -15,7 +15,7 @@ import { createId } from "@paralleldrive/cuid2";
 
 interface Props {
   form: any;
-  buildId: string | undefined;
+  buildId?: string | undefined;
 }
 
 const AddTrip = ({ form, buildId }: Props) => {

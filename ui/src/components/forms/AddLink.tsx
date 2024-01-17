@@ -19,7 +19,7 @@ const AddLink = ({
   buildId,
 }: {
   form: any;
-  buildId: string | undefined;
+  buildId?: string | undefined;
 }) => {
   const [open, setOpen] = useState(false);
   const [item, setItem] = useState<string>("");

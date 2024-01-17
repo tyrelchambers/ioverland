@@ -1,4 +1,8 @@
-import { findCategory, groupModificationsByCategory } from "@/lib/utils";
+import {
+  findCategory,
+  formatPrice,
+  groupModificationsByCategory,
+} from "@/lib/utils";
 import { Modification } from "@/types";
 import React from "react";
 import EmptyListText from "../EmptyListText";
@@ -27,7 +31,9 @@ const Modifications = ({
                     <p className="text-muted-foreground font-bold">
                       {mod.name}
                     </p>
-                    <p className="text-muted-foreground">${mod.price}</p>
+                    <p className="text-muted-foreground">
+                      {formatPrice(Number(mod.price))}
+                    </p>
                   </li>
                 ))}
               </ul>

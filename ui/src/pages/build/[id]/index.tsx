@@ -270,9 +270,11 @@ const Build = () => {
 
         <section className="px-4 ">
           <div className="flex flex-col ">
-            <p className="mb-8 max-w-3xl whitespace-pre-wrap leading-relaxed ">
-              {build?.description}
-            </p>
+            {build.description && (
+              <p className="my-8 max-w-3xl whitespace-pre-wrap leading-relaxed ">
+                {build?.description}
+              </p>
+            )}
 
             {user && (
               <div className="flex items-center  w-full max-w-xs  ">
