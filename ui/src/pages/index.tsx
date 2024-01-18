@@ -1,8 +1,8 @@
 import Footer from "@/components/Footer";
-import Header, { authRoutes, routes } from "@/components/Header";
+import Header from "@/components/Header";
 import { H2 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
-import { SignedIn, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import {
   Bookmark,
   Heart,
@@ -62,7 +62,7 @@ export default function Home() {
         <div className="my-10 rounded-md shadow-xl overflow-hidden mx-4">
           <div className="relative w-full lg:h-[600px] h-[400px]">
             <Image
-              src="/car in forest.jpg"
+              src="/IMG_2837 2.jpg"
               alt=""
               fill
               className="object-cover"
