@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 )
 
@@ -275,24 +274,24 @@ func Like(c *gin.Context) {
 func Dislike(c *gin.Context) {
 	id := c.Param("build_id")
 
-	user, _ := c.Get("user")
+	user := utils.UserFromContext(c)
 	build, err := build_service.GetById(dbConfig.Client, id)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [DISLIKE] Error getting build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = build_service.DisLike(dbConfig.Client, user.(*clerk.User).ID, build)
+	err = build_service.DisLike(dbConfig.Client, user.Uuid, build)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [DISLIKE] Error disliking build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -302,7 +301,7 @@ func Dislike(c *gin.Context) {
 }
 func DeleteBuild(c *gin.Context) {
 	id := c.Param("build_id")
-	user, _ := c.Get("user")
+	user := utils.UserFromContext(c)
 
 	build, err := build_service.GetById(dbConfig.Client, id)
 	banner := build.Banner
@@ -321,7 +320,7 @@ func DeleteBuild(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [DELETEBUILD] Error getting build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -331,7 +330,7 @@ func DeleteBuild(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [DELETEBUILD] Error deleting build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -342,7 +341,7 @@ func DeleteBuild(c *gin.Context) {
 
 func BuildEditSettings(c *gin.Context) {
 	id := c.Param("build_id")
-	user, _ := c.Get("user")
+	user := utils.UserFromContext(c)
 
 	var resp EditResponse
 
@@ -351,7 +350,7 @@ func BuildEditSettings(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [BUILDEDITSETTINGS] Error getting build in edit settings",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -362,7 +361,7 @@ func BuildEditSettings(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [BUILDEDITSETTINGS] Error getting account in edit settings",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.(*clerk.User).ID},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return

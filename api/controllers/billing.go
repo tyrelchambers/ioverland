@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v76"
 	"github.com/stripe/stripe-go/v76/checkout/session"
@@ -17,14 +16,12 @@ import (
 func CreateCheckout(c *gin.Context) {
 	redirect_to := c.Query("redirect_to")
 	plan := c.Query("plan")
-	user, _ := c.Get("user")
-
-	u := user.(*clerk.User)
+	user := utils.UserFromContext(c)
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
 
-	domainUser, err := user_service.FindUser(dbConfig.Client, u.ID)
+	domainUser, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 	success_url := os.Getenv("APP_URL")
 
 	if redirect_to != "" {
@@ -46,7 +43,7 @@ func CreateCheckout(c *gin.Context) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		Metadata: map[string]string{"clerk_user_id": u.ID},
+		Metadata: map[string]string{"clerk_user_id": user.Uuid},
 	}
 
 	if stripe_customer_id != "" {
