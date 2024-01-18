@@ -268,8 +268,8 @@ const Build = () => {
           </div>
         )}
 
-        <section className="px-4 ">
-          <div className="flex flex-col ">
+        <section className="px-4 my-10">
+          <div className="flex flex-col">
             {build.description && (
               <p className="my-8 max-w-3xl whitespace-pre-wrap leading-relaxed ">
                 {build?.description}
