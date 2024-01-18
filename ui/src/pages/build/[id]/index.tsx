@@ -242,8 +242,7 @@ const Build = () => {
                     href={`/build/${build?.uuid}/edit`}
                     className="text-green-foreground"
                   >
-                    <PencilRuler size={18} className="mr-2" />
-                    Edit
+                    Edit build
                   </Link>
                 </Button>
               )}
