@@ -406,7 +406,7 @@ const Edit = () => {
 
             <section className="flex flex-col">
               <H3>
-                Links <AddLink form={form} buildId={build.id} />
+                Links <AddLink form={form} />
               </H3>
               <p className="text-muted-foreground">
                 Include any links you&apos;d like to have included with this

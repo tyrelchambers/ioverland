@@ -38,8 +38,10 @@ const AddTrip = ({ form, buildId }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <PlusCircle className="ml-2" />
+      <DialogTrigger asChild>
+        <Button type="button" variant="ghost" size="icon">
+          <PlusCircle />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
