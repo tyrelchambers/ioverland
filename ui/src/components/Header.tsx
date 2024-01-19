@@ -5,8 +5,11 @@ import { useSearch } from "@/hooks/useSearch";
 import MobileNav from "./header/MobileNav";
 import Search from "./header/Search";
 import MobileSearch from "./header/MobileSearch";
-import { UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Badge } from "./ui/badge";
+import Link from "next/link";
+import { Button } from "./ui/button";
+import { useViewportWidth } from "@/hooks/useViewportWidth";
 
 export const routes = [
   {
@@ -43,7 +46,7 @@ interface Props {
 const Header = ({ on, className, stickyOnScroll }: Props) => {
   const [searchValue, setSearchValue] = React.useState("");
   const { search } = useSearch(searchValue);
-
+  const { width } = useViewportWidth();
   useEffect(() => {
     const header = document.querySelector(".header");
     const body = document.querySelector("body");
@@ -86,12 +89,47 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
         </div>
 
         {/* this is the desktop nav */}
-        <Search
-          searchResults={search.data ?? []}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          isLoading={search.isFetching}
-        />
+        {width >= 1024 && (
+          <div className="flex items-center gap-4">
+            <Search
+              searchResults={search.data ?? []}
+              searchValue={searchValue}
+              setSearchValue={setSearchValue}
+              isLoading={search.isFetching}
+            />
+            <div className="gap-8 items-center hidden lg:flex">
+              {routes.map((route) => (
+                <Link
+                  href={route.href}
+                  key={route.label}
+                  className="flex gap-3 items-center  hover:text-primary text-foreground/50"
+                >
+                  {route.label}
+                </Link>
+              ))}
+              <SignedIn>
+                {authRoutes.map((route) => (
+                  <Link
+                    href={route.href}
+                    key={route.label}
+                    className="flex gap-3 items-center  hover:text-primary text-foreground/50"
+                  >
+                    {route.label}
+                  </Link>
+                ))}
+                <Link href="/build/new">
+                  <Button size="sm">New build</Button>
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
+              <SignedOut>
+                <Link href="/sign-up">
+                  <Button>Sign up</Button>
+                </Link>
+              </SignedOut>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
