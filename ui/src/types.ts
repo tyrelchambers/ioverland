@@ -68,12 +68,12 @@ export const buildSchema = z.object({
   photos: z.array(media).optional(),
   banner: media.optional(),
   id: z.string().optional(),
-  uuid: z.string().optional(),
-  views: z.number().optional(),
-  likes: z.array(z.string()).optional().nullable(),
+  uuid: z.string(),
+  views: z.number(),
+  likes: z.array(z.string()).nullable(),
 });
 
-export type Build = z.infer<typeof buildSchema>;
+export type Build = z.infer<typeof buildSchema> & { comments: Comment[] };
 
 const domainUser = z.object({
   uuid: z.string(),
@@ -149,6 +149,12 @@ export type UpdateProfile = z.infer<typeof updateProfile>;
 export interface UpdateProfileWithBanner extends UpdateProfile {
   banner?: Omit<Media, "uuid">;
 }
+
+export const newComment = z.object({
+  comment: z.string().min(1),
+});
+
+export type NewComment = z.infer<typeof newComment>;
 export interface EditBuildResponse {
   build: Build;
   can_be_public: boolean;
@@ -188,6 +194,7 @@ export interface User {
   bio: string;
   banner: Media | undefined;
   username?: string;
+  image_url: string;
 }
 
 export const isBuild = (obj: any): obj is Build => {
@@ -209,3 +216,15 @@ export const isUser = (obj: any): obj is ClerkUser => {
 
   return false;
 };
+
+export interface IComment {
+  uuid: string;
+  text: string;
+  author: User;
+  replies: Comment[] | null;
+  created_at: Date;
+  deleted: boolean;
+  likes: string[];
+  build_id: string;
+  build: Build;
+}

@@ -1,5 +1,5 @@
 import { request } from "@/lib/axios";
-import { Build, EditBuildResponse, BuildPayload } from "@/types";
+import { Build, EditBuildResponse, BuildPayload, IComment } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
@@ -176,6 +176,14 @@ export const useBuild = (id?: string) => {
     enabled: !!id,
   });
 
+  const getComments = useQuery({
+    queryKey: ["build_comments", id],
+    queryFn: async (): Promise<IComment[]> => {
+      return request.get(`/api/build/${id}/comments`).then((res) => res.data);
+    },
+    enabled: !!id,
+  });
+
   return {
     createBuild,
     getById,
@@ -186,5 +194,6 @@ export const useBuild = (id?: string) => {
     dislikeBuild,
     deleteBuild,
     editSettings,
+    buildComments: getComments,
   };
 };

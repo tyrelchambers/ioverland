@@ -1,3 +1,4 @@
+import { CommentInput, CommentList } from "@/components/Comments";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
 import VideoWithLoader from "@/components/VideoWithLoader";
@@ -47,7 +48,8 @@ const Build = () => {
   const { user: domainUser, bookmark, removeBookmark } = useDomainUser();
 
   const paramId = router.query.id as string;
-  const { getById, incrementView, likeBuild, dislikeBuild } = useBuild(paramId);
+  const { getById, incrementView, likeBuild, dislikeBuild, buildComments } =
+    useBuild(paramId);
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const build = getById.data;
@@ -329,6 +331,16 @@ const Build = () => {
               <Links links={build?.links} />
             </div>
           </div>
+          <Separator />
+
+          <section className="my-10 max-w-3xl">
+            <H2>Comments</H2>
+            <CommentInput buildId={build?.uuid} />
+            <Separator className="my-6" />
+            {buildComments.data && (
+              <CommentList comments={buildComments.data} />
+            )}
+          </section>
         </section>
       </section>
     </section>

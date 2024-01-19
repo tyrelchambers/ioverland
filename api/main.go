@@ -72,7 +72,7 @@ func main() {
 	}
 
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Vehicle{}, &models.Modification{}, &models.Media{}, &models.User{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{})
 
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))
@@ -136,6 +136,7 @@ func main() {
 	userG := api.Group("/user")
 	billingG := api.Group("/billing")
 	exploreG := api.Group("/explore")
+	commentG := api.Group("/comment")
 
 	buildG.POST("", AuthRequired, controllers.CreateBuild)
 	buildG.GET("/:build_id", controllers.GetById)
@@ -147,12 +148,18 @@ func main() {
 	buildG.DELETE("/:build_id/delete", AuthRequired, controllers.DeleteBuild)
 	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, controllers.RemoveImage)
 	buildG.DELETE("/:build_id/:trip_id/delete", AuthRequired, controllers.DeleteTrip)
+	buildG.GET("/:build_id/comments", controllers.GetComments)
 
 	buildsG.GET("/user/:user_id", AuthRequired, controllers.GetUserBuilds)
 
 	billingG.POST("/checkout", AuthRequired, controllers.CreateCheckout)
 	billingG.GET("/checkout", AuthRequired, controllers.CreateCheckout)
 	billingG.POST("/portal", AuthRequired, controllers.CreateCustomerPortal)
+
+	commentG.POST("/create", AuthRequired, controllers.CreateComment)
+	// commentG.POST("/update", AuthRequired, controllers.UpdateComment)
+	commentG.PATCH("/:comment_id/like", AuthRequired, controllers.LikeComment)
+	commentG.PATCH("/:comment_id/dislike", AuthRequired, controllers.RemoveLike)
 
 	uploadG.POST("/process", UploadAuth, controllers.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, controllers.ProcessUpload)

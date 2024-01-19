@@ -4,6 +4,7 @@ import (
 	dbConfig "api/db"
 	"api/models"
 	"api/services/build_service"
+	"api/services/comment_service"
 	"api/services/media_service"
 	"api/services/user_service"
 	"api/utils"
@@ -393,4 +394,21 @@ func DeleteTrip(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "success")
+}
+
+func GetComments(c *gin.Context) {
+	id := c.Param("build_id")
+
+	comments, err := comment_service.GetComments(dbConfig.Client, id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [GETCOMMENTS] Error getting comments",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
 }

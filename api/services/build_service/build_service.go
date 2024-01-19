@@ -22,7 +22,11 @@ func (b *Build) Create(db *gorm.DB) error {
 }
 
 func IncrementViews(db *gorm.DB, b models.Build) error {
-	db.Model(&b).Where("uuid = ?", b.Uuid).Update("views", b.Views+1)
+	db.Model(&b).Select("views").Update("views", b.Views+1)
+
+	if db.Error != nil {
+		return db.Error
+	}
 	return nil
 }
 

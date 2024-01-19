@@ -19,7 +19,6 @@ const Modifications = ({
       {Object.entries(groupModificationsByCategory(modifications)).map(
         ([i, mod]) => {
           const category = findCategory(i);
-          console.log(mod);
 
           return (
             <div key={i} className="border-border border rounded-xl p-4">

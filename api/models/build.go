@@ -23,6 +23,7 @@ type Build struct {
 	Views         int            `gorm:"default:0" json:"views"`
 	Likes         pq.StringArray `gorm:"type:text[]" json:"likes"`
 	FeaturedOn    time.Time      `json:"featured_on"`
+	Comments      []*Comment     `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"comments"`
 }
 
 type Vehicle struct {

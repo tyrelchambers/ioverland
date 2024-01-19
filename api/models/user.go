@@ -20,4 +20,5 @@ type User struct {
 	Follows         []*User        `gorm:"many2many:user_follows" json:"followers"`
 	Username        string         `json:"username"`
 	ImageUrl        string         `json:"image_url"`
+	Comments        []*Comment     ` gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:AuthorId;references:Uuid" json:"comments"`
 }
