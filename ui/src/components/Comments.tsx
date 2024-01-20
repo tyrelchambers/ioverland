@@ -106,7 +106,7 @@ export const CommentInput = ({
 
 export const CommentList = ({ comments }: { comments: IComment[] }) => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col">
       {comments.map((c) => (
         <Comment key={c.uuid} c={c} />
       ))}
@@ -117,6 +117,7 @@ export const CommentList = ({ comments }: { comments: IComment[] }) => {
 export const Comment = ({ c }: { c: IComment }) => {
   const [openReply, setOpenReply] = useState(false);
   const { likeComment, dislikeComment } = useComments({ buildId: c.build_id });
+  const { isSignedIn } = useUser();
 
   const isLiked = c.likes?.includes(c.author?.uuid ?? "");
 
@@ -130,6 +131,7 @@ export const Comment = ({ c }: { c: IComment }) => {
               type="button"
               variant="link"
               onClick={() => dislikeComment.mutate({ comment_id: c.uuid })}
+              disabled={!isSignedIn}
             >
               <ArrowUpCircle className="text-primary" size={18} />
             </Button>
@@ -139,6 +141,7 @@ export const Comment = ({ c }: { c: IComment }) => {
               type="button"
               variant="link"
               onClick={() => likeComment.mutate({ comment_id: c.uuid })}
+              disabled={!isSignedIn}
             >
               <ArrowUpCircle className="text-foreground " size={18} />
             </Button>
@@ -205,6 +208,7 @@ const Reply = ({ r }: { r: IComment }) => {
   const { likeComment, dislikeComment } = useComments({
     buildId: r.build_id,
   });
+  const { isSignedIn } = useUser();
 
   const isLiked = r.likes?.includes(r.author?.uuid ?? "");
   return (
@@ -216,6 +220,7 @@ const Reply = ({ r }: { r: IComment }) => {
             type="button"
             variant="link"
             onClick={() => dislikeComment.mutate({ comment_id: r.uuid })}
+            disabled={!isSignedIn}
           >
             <ArrowUpCircle className="text-primary" size={18} />
           </Button>
@@ -225,6 +230,7 @@ const Reply = ({ r }: { r: IComment }) => {
             type="button"
             variant="link"
             onClick={() => likeComment.mutate({ comment_id: r.uuid })}
+            disabled={!isSignedIn}
           >
             <ArrowUpCircle className="text-foreground " size={18} />
           </Button>

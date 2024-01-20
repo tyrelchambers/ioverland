@@ -1,6 +1,7 @@
 import { CommentInput, CommentList } from "@/components/Comments";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import Info from "@/components/Info";
 import VideoWithLoader from "@/components/VideoWithLoader";
 import Links from "@/components/build/Links";
 import Modifications from "@/components/build/Modifications";
@@ -335,7 +336,13 @@ const Build = () => {
 
           <section className="my-10 max-w-3xl">
             <H2 className="mb-8">Comments</H2>
-            <CommentInput buildId={build?.uuid} />
+            {isSignedIn ? (
+              <CommentInput buildId={build?.uuid} />
+            ) : (
+              <Info>
+                <p>Sign in to comment</p>
+              </Info>
+            )}
             <Separator className="my-6" />
             {buildComments.data && (
               <CommentList comments={buildComments.data} />
