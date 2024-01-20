@@ -164,7 +164,7 @@ export const Comment = ({ c }: { c: IComment }) => {
               <p className="text-muted-foreground text-sm">
                 {formatDistanceToNowStrict(c.created_at, { addSuffix: true })}
               </p>
-              {!c.reply_id && (
+              {!c.reply_id && isSignedIn && (
                 <>
                   <Dot className="text-muted-foreground/50" />
                   <button

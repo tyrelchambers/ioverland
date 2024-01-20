@@ -67,6 +67,8 @@ const Build = () => {
   useEffect(() => {
     if (paramId && user?.id) {
       setLiked(hasLiked(build?.likes, user?.id));
+    } else {
+      setLiked(false);
     }
   }, [paramId, build?.likes, user?.id]);
 
@@ -126,12 +128,16 @@ const Build = () => {
 
   const LikeButton = () =>
     liked ? (
-      <Button variant="destructive" onClick={dislikeHandler}>
+      <Button
+        variant="destructive"
+        onClick={dislikeHandler}
+        disabled={!isSignedIn}
+      >
         <HeartOff size={20} className="mr-2" />{" "}
         <span className="font-bold">{build?.likes?.length}</span>
       </Button>
     ) : (
-      <Button variant="ghost" onClick={likeHandler}>
+      <Button variant="ghost" onClick={likeHandler} disabled={!isSignedIn}>
         <Heart size={20} className="text-muted-foreground mr-2" />{" "}
         <span className="font-bold">{build?.likes?.length || 0}</span>
       </Button>
