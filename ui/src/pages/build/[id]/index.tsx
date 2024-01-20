@@ -340,7 +340,7 @@ const Build = () => {
           </div>
           <Separator />
 
-          <section className="my-10 max-w-3xl">
+          <section className="my-10 lg:w-1/2 w-full">
             <H2 className="mb-8">Comments</H2>
             {isSignedIn ? (
               <CommentInput buildId={build?.uuid} />
@@ -349,7 +349,7 @@ const Build = () => {
                 <p>Sign in to comment</p>
               </Info>
             )}
-            <Separator className="my-6" />
+            <Separator className="mt-6" />
             {buildComments.data && (
               <CommentList comments={buildComments.data} />
             )}

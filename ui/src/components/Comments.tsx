@@ -123,7 +123,7 @@ export const Comment = ({ c }: { c: IComment }) => {
 
   return (
     <div className="flex flex-col">
-      <div className=" p-6 flex  gap-4">
+      <div className="md:p-6 py-6 flex  gap-4">
         <div className="w-[18px] flex flex-col items-center mt-1 ">
           {isLiked ? (
             <Button
@@ -150,14 +150,16 @@ export const Comment = ({ c }: { c: IComment }) => {
         </div>
 
         <div className="flex flex-col w-full">
-          <p className="text-foreground whitespace-pre-wrap">{c.text}</p>
+          <p className="text-card-foreground whitespace-pre-wrap bg-card p-3 rounded-md">
+            {c.text}
+          </p>
 
           <footer className="mt-2">
             <div className="flex items-center ">
               <Avatar className="w-6 h-6 mr-2">
                 <AvatarImage src={c.author?.image_url} />
               </Avatar>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-sm hidden md:inline">
                 {c.author?.username}
               </p>
               <Dot className="text-muted-foreground/50" />
@@ -212,7 +214,7 @@ const Reply = ({ r }: { r: IComment }) => {
 
   const isLiked = r.likes?.includes(r.author?.uuid ?? "");
   return (
-    <div className="rounded-xl flex  gap-4  ml-20" key={r.uuid}>
+    <div className="rounded-xl flex  gap-4  md:ml-20 ml-6" key={r.uuid}>
       <div className="w-[18px] flex flex-col items-center mt-1 ">
         {isLiked ? (
           <Button
@@ -239,14 +241,16 @@ const Reply = ({ r }: { r: IComment }) => {
       </div>
 
       <div className="flex flex-col w-full">
-        <p className="text-foreground whitespace-pre-wrap">{r.text}</p>
+        <p className="text-card-foreground whitespace-pre-wrap bg-card p-3 rounded-md">
+          {r.text}
+        </p>
 
         <footer className="mt-2">
           <div className="flex items-center ">
             <Avatar className="w-6 h-6 mr-2">
               <AvatarImage src={r.author?.image_url} />
             </Avatar>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm hidden md:flex">
               {r.author?.username}
             </p>
             <Dot className="text-muted-foreground/50" />
