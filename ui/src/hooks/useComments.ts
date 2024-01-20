@@ -4,7 +4,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
 
-export const useComments = (buildId: string) => {
+export const useComments = ({
+  buildId,
+  replyId,
+}: {
+  buildId: string;
+  replyId?: string;
+}) => {
   const context = useQueryClient();
   const { getToken } = useAuth();
   const post = useMutation({
@@ -14,6 +20,7 @@ export const useComments = (buildId: string) => {
         {
           comment,
           build_id: buildId,
+          reply_id: replyId,
         },
         {
           headers: {

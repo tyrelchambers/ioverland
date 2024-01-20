@@ -334,7 +334,7 @@ const Build = () => {
           <Separator />
 
           <section className="my-10 max-w-3xl">
-            <H2>Comments</H2>
+            <H2 className="mb-8">Comments</H2>
             <CommentInput buildId={build?.uuid} />
             <Separator className="my-6" />
             {buildComments.data && (

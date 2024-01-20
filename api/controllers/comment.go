@@ -8,12 +8,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lucsky/cuid"
 )
 
 func CreateComment(c *gin.Context) {
 	var body struct {
-		Comment string `json:"comment"`
-		BuildId string `json:"build_id"`
+		Comment string  `json:"comment"`
+		BuildId string  `json:"build_id"`
+		ReplyId *string `json:"reply_id"`
 	}
 
 	user := utils.UserFromContext(c)
@@ -27,6 +29,12 @@ func CreateComment(c *gin.Context) {
 		Text:     body.Comment,
 		AuthorId: user.Uuid,
 		BuildId:  body.BuildId,
+		Uuid:     cuid.New(),
+		ReplyId:  body.ReplyId,
+	}
+
+	if body.ReplyId != nil {
+		comment.ReplyId = body.ReplyId
 	}
 
 	err := comment_service.Create(dbConfig.Client, comment)

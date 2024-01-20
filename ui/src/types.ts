@@ -221,10 +221,11 @@ export interface IComment {
   uuid: string;
   text: string;
   author: User;
-  replies: Comment[] | null;
+  replies: IComment[] | null;
   created_at: Date;
   deleted: boolean;
   likes: string[];
   build_id: string;
   build: Build;
+  reply_id?: string;
 }
