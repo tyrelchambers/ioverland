@@ -97,7 +97,11 @@ export const useComments = ({
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        toast.error(error.response?.data.error);
+        toast.error(error.response?.data.error || error.response?.data);
+      } else {
+        toast.error("Error", {
+          description: "Something went wrong. Please try again.",
+        });
       }
     },
   });

@@ -4,7 +4,7 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Avatar, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useComments } from "@/hooks/useComments";
 import { IComment, newComment } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +15,7 @@ import {
   ChevronUp,
   CircleEllipsis,
   Dot,
+  UserIcon,
 } from "lucide-react";
 import { format, formatDistanceToNowStrict } from "date-fns";
 import { useState } from "react";
@@ -97,6 +98,9 @@ export const CommentInput = ({
           <div className="mt-6 flex justify-between bg-card p-3 items-center">
             <Avatar className="w-6 h-6 mr-2">
               <AvatarImage src={user?.imageUrl} />
+              <AvatarFallback>
+                <UserIcon size={14} />
+              </AvatarFallback>
             </Avatar>
             <div className="flex gap-3">
               {replyId && (
@@ -120,7 +124,7 @@ export const CommentInput = ({
 
 export const CommentList = ({ comments }: { comments: IComment[] }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-3">
       {comments.map((c) => (
         <Comment key={c.uuid} c={c} />
       ))}
@@ -136,10 +140,11 @@ export const Comment = ({ c }: { c: IComment }) => {
   const { isSignedIn, user } = useUser();
 
   const isLiked = c.likes?.includes(c.author?.uuid ?? "");
-  const canDelete = user?.id === c.author?.uuid;
+  const canDelete =
+    user?.id === c.author?.uuid || user?.id === c.build?.user_id;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-3">
       {!c.deleted ? (
         <div className="py-6 flex  gap-4">
           <div className="w-[18px] flex flex-col items-center mt-1 ">
@@ -176,6 +181,9 @@ export const Comment = ({ c }: { c: IComment }) => {
               <div className="flex items-center ">
                 <Avatar className="w-6 h-6 mr-2">
                   <AvatarImage src={c.author?.image_url} />
+                  <AvatarFallback>
+                    <UserIcon size={14} />
+                  </AvatarFallback>
                 </Avatar>
                 <p className="text-muted-foreground text-sm hidden md:inline">
                   {c.author?.username}
@@ -245,7 +253,8 @@ const Reply = ({ r }: { r: IComment }) => {
   const { isSignedIn, user } = useUser();
 
   const isLiked = r.likes?.includes(r.author?.uuid ?? "");
-  const canDelete = user?.id === r.author?.uuid;
+  const canDelete =
+    user?.id === r.author?.uuid || user?.id === r.build?.user_id;
 
   if (r.deleted) return <DeletedComment isReply />;
 
@@ -285,6 +294,9 @@ const Reply = ({ r }: { r: IComment }) => {
           <div className="flex items-center ">
             <Avatar className="w-6 h-6 mr-2">
               <AvatarImage src={r.author?.image_url} />
+              <AvatarFallback>
+                <UserIcon size={14} />
+              </AvatarFallback>
             </Avatar>
             <p className="text-muted-foreground text-sm hidden md:flex">
               {r.author?.username}

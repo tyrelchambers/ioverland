@@ -62,9 +62,11 @@ func Delete(db *gorm.DB, uuid string, user *models.User) error {
 		return err
 	}
 
-	if build.UserId != user.Uuid {
+	fmt.Println((build.UserId != user.Uuid) != (comment.AuthorId != user.Uuid))
+	if (build.UserId != user.Uuid) == (comment.AuthorId != user.Uuid) {
 		return errors.New("User does not have permission to delete this comment")
 	}
 
 	return db.Table("comments").Where("uuid = ?", uuid).Select("deleted").Update("deleted", true).Error
+
 }

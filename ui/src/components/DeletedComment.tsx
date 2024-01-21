@@ -5,7 +5,7 @@ const DeletedComment = ({ isReply }: { isReply?: boolean }) => {
   return (
     <div
       className={cn(
-        "bg-card border border-border p-3 rounded-md my-6",
+        "bg-card border border-border p-3 rounded-md ",
         isReply && "md:ml-20 ml-6"
       )}
     >
