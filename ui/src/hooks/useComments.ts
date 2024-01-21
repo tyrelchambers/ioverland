@@ -84,5 +84,23 @@ export const useComments = ({
     },
   });
 
-  return { post, likeComment: like, dislikeComment };
+  const deleteComment = useMutation({
+    mutationFn: async ({ comment_id }: { comment_id: string }) => {
+      return request.delete(`/api/comment/${comment_id}/delete`, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["build_comments", buildId] });
+    },
+    onError: (error) => {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.error);
+      }
+    },
+  });
+
+  return { post, likeComment: like, dislikeComment, deleteComment };
 };

@@ -157,9 +157,9 @@ func main() {
 	billingG.POST("/portal", AuthRequired, controllers.CreateCustomerPortal)
 
 	commentG.POST("/create", AuthRequired, controllers.CreateComment)
-	// commentG.POST("/update", AuthRequired, controllers.UpdateComment)
 	commentG.PATCH("/:comment_id/like", AuthRequired, controllers.LikeComment)
 	commentG.PATCH("/:comment_id/dislike", AuthRequired, controllers.RemoveLike)
+	commentG.DELETE("/:comment_id/delete", AuthRequired, controllers.DeleteComment)
 
 	uploadG.POST("/process", UploadAuth, controllers.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, controllers.ProcessUpload)

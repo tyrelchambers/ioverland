@@ -2,6 +2,8 @@ package comment_service
 
 import (
 	"api/models"
+	"api/services/build_service"
+	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
@@ -44,4 +46,25 @@ func GetReplies(db *gorm.DB, comment_id string) ([]*models.Comment, error) {
 	err := db.Table("comments").Where("reply_id = ?", comment_id).Preload("Author").Preload("Build").Order("created_at desc").Find(&replies).Error
 
 	return replies, err
+}
+
+func Delete(db *gorm.DB, uuid string, user *models.User) error {
+
+	comment, err := Find(db, uuid)
+
+	if err != nil {
+		return err
+	}
+
+	build, err := build_service.GetById(db, comment.BuildId)
+
+	if err != nil {
+		return err
+	}
+
+	if build.UserId != user.Uuid {
+		return errors.New("User does not have permission to delete this comment")
+	}
+
+	return db.Table("comments").Where("uuid = ?", uuid).Select("deleted").Update("deleted", true).Error
 }

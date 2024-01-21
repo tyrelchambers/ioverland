@@ -120,3 +120,21 @@ func RemoveLike(c *gin.Context) {
 	c.String(http.StatusOK, "success")
 
 }
+
+func DeleteComment(c *gin.Context) {
+	user := utils.UserFromContext(c)
+	comment_id := c.Param("comment_id")
+
+	err := comment_service.Delete(dbConfig.Client, comment_id, user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [COMMENT] [DELETE] Error deleting comment",
+			Extra:   map[string]interface{}{"error": err.Error(), "comment_id": comment_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+}
