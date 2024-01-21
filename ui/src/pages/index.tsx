@@ -1,10 +1,12 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { H2 } from "@/components/Heading";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@clerk/nextjs";
 import {
   Bookmark,
+  CheckCircle,
   Heart,
   Lightbulb,
   MapPin,
@@ -229,7 +231,16 @@ export default function Home() {
 
             <div>
               <MessageSquare className="text-primary" size={30} />
-              <p className=" font-bold my-2 text-xl">Comment</p>
+              <p className=" font-bold my-2 text-xl">
+                Comment{" "}
+                <Badge>
+                  <CheckCircle
+                    size={14}
+                    className="text-primary-foreground mr-1"
+                  />{" "}
+                  Complete
+                </Badge>
+              </p>
               <p className="text-muted-foreground">
                 Leave comments and let others known what you think of their
                 build

@@ -16,12 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
-import {
-  NewBuildSchemaWithoutUserId,
-  newBuildSchema,
-  Media,
-  BuildPayload,
-} from "@/types";
+import { newBuildSchema, Media, BuildPayload, NewBuildSchema } from "@/types";
 import { useUser } from "@clerk/nextjs";
 
 import { Label } from "@/components/ui/label";
@@ -76,7 +71,7 @@ const Index = () => {
   const modsWatch = form.watch("modifications");
   const linksWatch = form.watch("links");
 
-  const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
+  const submitHandler = async (data: NewBuildSchema) => {
     if (!user?.id) return;
 
     const modificationsToArray = [];

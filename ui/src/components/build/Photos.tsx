@@ -9,25 +9,31 @@ const Photos = ({ photos }: { photos: Media[] | undefined }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {photos?.map((photo, i) =>
-        photo.mime_type.includes("image") ? (
-          <a
-            href={photo.url}
-            target="_blank"
-            key={photo.id}
-            className={cn(
-              "relative  w-full aspect-square overflow-hidden shadow-xl ",
-              i % 2 && "lg:mt-[100px]"
-            )}
-          >
-            <Image src={photo.url} alt="" fill className="object-cover" />
-          </a>
-        ) : (
-          <video key={photo.id} controls muted>
-            <source src={photo.url} type={photo.mime_type} />
-          </video>
-        )
-      )}
+      {photos?.map((photo, i) => (
+        <div key={photo.id} className="flex items-center x">
+          {photo.mime_type.includes("image") ? (
+            <a
+              href={photo.url}
+              target="_blank"
+              className={cn(
+                "relative  w-full aspect-square overflow-hidden h-full shadow-xl flex",
+                i % 2 && "lg:mt-[100px]"
+              )}
+            >
+              <Image src={photo.url} alt="" fill className="object-cover" />
+            </a>
+          ) : (
+            <video
+              key={photo.id}
+              controls
+              muted
+              className="flex items-center h-full"
+            >
+              <source src={photo.url} type={photo.mime_type} />
+            </video>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

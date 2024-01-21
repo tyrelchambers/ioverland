@@ -19,7 +19,6 @@ const Modifications = ({
       {Object.entries(groupModificationsByCategory(modifications)).map(
         ([i, mod]) => {
           const category = findCategory(i);
-          console.log(mod);
 
           return (
             <div key={i} className="border-border border rounded-xl p-4">
@@ -28,11 +27,11 @@ const Modifications = ({
                 {mod.map((mod) => (
                   <li
                     key={mod.id}
-                    className="flex justify-between odd:bg-muted p-2 px-4 rounded-md items-center"
+                    className="flex justify-between odd:bg-card p-2 px-4 rounded-md items-center"
                   >
                     <div className="flex flex-col">
                       <p className="font-bold">{mod.name}</p>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-card-foreground text-sm">
                         {mod.subcategory}
                       </p>
                     </div>

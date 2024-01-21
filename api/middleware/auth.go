@@ -27,5 +27,13 @@ func Authorize(c *gin.Context) (*models.User, error) {
 	// get the user, and say welcome!
 	user, err := user_service.FindUser(dbConfig.Client, sessClaims.Claims.Subject)
 
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[MIDDLEWARE] [AUTHORIZATION] [FIND USER] ",
+			Extra:   map[string]interface{}{"error": err.Error()},
+		})
+		return nil, err
+	}
+
 	return user, nil
 }

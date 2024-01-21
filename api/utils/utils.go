@@ -88,7 +88,7 @@ type CaptureErrorParams struct {
 //
 // No return value.
 func CaptureError(c *gin.Context, params *CaptureErrorParams) {
-	fmt.Println(params.Message)
+	fmt.Println(params.Message, params.Extra)
 	if hub := sentrygin.GetHubFromContext(c); hub != nil {
 		hub.WithScope(func(scope *sentry.Scope) {
 			if hasExtraKeys(params.Extra) {

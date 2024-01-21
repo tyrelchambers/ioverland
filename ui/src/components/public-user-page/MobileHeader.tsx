@@ -2,9 +2,8 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { User } from "lucide-react";
 import { H1 } from "../Heading";
-import { Account, Media, PublicProfile } from "@/types";
+import { Media, PublicProfile } from "@/types";
 import Image from "next/image";
-import { Button } from "../ui/button";
 import { format } from "date-fns";
 import FollowBtn from "../FollowBtn";
 
