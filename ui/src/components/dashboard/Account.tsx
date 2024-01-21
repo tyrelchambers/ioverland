@@ -35,7 +35,7 @@ const Account = () => {
   const getPortalLink = async () => {
     const data = await createPortal.mutateAsync();
 
-    window.location.href = data.url;
+    window.open(data, "_blank");
   };
 
   const deleteHandler = () => {

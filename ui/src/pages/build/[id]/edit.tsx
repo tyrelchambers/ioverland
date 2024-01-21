@@ -251,7 +251,7 @@ const Edit = () => {
         <Form {...form}>
           <form
             className="flex flex-col gap-4"
-            onSubmit={form.handleSubmit(submitHandler, console.log)}
+            onSubmit={form.handleSubmit(submitHandler)}
           >
             <header className="flex justify-between items-center flex-col md:flex-row">
               <H1>Editing &quot;{build?.name}&quot;</H1>

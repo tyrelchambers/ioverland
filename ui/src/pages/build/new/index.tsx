@@ -141,7 +141,7 @@ const Index = () => {
           <Form {...form}>
             <form
               className="flex flex-col gap-4 mt-10"
-              onSubmit={form.handleSubmit(submitHandler, console.log)}
+              onSubmit={form.handleSubmit(submitHandler)}
             >
               <div className="flex flex-col">
                 <Label className="mb-2">Banner</Label>

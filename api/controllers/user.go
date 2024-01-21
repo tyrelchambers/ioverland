@@ -324,6 +324,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Banner    *models.Media  `json:"banner"`
 		Uuid      string         `json:"uuid"`
 		Bio       string         `json:"bio"`
+		Plan      string         `json:"plan"`
 	}
 
 	username := c.Param("username")
@@ -350,6 +351,16 @@ func GetUserPublicProfile(c *gin.Context) {
 		return
 	}
 
+	sub, err := user_service.GetStripeSubscription(user.CustomerId)
+
+	var sub_name string
+
+	if sub != nil {
+		sub_name = sub.Plan.Product.Name
+	} else {
+		sub_name = ""
+	}
+
 	userResp := UserResp{
 		Username:  &user.Username,
 		Avatar:    user.ImageUrl,
@@ -359,6 +370,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Banner:    user.Banner,
 		Uuid:      user.Uuid,
 		Bio:       user.Bio,
+		Plan:      sub_name,
 	}
 
 	for _, build := range user.Builds {

@@ -27,8 +27,6 @@ export const useDomainUser = ({
           },
         })
         .then((res) => {
-          console.log(res.data.builds);
-
           return res.data;
         });
     },
@@ -88,7 +86,7 @@ export const useDomainUser = ({
   });
 
   const createPortal = useMutation({
-    mutationFn: async (): Promise<{ url: string }> => {
+    mutationFn: async (): Promise<string> => {
       return request
         .post(
           `/api/billing/portal`,

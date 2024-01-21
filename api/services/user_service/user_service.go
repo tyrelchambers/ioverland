@@ -245,36 +245,22 @@ func (u User) ResetDeletedAt(db *gorm.DB) error {
 	return db.Model(&u).Update("deleted_at", nil).Error
 }
 
-func GetCurrentUserWithStripe(id string) (GetCurrentUserWithStripeResponse, error) {
-
-	var resp GetCurrentUserWithStripeResponse
+func GetStripeSubscription(customer_id string) (*stripe.Subscription, error) {
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 
 	stripe.Key = stripe_key
 
-	domainUser, err := FindUser(dbConfig.Client, id)
+	params := &stripe.CustomerParams{}
+	params.AddExpand("subscriptions.data.plan.product")
+
+	cus, err := customer.Get(customer_id, params)
 
 	if err != nil {
-		return resp, err
+		return nil, err
 	}
 
-	resp.User = domainUser
-
-	if domainUser.CustomerId != "" {
-		params := &stripe.CustomerParams{}
-		params.AddExpand("subscriptions.data.plan.product")
-
-		cus, err := customer.Get(domainUser.CustomerId, params)
-
-		if err != nil {
-			return resp, err
-		}
-		resp.Customer = cus
-
-	}
-
-	return resp, nil
+	return cus.Subscriptions.Data[0], nil
 
 }
 
