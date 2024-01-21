@@ -4,7 +4,6 @@ import (
 	"api/models"
 	"api/services/build_service"
 	"errors"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -27,7 +26,6 @@ func GetComments(db *gorm.DB, build_id string) ([]*models.Comment, error) {
 
 	for _, comment := range comments {
 		replies, _ := GetReplies(db, comment.Uuid)
-		fmt.Println("####", replies)
 		comment.Replies = replies
 	}
 
@@ -62,7 +60,6 @@ func Delete(db *gorm.DB, uuid string, user *models.User) error {
 		return err
 	}
 
-	fmt.Println((build.UserId != user.Uuid) != (comment.AuthorId != user.Uuid))
 	if (build.UserId != user.Uuid) == (comment.AuthorId != user.Uuid) {
 		return errors.New("User does not have permission to delete this comment")
 	}
