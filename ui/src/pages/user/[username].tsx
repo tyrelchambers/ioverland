@@ -20,7 +20,7 @@ const Profile = () => {
     if (publicUser.data) {
       viewProfile.mutate();
     }
-  }, [publicUser.data]);
+  }, [publicUser.isFetched]);
 
   if (publicUser.isError) return <Custom404 />;
   if (!publicUser.data) return null;

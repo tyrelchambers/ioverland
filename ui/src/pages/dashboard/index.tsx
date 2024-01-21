@@ -35,7 +35,6 @@ const Dashboard = () => {
       },
     });
   };
-  console.log(user);
 
   return (
     <div>
@@ -129,7 +128,6 @@ const Dashboard = () => {
                                 {build.likes?.length ?? 0}
                               </p>
                             </div>
-                            {console.log(build.comments)}
                             <div className="flex text-muted-foreground items-center">
                               <MessageCircle size={16} className="mr-1" />
                               <p className="text-sm">

@@ -46,7 +46,6 @@ import {
   EditBuildResponse,
   Media,
   NewBuildSchema,
-  NewBuildSchemaWithoutUserId,
   Trip,
   BuildPayload,
   newBuildSchema,
@@ -149,7 +148,7 @@ const Edit = () => {
 
   if (!build || !account) return null;
 
-  const submitHandler = async (data: NewBuildSchemaWithoutUserId) => {
+  const submitHandler = async (data: NewBuildSchema) => {
     if (!user?.id) return;
 
     const modificationsToArray = [];
@@ -176,7 +175,7 @@ const Edit = () => {
 
     const payload: BuildPayload = {
       ...data,
-      id: build?.id,
+      uuid: build?.uuid,
       trips: tripsToArray,
       links: linksToArray,
       modifications: modificationsToArray,

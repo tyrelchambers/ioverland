@@ -6,12 +6,13 @@ import { Loader2 } from "lucide-react";
 
 const FollowBtn = ({ data }: { data: PublicProfile }) => {
   const { follow, user, account, unfollow } = useDomainUser();
+  console.log(data.followers);
 
   return (
     <>
       {user.data && user.data?.uuid !== data.uuid && (
         <>
-          {account.data?.following?.find((d) => d.uuid === data.uuid) ? (
+          {data?.followers?.find((d) => d.uuid === user.data.uuid) ? (
             <Button
               type="button"
               variant="secondary"
