@@ -115,8 +115,7 @@ func Unbookmark(c *gin.Context) {
 }
 
 func GetCurrentUser(c *gin.Context) {
-	userParam, _ := c.Get("user")
-	user := userParam.(*models.User)
+	user := utils.UserFromContext(c)
 
 	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
@@ -134,7 +133,6 @@ func GetCurrentUser(c *gin.Context) {
 
 func GetAccount(c *gin.Context) {
 	user := utils.UserFromContext(c)
-
 	acc, err := user_service.GetUserAccount(dbConfig.Client, user.Uuid)
 
 	if err != nil {
@@ -322,7 +320,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Builds    []models.Build `json:"builds"`
 		CreatedAt time.Time      `json:"created_at"`
 		Views     int            `json:"views"`
-		Followers []models.User  `json:"followers"`
+		Followers []*models.User `json:"followers"`
 		Banner    *models.Media  `json:"banner"`
 		Uuid      string         `json:"uuid"`
 		Bio       string         `json:"bio"`

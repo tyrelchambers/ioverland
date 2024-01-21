@@ -4,6 +4,7 @@ import (
 	dbConfig "api/db"
 	"api/models"
 	"api/services/build_service"
+	"api/services/comment_service"
 	"api/services/media_service"
 	"api/services/user_service"
 	"api/utils"
@@ -18,7 +19,7 @@ type EditResponse struct {
 	Can_be_public bool         `json:"can_be_public"`
 }
 
-func countVisibleBuilds(user user_service.AccountResponse) int {
+func countVisibleBuilds(user *models.User) int {
 	count := 0
 
 	for _, build := range user.Builds {
@@ -30,7 +31,7 @@ func countVisibleBuilds(user user_service.AccountResponse) int {
 	return count
 }
 
-func canBePublic(user user_service.AccountResponse) bool {
+func canBePublic(user *models.User) bool {
 	if user.MaxPublicBuilds == -1 {
 		return true
 	}
@@ -159,7 +160,7 @@ func UpdateBuild(c *gin.Context) {
 		return
 	}
 
-	usr, err := user_service.GetUserAccount(dbConfig.Client, user.Uuid)
+	usr, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -356,7 +357,7 @@ func BuildEditSettings(c *gin.Context) {
 		return
 	}
 
-	account, err := user_service.GetUserAccount(dbConfig.Client, build.UserId)
+	account, err := user_service.FindUser(dbConfig.Client, build.UserId)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -393,4 +394,21 @@ func DeleteTrip(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "success")
+}
+
+func GetComments(c *gin.Context) {
+	id := c.Param("build_id")
+
+	comments, err := comment_service.GetComments(dbConfig.Client, id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [GETCOMMENTS] Error getting comments",
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
 }

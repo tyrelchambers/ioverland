@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 const trip = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
   year: z.string().optional(),
@@ -20,7 +21,6 @@ const modification = z.object({
 export type Modification = z.infer<typeof modification>;
 
 export const newBuildSchema = z.object({
-  uuid: z.string().optional(),
   name: z.string(),
   description: z.string().optional(),
   budget: z.string().optional(),
@@ -39,8 +39,6 @@ export const newBuildSchema = z.object({
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;
 
-export type NewBuildSchemaWithoutUserId = Omit<NewBuildSchema, "user_id">;
-
 export const media = z.object({
   id: z.string().optional(),
   url: z.string(),
@@ -50,6 +48,41 @@ export const media = z.object({
 });
 
 export type Media = z.infer<typeof media>;
+
+export const buildPayload = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  budget: z.string().optional(),
+  trips: z.array(trip),
+  links: z.array(z.string()),
+  vehicle: z.object({
+    model: z.string().optional(),
+    make: z.string().optional(),
+    year: z.string().optional(),
+  }),
+  modifications: z.array(modification),
+  public: z.boolean(),
+  user_id: z.string(),
+  banner: media.optional(),
+  photos: z.array(media).optional(),
+  uuid: z.string().optional(),
+});
+
+export type BuildPayload = z.infer<typeof buildPayload>;
+
+export const commentSchema = z.object({
+  uuid: z.string(),
+  text: z.string(),
+  created_at: z.date(),
+  deleted: z.boolean(),
+  likes: z.array(z.string()),
+  build_id: z.string(),
+  reply_id: z.string().optional(),
+});
+
+commentSchema.extend({
+  replies: z.array(commentSchema),
+});
 
 export const buildSchema = z.object({
   name: z.string(),
@@ -68,23 +101,54 @@ export const buildSchema = z.object({
   photos: z.array(media).optional(),
   banner: media.optional(),
   id: z.string().optional(),
-  uuid: z.string().optional(),
-  views: z.number().optional(),
-  likes: z.array(z.string()).optional().nullable(),
+  uuid: z.string(),
+  views: z.number(),
+  likes: z.array(z.string()).nullable(),
+  comments: z.array(commentSchema),
+});
+
+commentSchema.extend({
+  build: buildSchema,
 });
 
 export type Build = z.infer<typeof buildSchema>;
 
-const domainUser = z.object({
+const userBase = z.object({
   uuid: z.string(),
   builds: z.array(buildSchema),
   bookmarks: z.array(buildSchema),
-  deleted_on: z.date(),
-  username: z.string(),
+  customer_id: z.string(),
+  deleted_at: z.date().nullable(),
+  max_public_builds: z.number(),
+  views: z.number(),
+  created_at: z.date(),
+  bio: z.string(),
+  banner: media.optional(),
+  username: z.string().optional(),
   image_url: z.string(),
 });
 
-export type DomainUser = z.infer<typeof domainUser>;
+const domainUser = z
+  .object({
+    followers: z.array(userBase),
+    following: z.array(userBase),
+  })
+  .and(userBase);
+
+export type DomainUser = {
+  username: string;
+  avatar: string;
+  builds: Build[];
+  created_at: Date;
+  views: number;
+  followers: DomainUser[];
+  following: DomainUser[];
+  bio: string;
+  banner: Media | undefined;
+  uuid: string;
+  image_url: string;
+  bookmarks: Build[];
+};
 
 const account = z.object({
   has_subscription: z.boolean(),
@@ -109,8 +173,10 @@ const account = z.object({
     bio: z.string().optional(),
     username: z.string().optional(),
   }),
-  followers: z.array(domainUser),
-  following: z.array(domainUser),
+});
+
+commentSchema.extend({
+  author: account,
 });
 
 export type Account = z.infer<typeof account>;
@@ -149,6 +215,12 @@ export type UpdateProfile = z.infer<typeof updateProfile>;
 export interface UpdateProfileWithBanner extends UpdateProfile {
   banner?: Omit<Media, "uuid">;
 }
+
+export const newComment = z.object({
+  comment: z.string().min(1),
+});
+
+export type NewComment = z.infer<typeof newComment>;
 export interface EditBuildResponse {
   build: Build;
   can_be_public: boolean;
@@ -160,11 +232,6 @@ export interface Route {
   label: string;
 }
 
-export interface BuildPayload extends Omit<Build, "banner" | "photos"> {
-  banner?: Omit<Media, "uuid">;
-  photos?: Omit<Media, "uuid">[];
-}
-
 export interface Plan {
   name: string;
   tagline: string;
@@ -174,20 +241,6 @@ export interface Plan {
   featured?: boolean;
   plan_id?: string;
   redirect_link: string;
-}
-
-export interface User {
-  uuid: string;
-  builds: Build[];
-  bookmarks: Build[];
-  customer_id: string;
-  deleted_at: Date;
-  max_public_builds: number;
-  views: number;
-  created_at: Date;
-  bio: string;
-  banner: Media | undefined;
-  username?: string;
 }
 
 export const isBuild = (obj: any): obj is Build => {
@@ -209,3 +262,16 @@ export const isUser = (obj: any): obj is ClerkUser => {
 
   return false;
 };
+
+export interface IComment {
+  uuid: string;
+  text: string;
+  author: DomainUser;
+  replies: IComment[] | null;
+  created_at: Date;
+  deleted: boolean;
+  likes: string[];
+  build_id: string;
+  build: Build;
+  reply_id?: string;
+}

@@ -1,5 +1,7 @@
+import { CommentInput, CommentList } from "@/components/Comments";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
+import Info from "@/components/Info";
 import VideoWithLoader from "@/components/VideoWithLoader";
 import Links from "@/components/build/Links";
 import Modifications from "@/components/build/Modifications";
@@ -47,7 +49,8 @@ const Build = () => {
   const { user: domainUser, bookmark, removeBookmark } = useDomainUser();
 
   const paramId = router.query.id as string;
-  const { getById, incrementView, likeBuild, dislikeBuild } = useBuild(paramId);
+  const { getById, incrementView, likeBuild, dislikeBuild, buildComments } =
+    useBuild(paramId);
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const build = getById.data;
@@ -64,6 +67,8 @@ const Build = () => {
   useEffect(() => {
     if (paramId && user?.id) {
       setLiked(hasLiked(build?.likes, user?.id));
+    } else {
+      setLiked(false);
     }
   }, [paramId, build?.likes, user?.id]);
 
@@ -123,12 +128,16 @@ const Build = () => {
 
   const LikeButton = () =>
     liked ? (
-      <Button variant="destructive" onClick={dislikeHandler}>
+      <Button
+        variant="destructive"
+        onClick={dislikeHandler}
+        disabled={!isSignedIn}
+      >
         <HeartOff size={20} className="mr-2" />{" "}
         <span className="font-bold">{build?.likes?.length}</span>
       </Button>
     ) : (
-      <Button variant="ghost" onClick={likeHandler}>
+      <Button variant="ghost" onClick={likeHandler} disabled={!isSignedIn}>
         <Heart size={20} className="text-muted-foreground mr-2" />{" "}
         <span className="font-bold">{build?.likes?.length || 0}</span>
       </Button>
@@ -329,6 +338,22 @@ const Build = () => {
               <Links links={build?.links} />
             </div>
           </div>
+          <Separator />
+
+          <section className="my-10 lg:w-1/2 w-full">
+            <H2 className="mb-8">Comments</H2>
+            {isSignedIn ? (
+              <CommentInput buildId={build?.uuid} />
+            ) : (
+              <Info>
+                <p>Sign in to comment</p>
+              </Info>
+            )}
+            <Separator className="mt-6" />
+            {buildComments.data && (
+              <CommentList comments={buildComments.data} />
+            )}
+          </section>
         </section>
       </section>
     </section>

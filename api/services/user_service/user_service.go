@@ -3,7 +3,6 @@ package user_service
 import (
 	dbConfig "api/db"
 	"api/models"
-	"api/services/build_service"
 	"api/utils"
 	"time"
 
@@ -42,15 +41,12 @@ type AccountResponse struct {
 	BuildsRemaining int64           `json:"builds_remaining"`
 	PlanLimits      PlanLimit       `json:"plan_limits"`
 	MaxBuilds       int64           `json:"max_builds"`
-	Builds          []models.Build  `json:"builds"`
 	MaxPublicBuilds int             `json:"max_public_builds"`
 	User            struct {
 		Bio      string        `json:"bio"`
 		Banner   *models.Media `json:"banner"`
 		Username *string       `json:"username"`
 	} `json:"user"`
-	Followers []models.User `json:"followers"`
-	Following []models.User `json:"following"`
 }
 
 var Plan_limits = map[string]PlanLimit{
@@ -91,30 +87,6 @@ func GetUserAccount(db *gorm.DB, user_id string) (AccountResponse, error) {
 	if err != nil {
 		return resp, err
 	}
-
-	userBuilds, err := build_service.AllByUser(dbConfig.Client, user_id)
-
-	if err != nil {
-		return resp, err
-	}
-
-	resp.Builds = userBuilds
-
-	followers, err := GetFollowers(dbConfig.Client, domainUser)
-
-	if err != nil {
-		return resp, err
-	}
-
-	resp.Followers = followers
-
-	following, err := GetFollowing(dbConfig.Client, domainUser)
-
-	if err != nil {
-		return resp, err
-	}
-
-	resp.Following = following
 
 	var cus stripe.Customer
 
@@ -218,8 +190,29 @@ func Unbookmark(db *gorm.DB, u *models.User, build models.Build) error {
 func FindUser(db *gorm.DB, uuid string) (*models.User, error) {
 	var user *models.User
 
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
-	return user, err
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Builds.Comments").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	followers, err := GetFollowers(db, user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user.Followers = followers
+
+	following, err := GetFollowing(db, user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user.Following = following
+
+	return user, nil
 }
 
 func Update(db *gorm.DB, u *models.User) error {
@@ -296,7 +289,7 @@ func RemoveImage(db *gorm.DB, media_id int) error {
 }
 
 func Follow(db *gorm.DB, user *models.User, other *models.User) error {
-	db.Model(&user).Association("Follows").Append(&other)
+	db.Table("user_follows").Create(map[string]interface{}{"user_uuid": user.Uuid, "follower_uuid": other.Uuid})
 
 	if db.Error != nil {
 		return db.Error
@@ -306,7 +299,7 @@ func Follow(db *gorm.DB, user *models.User, other *models.User) error {
 }
 
 func Unfollow(db *gorm.DB, user *models.User, other *models.User) error {
-	db.Model(&user).Association("Follows").Delete(&other)
+	db.Table("user_follows").Where("user_uuid = ? AND follower_uuid = ?", user.Uuid, other.Uuid).Delete(map[string]interface{}{"user_uuid": user.Uuid, "follower_uuid": other.Uuid})
 
 	if db.Error != nil {
 		return db.Error
@@ -315,16 +308,16 @@ func Unfollow(db *gorm.DB, user *models.User, other *models.User) error {
 	return nil
 }
 
-func GetFollowers(db *gorm.DB, user *models.User) ([]models.User, error) {
-	var followers []models.User
-	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.user_uuid WHERE follow_uuid = ?", user.Uuid).Scan(&followers).Error
+func GetFollowers(db *gorm.DB, user *models.User) ([]*models.User, error) {
+	var followers []*models.User
+	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.user_uuid WHERE follower_uuid = ?", user.Uuid).Scan(&followers).Error
 
 	return followers, err
 }
 
-func GetFollowing(db *gorm.DB, user *models.User) ([]models.User, error) {
-	var following []models.User
-	err := db.Model(&user).Select("users.image_url, users.username, users.uuid").Association("Follows").Find(&following)
+func GetFollowing(db *gorm.DB, user *models.User) ([]*models.User, error) {
+	var following []*models.User
+	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.follower_uuid WHERE user_uuid = ?", user.Uuid).Scan(&following).Error
 
 	return following, err
 }

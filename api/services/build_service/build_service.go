@@ -22,7 +22,11 @@ func (b *Build) Create(db *gorm.DB) error {
 }
 
 func IncrementViews(db *gorm.DB, b models.Build) error {
-	db.Model(&b).Where("uuid = ?", b.Uuid).Update("views", b.Views+1)
+	db.Model(&b).Select("views").Update("views", b.Views+1)
+
+	if db.Error != nil {
+		return db.Error
+	}
 	return nil
 }
 
@@ -72,7 +76,7 @@ func AllByUser(db *gorm.DB, user_id string) ([]models.Build, error) {
 
 	var builds []models.Build
 
-	err := db.Order("name").Preload("Banner", "type='banner'").Where("user_id = ?", user_id).Find(&builds).Error
+	err := db.Order("name").Preload("Banner", "type='banner'").Where("user_id = ?", user_id).Preload("Comments").Find(&builds).Error
 
 	if err != nil {
 		return nil, err

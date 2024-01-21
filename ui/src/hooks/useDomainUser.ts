@@ -26,7 +26,11 @@ export const useDomainUser = ({
             Authorization: `Bearer ${await getToken()}`,
           },
         })
-        .then((res) => res.data);
+        .then((res) => {
+          console.log(res.data.builds);
+
+          return res.data;
+        });
     },
     enabled: !!userId,
   });
@@ -239,6 +243,7 @@ export const useDomainUser = ({
         .then((res) => res.data);
     },
     onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["user"] });
       context.invalidateQueries({ queryKey: ["account"] });
     },
     onError: (error) => {
@@ -269,6 +274,7 @@ export const useDomainUser = ({
         .then((res) => res.data);
     },
     onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["user"] });
       context.invalidateQueries({ queryKey: ["account"] });
     },
     onError: (error) => {

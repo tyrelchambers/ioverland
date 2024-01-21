@@ -2,12 +2,9 @@ import Link from "next/link";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { User } from "lucide-react";
+import { DomainUser } from "@/types";
 
-const FollowItem = ({
-  user,
-}: {
-  user: { username: string; image_url: string; uuid: string };
-}) => {
+const FollowItem = ({ user }: { user: DomainUser }) => {
   return (
     <Link
       href={`/user/${user.username}`}

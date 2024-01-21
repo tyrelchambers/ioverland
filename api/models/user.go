@@ -17,7 +17,9 @@ type User struct {
 	CreatedAt       time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	Bio             string         `gorm:"type:text" json:"bio"`
 	Banner          *Media         `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:UserId;references:Uuid" json:"banner"`
-	Follows         []*User        `gorm:"many2many:user_follows" json:"followers"`
+	Followers       []*User        `gorm:"many2many:user_follows" json:"followers"`
+	Following       []*User        `gorm:"many2many:user_follows" json:"following"`
 	Username        string         `json:"username"`
 	ImageUrl        string         `json:"image_url"`
+	Comments        []*Comment     ` gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:AuthorId;references:Uuid" json:"comments"`
 }
