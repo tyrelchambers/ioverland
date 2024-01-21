@@ -2,7 +2,7 @@ import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
 import Header from "@/components/Header";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Eye, Heart } from "lucide-react";
+import { Eye, Heart, MessageCircle } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,7 @@ const Dashboard = () => {
       },
     });
   };
+  console.log(user);
 
   return (
     <div>
@@ -126,6 +127,13 @@ const Dashboard = () => {
                               <Heart size={16} className="mr-1" />
                               <p className="text-sm">
                                 {build.likes?.length ?? 0}
+                              </p>
+                            </div>
+                            {console.log(build.comments)}
+                            <div className="flex text-muted-foreground items-center">
+                              <MessageCircle size={16} className="mr-1" />
+                              <p className="text-sm">
+                                {build.comments?.length ?? 0}
                               </p>
                             </div>
                             {build.public && <Badge>public</Badge>}

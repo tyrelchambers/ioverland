@@ -76,7 +76,7 @@ func AllByUser(db *gorm.DB, user_id string) ([]models.Build, error) {
 
 	var builds []models.Build
 
-	err := db.Order("name").Preload("Banner", "type='banner'").Where("user_id = ?", user_id).Find(&builds).Error
+	err := db.Order("name").Preload("Banner", "type='banner'").Where("user_id = ?", user_id).Preload("Comments").Find(&builds).Error
 
 	if err != nil {
 		return nil, err

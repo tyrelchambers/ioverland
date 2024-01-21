@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 const trip = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
   year: z.string().optional(),
@@ -51,6 +52,20 @@ export const media = z.object({
 
 export type Media = z.infer<typeof media>;
 
+export const commentSchema = z.object({
+  uuid: z.string(),
+  text: z.string(),
+  created_at: z.date(),
+  deleted: z.boolean(),
+  likes: z.array(z.string()),
+  build_id: z.string(),
+  reply_id: z.string().optional(),
+});
+
+commentSchema.extend({
+  replies: z.array(commentSchema),
+});
+
 export const buildSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
@@ -71,9 +86,14 @@ export const buildSchema = z.object({
   uuid: z.string(),
   views: z.number(),
   likes: z.array(z.string()).nullable(),
+  comments: z.array(commentSchema),
 });
 
-export type Build = z.infer<typeof buildSchema> & { comments: Comment[] };
+commentSchema.extend({
+  build: buildSchema,
+});
+
+export type Build = z.infer<typeof buildSchema>;
 
 const domainUser = z.object({
   uuid: z.string(),
@@ -111,6 +131,10 @@ const account = z.object({
   }),
   followers: z.array(domainUser),
   following: z.array(domainUser),
+});
+
+commentSchema.extend({
+  author: account,
 });
 
 export type Account = z.infer<typeof account>;
