@@ -29,7 +29,7 @@ export const plans: Plan[] = [
     tagline: "For hobbyists",
     price: 0,
     plan_name: "free",
-    features: ["1 build", "6 images per build", "50MB per image"],
+    features: ["1 build", "6 images per build", "5MB per image"],
     redirect_link: "/sign-up",
   },
   {
