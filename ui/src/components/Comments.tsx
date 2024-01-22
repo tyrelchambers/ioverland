@@ -1,25 +1,16 @@
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Form, FormField, FormItem, FormMessage } from "./ui/form";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { useDomainUser } from "@/hooks/useDomainUser";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useComments } from "@/hooks/useComments";
 import { IComment, newComment } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  ArrowUp,
-  ArrowUpCircle,
-  ChevronUp,
-  CircleEllipsis,
-  Dot,
-  UserIcon,
-} from "lucide-react";
-import { format, formatDistanceToNowStrict } from "date-fns";
+import { ArrowUpCircle, Dot, UserIcon } from "lucide-react";
+import { formatDistanceToNowStrict } from "date-fns";
 import { useState } from "react";
-import { Label } from "./ui/label";
 import {
   Dialog,
   DialogClose,

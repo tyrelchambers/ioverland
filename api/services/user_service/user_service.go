@@ -48,7 +48,7 @@ type AccountResponse struct {
 var Plan_limits = map[string]PlanLimit{
 	"Free": {
 		MaxFiles:     6,
-		MaxFileSize:  "50mb",
+		MaxFileSize:  "5mb",
 		VideoSupport: false,
 		MaxBuilds:    1,
 	},

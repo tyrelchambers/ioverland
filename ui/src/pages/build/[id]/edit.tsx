@@ -455,6 +455,7 @@ const Edit = () => {
                 explicitly made public.
               </p>
             </Info>
+
             <FormField
               control={form.control}
               name="public"
@@ -464,6 +465,7 @@ const Edit = () => {
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
+                      disabled={editSettings.data?.can_be_public === false}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
