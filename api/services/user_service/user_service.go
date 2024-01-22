@@ -12,10 +12,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
-	models.User
-}
-
 type GetCurrentUserWithStripeResponse struct {
 	User     *models.User     `json:"user"`
 	Customer *stripe.Customer `json:"customer"`
@@ -196,27 +192,11 @@ func FindUser(db *gorm.DB, uuid string) (*models.User, error) {
 		return nil, err
 	}
 
-	followers, err := GetFollowers(db, user)
-
-	if err != nil {
-		return nil, err
-	}
-
-	user.Followers = followers
-
-	following, err := GetFollowing(db, user)
-
-	if err != nil {
-		return nil, err
-	}
-
-	user.Following = following
-
 	return user, nil
 }
 
 func Update(db *gorm.DB, u *models.User) error {
-	return db.Session(&gorm.Session{FullSaveAssociations: true}).Save(&u).Error
+	return db.Save(&u).Error
 }
 
 func FindUserByCustomerId(db *gorm.DB, customerId string) (*models.User, error) {
@@ -225,23 +205,23 @@ func FindUserByCustomerId(db *gorm.DB, customerId string) (*models.User, error) 
 	return user, err
 }
 
-func (u User) BuildCount(db *gorm.DB) (int64, error) {
+func BuildCount(db *gorm.DB, u *models.User) (int64, error) {
 	var builds int64
 	err := db.Table("builds").Where("user_id = ?", u.Uuid).Count(&builds).Error
 	return builds, err
 }
 
-func GetUsersToDelete(db *gorm.DB, time time.Time) ([]User, error) {
-	var users []User
+func GetUsersToDelete(db *gorm.DB, time time.Time) ([]*models.User, error) {
+	var users []*models.User
 	err := db.Unscoped().Where("deleted_at IS NOT NULL and deleted_at < ?", time).Find(&users).Error
 	return users, err
 }
 
-func (u User) PermanentlyDelete(db *gorm.DB) error {
+func PermanentlyDelete(db *gorm.DB, u *models.User) error {
 	return db.Unscoped().Delete(&u).Error
 }
 
-func (u User) ResetDeletedAt(db *gorm.DB) error {
+func ResetDeletedAt(db *gorm.DB, u *models.User) error {
 	return db.Model(&u).Update("deleted_at", nil).Error
 }
 
@@ -275,11 +255,10 @@ func RemoveImage(db *gorm.DB, media_id int) error {
 }
 
 func Follow(db *gorm.DB, user *models.User, other *models.User) error {
-	db.Table("user_follows").Create(map[string]interface{}{"user_uuid": user.Uuid, "follower_uuid": other.Uuid})
-
-	if db.Error != nil {
-		return db.Error
-	}
+	db.Table("user_follows").Create(map[string]interface{}{
+		"user_uuid":   user.Uuid,
+		"follow_uuid": other.Uuid,
+	})
 
 	return nil
 }
@@ -294,18 +273,16 @@ func Unfollow(db *gorm.DB, user *models.User, other *models.User) error {
 	return nil
 }
 
-func GetFollowers(db *gorm.DB, user *models.User) ([]*models.User, error) {
-	var followers []*models.User
-	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.user_uuid WHERE follower_uuid = ?", user.Uuid).Scan(&followers).Error
-
-	return followers, err
+func GetFollowing(db *gorm.DB, user *models.User) ([]*models.User, error) {
+	var follows []*models.User
+	err := db.Raw("SELECT Users.* FROM user_follows JOIN Users ON user_follows.follower_uuid = Users.uuid WHERE user_uuid = ?", user.Uuid).Find(&follows).Error
+	return follows, err
 }
 
-func GetFollowing(db *gorm.DB, user *models.User) ([]*models.User, error) {
-	var following []*models.User
-	err := db.Raw("SELECT users.image_url, users.username, users.uuid FROM users JOIN user_follows ON users.uuid = user_follows.follower_uuid WHERE user_uuid = ?", user.Uuid).Scan(&following).Error
-
-	return following, err
+func GetFollowers(db *gorm.DB, user *models.User) ([]*models.User, error) {
+	var follows []*models.User
+	err := db.Raw("SELECT Users.* FROM user_follows JOIN Users ON user_follows.user_uuid = Users.uuid WHERE follow_uuid = ?", user.Uuid).Find(&follows).Error
+	return follows, err
 }
 
 func FindByUsername(db *gorm.DB, username string) (*models.User, error) {

@@ -97,27 +97,25 @@ func CreateBuild(c *gin.Context) {
 		})
 	}
 
-	buildEntity := &build_service.Build{
-		Build: models.Build{
-			Name:        reqBody.Name,
-			Description: reqBody.Description,
-			Budget:      reqBody.Budget,
-			Vehicle: models.Vehicle{
-				Model: reqBody.Vehicle.Model,
-				Make:  reqBody.Vehicle.Make,
-				Year:  reqBody.Vehicle.Year,
-			},
-			Modifications: modifications,
-			Public:        reqBody.Public,
-			Trips:         trips,
-			Links:         links,
-			UserId:        reqBody.UserId,
-			Banner:        reqBody.Banner,
-			Photos:        reqBody.Photos,
+	buildEntity := &models.Build{
+		Name:        reqBody.Name,
+		Description: reqBody.Description,
+		Budget:      reqBody.Budget,
+		Vehicle: models.Vehicle{
+			Model: reqBody.Vehicle.Model,
+			Make:  reqBody.Vehicle.Make,
+			Year:  reqBody.Vehicle.Year,
 		},
+		Modifications: modifications,
+		Public:        reqBody.Public,
+		Trips:         trips,
+		Links:         links,
+		UserId:        reqBody.UserId,
+		Banner:        reqBody.Banner,
+		Photos:        reqBody.Photos,
 	}
 
-	err = buildEntity.Create(dbConfig.Client)
+	err = build_service.Create(dbConfig.Client, buildEntity)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
