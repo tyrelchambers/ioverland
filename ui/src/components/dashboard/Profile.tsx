@@ -3,7 +3,7 @@ import { H2, H3 } from "../Heading";
 import Uploader from "../Uploader";
 import { FilePondFile } from "filepond";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Trash, User } from "lucide-react";
+import { Loader2, Trash, User } from "lucide-react";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import {
   Form,
@@ -179,7 +179,9 @@ const Profile = () => {
               </FormItem>
             )}
           />
-          <Button>Save profile</Button>
+          <Button disabled={update.isPending}>
+            {update.isPending ? <Loader2 className="animate-spin" /> : "Update"}
+          </Button>
         </form>
       </Form>
     </div>
