@@ -6,6 +6,7 @@ import { Media, PublicProfile } from "@/types";
 import Image from "next/image";
 import { format } from "date-fns";
 import FollowBtn from "../FollowBtn";
+import PlanBadge from "./PlanBadge";
 
 const LargeHeader = ({
   data,
@@ -40,13 +41,14 @@ const LargeHeader = ({
           </span>
         </div>
         <div className="-translate-y-[calc(5rem+8px)] flex flex-col items-center flex-1">
-          <Avatar className="w-40 h-40 border-8 border-white  shadow-xl">
+          <Avatar className="w-40 h-40 border-8 border-white  shadow-xl mb-3">
             <AvatarFallback>
               <User />
             </AvatarFallback>
             <AvatarImage src={data.avatar} fetchPriority="high" />
           </Avatar>
-          <H1 className="mt-6 mb-3">{data.username}</H1>
+          <PlanBadge plan={data.plan} />
+          <H1 className="mb-3">{data.username}</H1>
 
           {data.bio && (
             <p className="text-muted-foreground text-sm text-center mb-3">

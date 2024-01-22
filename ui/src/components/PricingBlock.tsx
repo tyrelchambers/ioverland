@@ -28,10 +28,7 @@ const PricingBlock = ({
         </p>
       )}
       <H2 className="text-xl">{plan.name}</H2>
-      <p className="font-black text-5xl my-4">
-        ${plan.price}
-        <span className="text-lg font-normal"></span>
-      </p>
+      <p className="font-black text-5xl my-4">${plan.price}</p>
       <p className="text-xl text-muted-foreground">{plan.tagline}</p>
       {useLink ? (
         <Link href={plan.redirect_link} className="w-full">

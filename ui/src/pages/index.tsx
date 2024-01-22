@@ -231,8 +231,8 @@ export default function Home() {
 
             <div>
               <MessageSquare className="text-primary" size={30} />
-              <p className=" font-bold my-2 text-xl">
-                Comment{" "}
+              <div className=" font-bold my-2 text-xl flex items-center gap-2">
+                <p>Comment </p>
                 <Badge>
                   <CheckCircle
                     size={14}
@@ -240,7 +240,7 @@ export default function Home() {
                   />{" "}
                   Complete
                 </Badge>
-              </p>
+              </div>
               <p className="text-muted-foreground">
                 Leave comments and let others known what you think of their
                 build

@@ -74,6 +74,11 @@ func main() {
 	dbConfig.Init()
 	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{})
 
+	if err != nil {
+		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
+		os.Exit(1)
+	}
+
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))
 

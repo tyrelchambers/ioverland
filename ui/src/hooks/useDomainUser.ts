@@ -9,13 +9,14 @@ import {
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { useRouter } from "next/router";
 import { toast } from "sonner";
 export const useDomainUser = ({
   id,
   username,
 }: { id?: string; username?: string } = {}) => {
   const { getToken, userId } = useAuth();
-
+  const router = useRouter();
   const context = useQueryClient();
   const query = useQuery({
     queryKey: ["me"],
@@ -27,8 +28,6 @@ export const useDomainUser = ({
           },
         })
         .then((res) => {
-          console.log(res.data.builds);
-
           return res.data;
         });
     },
@@ -88,7 +87,7 @@ export const useDomainUser = ({
   });
 
   const createPortal = useMutation({
-    mutationFn: async (): Promise<{ url: string }> => {
+    mutationFn: async (): Promise<string> => {
       return request
         .post(
           `/api/billing/portal`,
@@ -119,7 +118,7 @@ export const useDomainUser = ({
       });
       context.invalidateQueries({ queryKey: ["me"] });
       context.invalidateQueries({ queryKey: ["account"] });
-      window.location.reload();
+      router.push("/");
     },
   });
 

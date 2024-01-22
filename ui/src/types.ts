@@ -201,6 +201,7 @@ const publicProfile = z.object({
   bio: z.string(),
   banner: media.optional(),
   uuid: z.string(),
+  plan: z.string().optional(),
 });
 
 export type PublicProfile = z.infer<typeof publicProfile>;

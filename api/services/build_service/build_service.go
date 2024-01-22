@@ -6,11 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Build struct {
-	models.Build
-}
-
-func (b *Build) Create(db *gorm.DB) error {
+func Create(db *gorm.DB, b *models.Build) error {
 
 	err := db.Omit("Likes", "Views").Create(&b).Error
 
@@ -144,7 +140,7 @@ func Delete(db *gorm.DB, b models.Build) error {
 
 func AllBuildsCount(db *gorm.DB) (int64, error) {
 	var count int64
-	err := db.Model(&Build{}).Count(&count).Error
+	err := db.Model(&models.Build{}).Count(&count).Error
 	return count, err
 }
 

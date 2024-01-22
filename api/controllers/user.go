@@ -115,6 +115,12 @@ func Unbookmark(c *gin.Context) {
 }
 
 func GetCurrentUser(c *gin.Context) {
+	var resp struct {
+		models.User
+		Followers []*models.User `json:"followers"`
+		Following []*models.User `json:"following"`
+	}
+
 	user := utils.UserFromContext(c)
 
 	u, err := user_service.FindUser(dbConfig.Client, user.Uuid)
@@ -128,7 +134,35 @@ func GetCurrentUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, u)
+	resp.User = *u
+
+	followers, err := user_service.GetFollowers(dbConfig.Client, user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETCURRENTUSER] Error getting followers",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.Followers = followers
+
+	following, err := user_service.GetFollowing(dbConfig.Client, user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETCURRENTUSER] Error getting following",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.Following = following
+
+	c.JSON(http.StatusOK, resp)
 }
 
 func GetAccount(c *gin.Context) {
@@ -253,22 +287,12 @@ func RestoreUser(c *gin.Context) {
 
 	stripe_key := utils.GoDotEnvVariable("STRIPE_TEST_KEY")
 	stripe.Key = stripe_key
-	domainUser, err := user_service.FindUser(dbConfig.Client, user.Uuid)
 
-	if err != nil {
-		utils.CaptureError(c, &utils.CaptureErrorParams{
-			Message: "[CONTROLLERS] [USER] [RESTOREUSER] Error getting user",
-			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
-		})
-		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if domainUser.CustomerId != "" {
+	if user.CustomerId != "" {
 		params := &stripe.CustomerParams{}
 		params.AddExpand("subscriptions")
 
-		cus, err := customer.Get(domainUser.CustomerId, params)
+		cus, err := customer.Get(user.CustomerId, params)
 
 		if err != nil {
 			utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -294,12 +318,12 @@ func RestoreUser(c *gin.Context) {
 
 	}
 
-	domainUser.DeletedAt = gorm.DeletedAt{
+	user.DeletedAt = gorm.DeletedAt{
 		Valid: false,
 		Time:  time.Unix(0, 0),
 	}
 
-	err = user_service.Update(dbConfig.Client, domainUser)
+	err := user_service.Update(dbConfig.Client, user)
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
@@ -324,6 +348,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Banner    *models.Media  `json:"banner"`
 		Uuid      string         `json:"uuid"`
 		Bio       string         `json:"bio"`
+		Plan      string         `json:"plan"`
 	}
 
 	username := c.Param("username")
@@ -350,6 +375,16 @@ func GetUserPublicProfile(c *gin.Context) {
 		return
 	}
 
+	sub, err := user_service.GetStripeSubscription(user.CustomerId)
+
+	var sub_name string
+
+	if sub != nil {
+		sub_name = sub.Plan.Product.Name
+	} else {
+		sub_name = ""
+	}
+
 	userResp := UserResp{
 		Username:  &user.Username,
 		Avatar:    user.ImageUrl,
@@ -359,6 +394,7 @@ func GetUserPublicProfile(c *gin.Context) {
 		Banner:    user.Banner,
 		Uuid:      user.Uuid,
 		Bio:       user.Bio,
+		Plan:      sub_name,
 	}
 
 	for _, build := range user.Builds {

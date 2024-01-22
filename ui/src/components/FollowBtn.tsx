@@ -5,8 +5,7 @@ import { PublicProfile } from "@/types";
 import { Loader2 } from "lucide-react";
 
 const FollowBtn = ({ data }: { data: PublicProfile }) => {
-  const { follow, user, account, unfollow } = useDomainUser();
-  console.log(data.followers);
+  const { follow, user, unfollow } = useDomainUser();
 
   return (
     <>
