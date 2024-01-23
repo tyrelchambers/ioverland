@@ -36,13 +36,13 @@ export default function Home() {
             </p>
             <div className="flex items-center mt-10 gap-6 flex-col md:flex-row">
               <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
-                <Button type="button" className="w-full">
+                <Button type="button" className="w-full" size="lg">
                   Create your build
                 </Button>
               </Link>
 
               <Link href="/explore">
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" size="lg">
                   Find your inspiration
                 </Button>
               </Link>
