@@ -64,7 +64,7 @@ export default function Home() {
         <div className="my-10 rounded-md shadow-xl overflow-hidden mx-4">
           <div className="relative w-full lg:h-[600px] h-[400px]">
             <Image
-              src="/IMG_2837 2.jpg"
+              src="/car on beach.jpg"
               alt=""
               fill
               className="object-cover"
