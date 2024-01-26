@@ -9,7 +9,7 @@ export const H1 = ({
 }) => (
   <h1
     className={cn(
-      "text-4xl  font-black font-serif mb-1 text-foreground p-2 lg:p-0",
+      "text-4xl  font-black font-serif mb-2 text-foreground",
       className
     )}
   >

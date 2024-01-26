@@ -76,9 +76,11 @@ const StepperTabs = ({ className, children }: IStepperTabs) => {
 const Stepper = ({
   children,
   activeStep,
+  className,
 }: {
   children: React.ReactNode;
   activeStep?: number;
+  className?: string;
 }) => {
   const [active, setActive] = React.useState(1);
 
@@ -95,7 +97,7 @@ const Stepper = ({
         setActive,
       }}
     >
-      {children}
+      <section className={className}>{children}</section>
     </StepperContext.Provider>
   );
 };

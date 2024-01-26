@@ -169,7 +169,7 @@ const Index = () => {
             Create your first build here. Include as many or as little details
             as you want.
           </p>
-          <Stepper activeStep={activeStep}>
+          <Stepper activeStep={activeStep} className="mt-6">
             <StepperTabs>
               <StepperTab step={1}>Info</StepperTab>
               <StepperTab step={2}>Trips</StepperTab>
@@ -341,27 +341,23 @@ const Index = () => {
                 </StepperPanel>
 
                 <StepperPanel step={5} className="flex flex-col">
-                  <Label className="mb-2">Photos</Label>
-
-                  <div className="mt-8">
-                    <Label>Upload photos </Label>
-                    <MaxFileSizeText
-                      isProPlan={account?.has_subscription}
-                      maxFileUploads={account?.plan_limits.max_files}
-                      maxFileSize={account?.plan_limits.max_file_size}
-                    />
-                    <Uploader
-                      files={photos as any}
-                      onUpdate={setPhotos}
-                      acceptedFileTypes={acceptedFiletypes(
-                        account?.has_subscription
-                      )}
-                      allowMultiple={true}
-                      maxFiles={account?.plan_limits.max_files}
-                      type="photos"
-                      maxFileSize={account?.plan_limits.max_file_size}
-                    />
-                  </div>
+                  <Label className="mb-4">Upload photos </Label>
+                  <MaxFileSizeText
+                    isProPlan={account?.has_subscription}
+                    maxFileUploads={account?.plan_limits.max_files}
+                    maxFileSize={account?.plan_limits.max_file_size}
+                  />
+                  <Uploader
+                    files={photos as any}
+                    onUpdate={setPhotos}
+                    acceptedFileTypes={acceptedFiletypes(
+                      account?.has_subscription
+                    )}
+                    allowMultiple={true}
+                    maxFiles={account?.plan_limits.max_files}
+                    type="photos"
+                    maxFileSize={account?.plan_limits.max_file_size}
+                  />
                 </StepperPanel>
 
                 <StepperPanel step={6} className="flex flex-col gap-3">
