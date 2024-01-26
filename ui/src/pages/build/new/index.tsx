@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { carModels, folderRoot, popularCarBrands } from "@/constants";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitErrorHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
@@ -54,6 +54,7 @@ import {
 } from "@/components/Stepper";
 
 const Index = () => {
+  const [activeStep, setActiveStep] = useState<number | undefined>(undefined);
   const { createBuild } = useBuild();
   const { user } = useUser();
   const {
@@ -146,6 +147,14 @@ const Index = () => {
     }
   };
 
+  const errorHandler = (error: any) => {
+    const el = document.querySelector(`[name=${Object.keys(error)[0]}]`);
+    const parent = el?.closest("[data-step]");
+    const step = parent?.getAttribute("data-step");
+
+    setActiveStep(Number(step));
+  };
+
   return (
     <section>
       <Head>
@@ -160,7 +169,7 @@ const Index = () => {
             Create your first build here. Include as many or as little details
             as you want.
           </p>
-          <Stepper>
+          <Stepper activeStep={activeStep}>
             <StepperTabs>
               <StepperTab step={1}>Info</StepperTab>
               <StepperTab step={2}>Trips</StepperTab>
@@ -173,7 +182,7 @@ const Index = () => {
             <Form {...form}>
               <form
                 className="flex flex-col gap-4 mt-10"
-                onSubmit={form.handleSubmit(submitHandler)}
+                onSubmit={form.handleSubmit(submitHandler, errorHandler)}
               >
                 <StepperPanel step={1}>
                   <div className="flex flex-col">

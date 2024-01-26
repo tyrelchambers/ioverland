@@ -44,7 +44,10 @@ const StepperTab = ({
       )}
       onClick={() => ctx.setActive(step)}
     >
-      <span className="h-4 w-4 rounded-full px-2 bg-primary mr-2 text-sm font-bold text-white">
+      <span
+        className="h-4 w-4 rounded-full px-2 bg-primary mr-2 text-sm font-bold text-white"
+        data-step={step}
+      >
         {step}
       </span>
       {children}
@@ -65,8 +68,21 @@ const StepperTabs = ({ className, children }: IStepperTabs) => {
   );
 };
 
-const Stepper = ({ children }: { children: React.ReactNode }) => {
+const Stepper = ({
+  children,
+  activeStep,
+}: {
+  children: React.ReactNode;
+  activeStep?: number;
+}) => {
   const [active, setActive] = React.useState(1);
+
+  useEffect(() => {
+    if (activeStep) {
+      setActive(activeStep);
+    }
+  }, [activeStep]);
+
   return (
     <StepperContext.Provider
       value={{
@@ -88,11 +104,14 @@ interface IStepperPanel {
 const StepperPanel = ({ children, className, step }: IStepperPanel) => {
   const ctx = useStepper();
 
-  if (ctx.active !== step) {
-    return null;
-  }
-
-  return <div className={cn("w-full", className)}>{children}</div>;
+  return (
+    <div
+      className={cn("w-full", ctx.active !== step && "!hidden", className)}
+      data-step={step}
+    >
+      {children}
+    </div>
+  );
 };
 
 export { StepperTabs, Stepper, StepperPanel, StepperTab };
