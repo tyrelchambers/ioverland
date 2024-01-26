@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect } from "react";
-import { Button } from "./ui/button";
 
 interface StepperContextProps {
   active: number;
@@ -38,14 +37,20 @@ const StepperTab = ({
     <button
       type="button"
       className={cn(
-        "border border-border p-3 rounded-md hover:border-primary",
-        ctx.active === step && "bg-primary/10 border-primary text-foreground",
+        "border border-border p-3 rounded-md hover:border-secondary text-secondary",
+        ctx.active === step &&
+          "bg-secondary/10 border-secondary text-secondary",
+        step < ctx.active && "complete-step",
         className
       )}
       onClick={() => ctx.setActive(step)}
+      data-step-trigger={step}
     >
       <span
-        className="h-4 w-4 rounded-full px-2 bg-primary mr-2 text-sm font-bold text-white"
+        className={cn(
+          "h-4 w-4 rounded-full px-2 bg-secondary mr-2 text-sm font-bold text-secondary-foreground",
+          ctx.active === step && "bg-secondary text-secondary-foreground"
+        )}
         data-step={step}
       >
         {step}
@@ -59,7 +64,7 @@ const StepperTabs = ({ className, children }: IStepperTabs) => {
   return (
     <div
       className={cn(
-        `items-center grid grid-cols-6 my-3 gap-3 text-sm text-foreground`,
+        `items-center grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 my-3 gap-3 text-sm text-secondary-foreground `,
         className
       )}
     >
