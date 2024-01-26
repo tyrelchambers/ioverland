@@ -21,7 +21,7 @@ const modification = z.object({
 export type Modification = z.infer<typeof modification>;
 
 export const newBuildSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, { message: "Name is required" }),
   description: z.string().optional(),
   budget: z.string().optional(),
   trips: z.record(z.string(), trip),

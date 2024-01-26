@@ -37,7 +37,7 @@ export const useBuild = (id?: string) => {
     onError: (error) => {
       if (isAxiosError(error)) {
         return toast.error("Error", {
-          description: error.response?.data.message || error.response?.data,
+          description: error.response?.data.error,
         });
       }
       toast.error("Error", {

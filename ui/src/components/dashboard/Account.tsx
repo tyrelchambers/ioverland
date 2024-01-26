@@ -121,7 +121,7 @@ const Account = () => {
       {!account?.deleted_at && (
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="destructiveMuted" className="mt-6" type="button">
+            <Button variant="outline" className="mt-6" type="button">
               Delete Account
             </Button>
           </DialogTrigger>

@@ -7,12 +7,13 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { carModels, folderRoot, popularCarBrands } from "@/constants";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitErrorHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
@@ -45,8 +46,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Stepper,
+  StepperPanel,
+  StepperTab,
+  StepperTabs,
+} from "@/components/Stepper";
 
 const Index = () => {
+  const [activeStep, setActiveStep] = useState<number | undefined>(undefined);
   const { createBuild } = useBuild();
   const { user } = useUser();
   const {
@@ -132,10 +140,20 @@ const Index = () => {
       console.log(error);
     }
 
-    await createBuild.mutateAsync(payload);
+    try {
+      await createBuild.mutateAsync(payload);
+    } catch (error) {
+      return;
+    }
   };
 
-  console.log(generateYears());
+  const errorHandler = (error: any) => {
+    const el = document.querySelector(`[name=${Object.keys(error)[0]}]`);
+    const parent = el?.closest("[data-step]");
+    const step = parent?.getAttribute("data-step");
+
+    setActiveStep(Number(step));
+  };
 
   return (
     <section>
@@ -143,7 +161,7 @@ const Index = () => {
         <title>Create | iOverland</title>
       </Head>
       <Header />
-      <div className="max-w-screen-md mx-auto my-10 relative h-full">
+      <div className="max-w-screen-lg mx-auto my-10 relative h-full">
         {account?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
         <div className="p-4">
           <H1>Let&apos;s build</H1>
@@ -151,228 +169,244 @@ const Index = () => {
             Create your first build here. Include as many or as little details
             as you want.
           </p>
-          <Form {...form}>
-            <form
-              className="flex flex-col gap-4 mt-10"
-              onSubmit={form.handleSubmit(submitHandler)}
-            >
-              <div className="flex flex-col">
-                <Label className="mb-2">Banner</Label>
-                <MaxFileSizeText
-                  isProPlan={account?.has_subscription}
-                  maxFileUploads={1}
-                  maxFileSize={account?.plan_limits.max_file_size}
-                  type="banner"
-                />
-                <Uploader
-                  onUpdate={setBanner}
-                  acceptedFileTypes={acceptedFiletypes(
-                    account?.has_subscription
-                  )}
-                  allowMultiple={false}
-                  maxFiles={1}
-                  type="banner"
-                  maxFileSize={account?.plan_limits.max_file_size}
-                />
-              </div>
-              <FormField
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <Input {...field} />
-                  </FormItem>
-                )}
-              />
+          <Stepper activeStep={activeStep}>
+            <StepperTabs>
+              <StepperTab step={1}>Info</StepperTab>
+              <StepperTab step={2}>Trips</StepperTab>
+              <StepperTab step={3}>Modifications</StepperTab>
+              <StepperTab step={4}>Links</StepperTab>
+              <StepperTab step={5}>Photos</StepperTab>
+              <StepperTab step={6}>Finish</StepperTab>
+            </StepperTabs>
 
-              <FormField
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea {...field} />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="budget"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Budget</FormLabel>
-                    <Input type="number" {...field} />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 items-end gap-4 ">
-                <FormField
-                  name="vehicle.make"
-                  render={({ field }) => (
-                    <FormItem className=" flex-1">
-                      <FormLabel>Make</FormLabel>
-                      <Combobox
-                        defaultLabel="Select a make..."
-                        searchLabel="makes"
-                        notFoundLabel="No makes found"
-                        data={popularCarBrands}
-                        {...field}
-                      />
-                    </FormItem>
-                  )}
-                />
-
-                {form.getValues("vehicle.make") && (
+            <Form {...form}>
+              <form
+                className="flex flex-col gap-4 mt-10"
+                onSubmit={form.handleSubmit(submitHandler, errorHandler)}
+              >
+                <StepperPanel step={1}>
+                  <div className="flex flex-col">
+                    <Label className="mb-2">Banner</Label>
+                    <MaxFileSizeText
+                      isProPlan={account?.has_subscription}
+                      maxFileUploads={1}
+                      maxFileSize={account?.plan_limits.max_file_size}
+                      type="banner"
+                    />
+                    <Uploader
+                      onUpdate={setBanner}
+                      acceptedFileTypes={acceptedFiletypes(
+                        account?.has_subscription
+                      )}
+                      allowMultiple={false}
+                      maxFiles={1}
+                      type="banner"
+                      maxFileSize={account?.plan_limits.max_file_size}
+                    />
+                  </div>
                   <FormField
-                    name="vehicle.model"
+                    name="name"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>Make</FormLabel>
-                        <Combobox
-                          defaultLabel="Select a make..."
-                          searchLabel="makes"
-                          notFoundLabel="No makes found"
-                          data={carModels[watchMake]}
-                          {...field}
-                        />
+                      <FormItem>
+                        <FormLabel className="required">Name</FormLabel>
+                        <Input {...field} />
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
 
-                {form.getValues("vehicle.model") && (
                   <FormField
-                    name="vehicle.year"
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <Textarea {...field} />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    name="budget"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Budget</FormLabel>
+                        <Input type="number" {...field} />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 lg:grid-cols-3 items-end gap-4 ">
+                    <FormField
+                      name="vehicle.make"
+                      render={({ field }) => (
+                        <FormItem className=" flex-1">
+                          <FormLabel>Make</FormLabel>
+                          <Combobox
+                            defaultLabel="Select a make..."
+                            searchLabel="makes"
+                            notFoundLabel="No makes found"
+                            data={popularCarBrands}
+                            {...field}
+                          />
+                        </FormItem>
+                      )}
+                    />
+
+                    {form.getValues("vehicle.make") && (
+                      <FormField
+                        name="vehicle.model"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel>Make</FormLabel>
+                            <Combobox
+                              defaultLabel="Select a make..."
+                              searchLabel="makes"
+                              notFoundLabel="No makes found"
+                              data={carModels[watchMake]}
+                              {...field}
+                            />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+
+                    {form.getValues("vehicle.model") && (
+                      <FormField
+                        name="vehicle.year"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel>Year</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a year" />
+                                </SelectTrigger>
+                              </FormControl>
+
+                              <SelectContent>
+                                {generateYears().map((year) => (
+                                  <SelectItem
+                                    key={year}
+                                    value={year.toString()}
+                                  >
+                                    {year}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
+                </StepperPanel>
+
+                <StepperPanel step={2} className="flex flex-col">
+                  <H3>
+                    Trips <AddTrip form={form} />
+                  </H3>
+                  <p className="text-muted-foreground">
+                    Include any trips you&apos;d like to have included with this
+                    build.
+                  </p>
+
+                  <TripsList trips={tripsWatch} form={form} />
+                </StepperPanel>
+
+                <StepperPanel step={3} className="flex flex-col">
+                  <H3>
+                    Modifications <AddMod form={form} />
+                  </H3>
+                  <p className="text-muted-foreground">
+                    Include any modifications you&apos;d like to have included
+                    with this build.
+                  </p>
+                  <ModsList mods={modsWatch} form={form} />
+                </StepperPanel>
+
+                <StepperPanel step={4} className="flex flex-col">
+                  <H3>
+                    Links <AddLink form={form} />
+                  </H3>
+                  <p className="text-muted-foreground">
+                    Include any links you&apos;d like to have included with this
+                    build.
+                  </p>
+
+                  <LinksList links={linksWatch} form={form} />
+                </StepperPanel>
+
+                <StepperPanel step={5} className="flex flex-col">
+                  <Label className="mb-2">Photos</Label>
+
+                  <div className="mt-8">
+                    <Label>Upload photos </Label>
+                    <MaxFileSizeText
+                      isProPlan={account?.has_subscription}
+                      maxFileUploads={account?.plan_limits.max_files}
+                      maxFileSize={account?.plan_limits.max_file_size}
+                    />
+                    <Uploader
+                      files={photos as any}
+                      onUpdate={setPhotos}
+                      acceptedFileTypes={acceptedFiletypes(
+                        account?.has_subscription
+                      )}
+                      allowMultiple={true}
+                      maxFiles={account?.plan_limits.max_files}
+                      type="photos"
+                      maxFileSize={account?.plan_limits.max_file_size}
+                    />
+                  </div>
+                </StepperPanel>
+
+                <StepperPanel step={6} className="flex flex-col gap-3">
+                  <H3>Visibility</H3>
+                  <Info>
+                    <p>
+                      This build will be published as a{" "}
+                      <span className="font-bold">Draft</span> unless it&apos;s
+                      explicitly made public.
+                    </p>
+                  </Info>
+                  <FormField
                     control={form.control}
+                    name="public"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel>Year</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a year" />
-                            </SelectTrigger>
-                          </FormControl>
-
-                          <SelectContent>
-                            {generateYears().map((year) => (
-                              <SelectItem key={year} value={year.toString()}>
-                                {year}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Make this build public?</FormLabel>
+                          <FormDescription>
+                            Anyone with the link can access this build.
+                          </FormDescription>
+                        </div>
                       </FormItem>
                     )}
                   />
-                )}
-              </div>
-
-              <Separator className="my-4" />
-
-              <div className="flex flex-col">
-                <H3>
-                  Trips <AddTrip form={form} />
-                </H3>
-                <p className="text-muted-foreground">
-                  Include any trips you&apos;d like to have included with this
-                  build.
-                </p>
-
-                <TripsList trips={tripsWatch} form={form} />
-              </div>
-              <Separator className="my-4" />
-
-              <section className="flex flex-col">
-                <H3>
-                  Modifications <AddMod form={form} />
-                </H3>
-                <p className="text-muted-foreground">
-                  Include any modifications you&apos;d like to have included
-                  with this build.
-                </p>
-                <ModsList mods={modsWatch} form={form} />
-              </section>
-              <Separator className="my-4" />
-
-              <section className="flex flex-col">
-                <H3>
-                  Links <AddLink form={form} />
-                </H3>
-                <p className="text-muted-foreground">
-                  Include any links you&apos;d like to have included with this
-                  build.
-                </p>
-
-                <LinksList links={linksWatch} form={form} />
-              </section>
-              <Separator className="my-4" />
-
-              <div className="flex flex-col">
-                <Label className="mb-2">Photos</Label>
-
-                <div className="mt-8">
-                  <Label>Upload photos </Label>
-                  <MaxFileSizeText
-                    isProPlan={account?.has_subscription}
-                    maxFileUploads={account?.plan_limits.max_files}
-                    maxFileSize={account?.plan_limits.max_file_size}
-                  />
-                  <Uploader
-                    files={photos as any}
-                    onUpdate={setPhotos}
-                    acceptedFileTypes={acceptedFiletypes(
-                      account?.has_subscription
+                  <Button
+                    disabled={form.formState.isSubmitting}
+                    className="w-fit"
+                  >
+                    {form.formState.isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Create build"
                     )}
-                    allowMultiple={true}
-                    maxFiles={account?.plan_limits.max_files}
-                    type="photos"
-                    maxFileSize={account?.plan_limits.max_file_size}
-                  />
-                </div>
-              </div>
-
-              <Separator className="my-4" />
-              <H3>Visibility</H3>
-              <Info>
-                <p>
-                  This build will be published as a{" "}
-                  <span className="font-bold">Draft</span> unless it&apos;s
-                  explicitly made public.
-                </p>
-              </Info>
-              <FormField
-                control={form.control}
-                name="public"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Make this build public?</FormLabel>
-                      <FormDescription>
-                        Anyone with the link can access this build.
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-              <Button disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Create build"
-                )}
-              </Button>
-            </form>
-          </Form>
+                  </Button>
+                </StepperPanel>
+              </form>
+            </Form>
+          </Stepper>
         </div>
       </div>
     </section>
