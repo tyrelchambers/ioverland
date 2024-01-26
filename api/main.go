@@ -191,6 +191,7 @@ func main() {
 	api.GET("/search", controllers.Search)
 
 	r.GET("/health", controllers.Health)
+	api.POST("/feedback", controllers.Feedback)
 
 	// create a scheduler
 	s, err := gocron.NewScheduler()
