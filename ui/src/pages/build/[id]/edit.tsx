@@ -57,6 +57,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
 import { Loader2 } from "lucide-react";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -246,6 +247,9 @@ const Edit = () => {
 
   return (
     <section>
+      <Head>
+        <title>Edit Build | iOverland</title>
+      </Head>
       <Header />
       <div className="py-10 p-4  max-w-screen-md mx-auto">
         <Form {...form}>

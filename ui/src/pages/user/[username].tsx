@@ -8,6 +8,7 @@ import { useDomainUser } from "@/hooks/useDomainUser";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import Custom404 from "../404";
+import Head from "next/head";
 
 const Profile = () => {
   const { username } = useRouter().query;
@@ -27,6 +28,9 @@ const Profile = () => {
 
   return (
     <div>
+      <Head>
+        <title>{publicUser.data.username} iOverland</title>
+      </Head>
       <Header />
 
       <MobileHeader data={publicUser.data} banner={publicUser.data?.banner} />

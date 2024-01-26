@@ -37,6 +37,7 @@ import {
   Share,
   Truck,
 } from "lucide-react";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -169,6 +170,9 @@ const Build = () => {
   const twitterShareLink = `https://twitter.com/intent/tweet?text=Check%20out%20this%20build%20on%20iover.land&url=${shareLink}`;
   return (
     <section>
+      <Head>
+        <title>{build?.name} | iOverland</title>
+      </Head>
       <Header />
 
       <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">

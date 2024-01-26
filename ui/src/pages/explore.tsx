@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useExplore } from "@/hooks/useExplore";
 import { Feather } from "lucide-react";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -17,6 +18,9 @@ const Explore = () => {
 
   return (
     <div className="relative min-h-screen">
+      <Head>
+        <title>Explore | iOverland</title>
+      </Head>
       <Header />
 
       {/* <Featured featured={explore.data?.featured} />

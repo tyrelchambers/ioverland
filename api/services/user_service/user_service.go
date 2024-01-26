@@ -240,6 +240,10 @@ func GetStripeSubscription(customer_id string) (*stripe.Subscription, error) {
 		return nil, err
 	}
 
+	if len(cus.Subscriptions.Data) == 0 {
+		return nil, nil
+	}
+
 	return cus.Subscriptions.Data[0], nil
 
 }

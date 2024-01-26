@@ -2,11 +2,15 @@ import Header from "@/components/Header";
 import { H1 } from "@/components/Heading";
 import PricingBlock from "@/components/PricingBlock";
 import { plans } from "@/constants";
+import Head from "next/head";
 import React from "react";
 
 const pricing = () => {
   return (
     <div>
+      <Head>
+        <title>Pricing | iOverland</title>
+      </Head>
       <Header />
 
       <section className="max-w-screen-xl mx-auto">

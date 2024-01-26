@@ -16,6 +16,7 @@ import {
   Video,
   Wrench,
 } from "lucide-react";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -23,6 +24,9 @@ export default function Home() {
   const { isSignedIn } = useAuth();
   return (
     <main>
+      <Head>
+        <title>iOverland</title>
+      </Head>
       <section className="h-screen flex relative">
         <div className="w-full flex flex-col items-center absolute inset-0 z-10 justify-center max-w-screen-xl h-full min-h-screen mx-auto">
           <Header className="absolute top-0 bg-transparent border-0 w-full" />

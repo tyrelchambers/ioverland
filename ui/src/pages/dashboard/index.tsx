@@ -17,6 +17,7 @@ import Followers from "@/components/dashboard/Followers";
 import EmptyListText from "@/components/EmptyListText";
 import DesktopTabs from "@/components/dashboard/DesktopTabs";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
+import Head from "next/head";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -38,6 +39,9 @@ const Dashboard = () => {
 
   return (
     <div>
+      <Head>
+        <title>Dashboard | iOverland</title>
+      </Head>
       <Header stickyOnScroll={false} />
 
       <Tabs

@@ -37,6 +37,7 @@ import AddMod from "@/components/forms/AddMod";
 import ModsList from "@/components/forms/ModsList";
 import AddLink from "@/components/forms/AddLink";
 import LinksList from "@/components/forms/LinksList";
+import Head from "next/head";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -129,6 +130,9 @@ const Index = () => {
 
   return (
     <section>
+      <Head>
+        <title>Create | iOverland</title>
+      </Head>
       <Header />
       <div className="max-w-screen-md mx-auto my-10 relative h-full">
         {account?.builds_remaining === 0 ? <BuildQuotaMet /> : null}
