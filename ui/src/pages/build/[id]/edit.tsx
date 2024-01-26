@@ -35,13 +35,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { carModels, popularCarBrands } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { request } from "@/lib/axios";
-import { acceptedFiletypes } from "@/lib/utils";
+import { acceptedFiletypes, generateYears } from "@/lib/utils";
 import {
   EditBuildResponse,
   Media,
@@ -176,6 +183,7 @@ const Edit = () => {
 
     const payload: BuildPayload = {
       ...data,
+      id: build?.id,
       uuid: build?.uuid,
       trips: tripsToArray,
       links: linksToArray,
@@ -370,10 +378,28 @@ const Edit = () => {
               {form.getValues("vehicle.model") && (
                 <FormField
                   name="vehicle.year"
+                  control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormLabel>Year</FormLabel>
-                      <Input type="number" min={0} {...field} />
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a year" />
+                          </SelectTrigger>
+                        </FormControl>
+
+                        <SelectContent>
+                          {generateYears().map((year) => (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormItem>
                   )}
                 />

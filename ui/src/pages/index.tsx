@@ -8,6 +8,7 @@ import {
   Bookmark,
   CheckCircle,
   Heart,
+  History,
   Lightbulb,
   MapPin,
   MessageSquare,
@@ -78,7 +79,9 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col items-center w-full py-20">
-          <H2 className="lg:!text-6xl text-center">Show off your vehicle</H2>
+          <H2 className="lg:!text-6xl text-center !font-serif">
+            Show off your vehicle
+          </H2>
           <p className="lg:text-2xl text-muted-foreground font-light max-w-2xl leading-relaxed text-center mt-4">
             Upload images and videos of your Overlanding build to showcase to
             the world.
@@ -104,7 +107,7 @@ export default function Home() {
       <section className="my-20 max-w-screen-xl mx-auto">
         <div className="flex items-center flex-col-reverse lg:flex-row p-4 lg:p-0">
           <div className="flex flex-col lg:p-20 p-6">
-            <H2 className="lg:text-6xl text-4xl mb-10">
+            <H2 className="lg:text-6xl text-4xl mb-10 !font-serif">
               We would love to see your build
             </H2>
             <p className="text-muted-foreground max-w-3xl text-xl leading-relaxed">
@@ -140,7 +143,9 @@ export default function Home() {
         />
         <section className="max-w-screen-xl w-full mx-auto lg:py-20 py-20 relative p-6">
           <header className="max-w-2xl w-full">
-            <H2 className="mb-5 text-4xl">Want to see some cool builds?</H2>
+            <H2 className="mb-5 text-4xl !font-serif">
+              Want to see some cool builds?
+            </H2>
             <p className="text-muted-foreground mb-8">
               Discover awe-inspiring overlanding builds from across the globe.
               Immerse yourself in a world of customized vehicles, epic trips,
@@ -163,7 +168,7 @@ export default function Home() {
         </div>
         <div className="flex-1 flex flex-col lg:px-20 px-0">
           <header className="max-w-2xl w-full">
-            <H2 className="mb-5 text-4xl">Features</H2>
+            <H2 className="mb-5 text-4xl !font-serif">Features</H2>
             <p className="text-muted-foreground">
               iOverland is designed and will continue to be improved upon, to
               provide you with a fun and easy way to showcase your overland
@@ -214,7 +219,7 @@ export default function Home() {
         />
         <section className="max-w-screen-xl w-full mx-auto lg:py-20 py-20 relative p-6">
           <header className="max-w-2xl w-full">
-            <H2 className="mb-5 text-4xl">Roadmap</H2>
+            <H2 className="mb-5 text-4xl !font-serif">Roadmap</H2>
             <p className="text-muted-foreground">
               We&apos;d love to share with you our roadmap of where we would
               like to take things in the near future. Please keep in mind these
@@ -256,6 +261,14 @@ export default function Home() {
               <p className=" font-bold my-2 text-xl">Meetups</p>
               <p className="text-muted-foreground">
                 Meet up with other iOverlanders
+              </p>
+            </div>
+
+            <div>
+              <History className="text-primary" size={30} />
+              <p className=" font-bold my-2 text-xl">Build history</p>
+              <p className="text-muted-foreground">
+                Track your builds over time
               </p>
             </div>
           </div>

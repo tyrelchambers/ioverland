@@ -25,7 +25,7 @@ import Uploader from "@/components/Uploader";
 import { H1, H3 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
-import { acceptedFiletypes } from "@/lib/utils";
+import { acceptedFiletypes, generateYears } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
@@ -38,6 +38,13 @@ import ModsList from "@/components/forms/ModsList";
 import AddLink from "@/components/forms/AddLink";
 import LinksList from "@/components/forms/LinksList";
 import Head from "next/head";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Index = () => {
   const { createBuild } = useBuild();
@@ -127,6 +134,8 @@ const Index = () => {
 
     await createBuild.mutateAsync(payload);
   };
+
+  console.log(generateYears());
 
   return (
     <section>
@@ -234,10 +243,28 @@ const Index = () => {
                 {form.getValues("vehicle.model") && (
                   <FormField
                     name="vehicle.year"
+                    control={form.control}
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormLabel>Year</FormLabel>
-                        <Input type="number" min={0} {...field} />
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a year" />
+                            </SelectTrigger>
+                          </FormControl>
+
+                          <SelectContent>
+                            {generateYears().map((year) => (
+                              <SelectItem key={year} value={year.toString()}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormItem>
                     )}
                   />

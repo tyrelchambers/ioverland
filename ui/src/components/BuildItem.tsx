@@ -27,7 +27,7 @@ const BuildItem = ({
       <header className="relative w-full aspect-video shadow-md">
         <RenderMedia media={build.banner} autoPlay={playVideo} />
       </header>
-      <p className="mt-3 font-bold text-xl font-serif text-foreground">
+      <p className="mt-3 font-bold text-xl font-sans text-foreground">
         {build.name}
       </p>
       <p className="text-muted-foreground line-clamp-3 text-sm mt-1">

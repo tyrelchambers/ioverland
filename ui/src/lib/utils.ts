@@ -77,3 +77,14 @@ export const formatPrice = (itemPrice: number) => {
 
   return price.format(itemPrice / 100);
 };
+
+export const generateYears = () => {
+  let year = new Date().getFullYear();
+  const years = [];
+
+  while (year >= 1980) {
+    years.push(year--);
+  }
+
+  return years;
+};

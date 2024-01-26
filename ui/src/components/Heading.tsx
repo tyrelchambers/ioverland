@@ -26,7 +26,7 @@ export const H2 = ({
 }) => (
   <h2
     className={cn(
-      "text-3xl font-black font-serif mb-1 text-foreground",
+      "text-3xl font-bold font-sans mb-1 text-foreground",
       className
     )}
   >
@@ -43,7 +43,7 @@ export const H3 = ({
 }) => (
   <h3
     className={cn(
-      "text-2xl font-black font-serif mb-1 text-foreground",
+      "text-2xl font-bold font-sans mb-1 text-foreground",
       className
     )}
   >

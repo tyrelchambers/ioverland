@@ -66,6 +66,7 @@ export const buildPayload = z.object({
   banner: media.optional(),
   photos: z.array(media).optional(),
   uuid: z.string().optional(),
+  id: z.string().optional(),
 });
 
 export type BuildPayload = z.infer<typeof buildPayload>;
