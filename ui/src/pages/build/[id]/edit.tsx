@@ -4,9 +4,11 @@ import Info from "@/components/Info";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
 import RenderMedia from "@/components/RenderMedia";
 import Uploader from "@/components/Uploader";
+import AddHistory from "@/components/forms/AddHistory";
 import AddLink from "@/components/forms/AddLink";
 import AddMod from "@/components/forms/AddMod";
 import AddTrip from "@/components/forms/AddTrip";
+import HistoryList from "@/components/forms/HistoryList";
 import LinksList from "@/components/forms/LinksList";
 import ModsList from "@/components/forms/ModsList";
 import PhotosList from "@/components/forms/PhotosList";
@@ -101,6 +103,7 @@ const Edit = () => {
       banner: "",
       photos: [],
       modifications: {},
+      history: {},
     },
   });
 
@@ -108,6 +111,7 @@ const Edit = () => {
   const modsWatch = form.watch("modifications");
   const linksWatch = form.watch("links");
   const photosWatch = form.watch("photos");
+  const historyWatch = form.watch("history");
 
   useEffect(() => {
     if (id && build) {
@@ -117,6 +121,7 @@ const Edit = () => {
         trips: {},
         links: {},
         modifications: {},
+        history: {},
       };
 
       if (data.trips && formattedData.trips) {
@@ -448,6 +453,19 @@ const Edit = () => {
               </p>
 
               <LinksList links={linksWatch} form={form} />
+            </section>
+            <Separator className="my-4" />
+
+            <section className="flex flex-col">
+              <H3>
+                History <AddHistory form={form} buildId={build.uuid} />
+              </H3>
+              <p className="text-muted-foreground">
+                Add any repairs, maintenace or additions you&apos;ve done over
+                the years.
+              </p>
+
+              <HistoryList history={historyWatch} form={form} />
             </section>
             <Separator className="my-4" />
 
