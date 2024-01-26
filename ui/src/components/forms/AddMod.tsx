@@ -1,7 +1,7 @@
 import { Modification } from "@/types";
 import { createId } from "@paralleldrive/cuid2";
 import React, { useState } from "react";
-import { FormItem, FormLabel } from "../ui/form";
+import { FormDescription, FormItem, FormLabel } from "../ui/form";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { modificationCategories } from "@/constants";
-import { findCategorySubcategories } from "@/lib/utils";
+import { findCategorySubcategories, formatPrice } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { PlusCircle } from "lucide-react";
 import { Input } from "../ui/input";
@@ -130,6 +130,9 @@ const AddMod = ({ form, build_id }: Props) => {
 
         <FormItem>
           <FormLabel>Price</FormLabel>
+          <FormDescription>
+            Input your price in cents (eg: 1000 = $10)
+          </FormDescription>
           <Input
             type="number"
             onChange={(e) => {
@@ -139,6 +142,7 @@ const AddMod = ({ form, build_id }: Props) => {
               });
             }}
           />
+          <FormDescription>{formatPrice(Number(item.price))}</FormDescription>
         </FormItem>
         <DialogFooter>
           <Button onClick={addModification}>Add modification</Button>

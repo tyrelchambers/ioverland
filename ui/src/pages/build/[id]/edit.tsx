@@ -48,7 +48,7 @@ import { carModels, popularCarBrands } from "@/constants";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { request } from "@/lib/axios";
-import { acceptedFiletypes, generateYears } from "@/lib/utils";
+import { acceptedFiletypes, formatPrice, generateYears } from "@/lib/utils";
 import {
   EditBuildResponse,
   Media,
@@ -335,7 +335,12 @@ const Edit = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Budget</FormLabel>
+                  <FormDescription>
+                    Input your total approximate budget in cents (eg: 1000 =
+                    $10)
+                  </FormDescription>
                   <Input type="number" {...field} />
+                  <FormDescription>{formatPrice(field.value)}</FormDescription>
                 </FormItem>
               )}
             />

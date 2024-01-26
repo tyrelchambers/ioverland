@@ -26,7 +26,7 @@ import Uploader from "@/components/Uploader";
 import { H1, H3 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
-import { acceptedFiletypes, generateYears } from "@/lib/utils";
+import { acceptedFiletypes, formatPrice, generateYears } from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
@@ -181,10 +181,10 @@ const Index = () => {
 
             <Form {...form}>
               <form
-                className="flex flex-col gap-4 mt-10"
+                className="flex flex-col mt-10"
                 onSubmit={form.handleSubmit(submitHandler, errorHandler)}
               >
-                <StepperPanel step={1}>
+                <StepperPanel step={1} className="flex flex-col gap-3">
                   <div className="flex flex-col">
                     <Label className="mb-2">Banner</Label>
                     <MaxFileSizeText
@@ -230,7 +230,14 @@ const Index = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Budget</FormLabel>
+                        <FormDescription>
+                          Input your total approximate budget in cents (eg: 1000
+                          = $10)
+                        </FormDescription>
                         <Input type="number" {...field} />
+                        <FormDescription>
+                          {formatPrice(field.value)}
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
