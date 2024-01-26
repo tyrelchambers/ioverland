@@ -1,12 +1,8 @@
-import BuildItem from "@/components/BuildItem";
 import Header from "@/components/Header";
-import { H1, H2 } from "@/components/Heading";
-import Featured from "@/components/explore/Featured";
-import Top10 from "@/components/explore/Top10";
+import { H1 } from "@/components/Heading";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useExplore } from "@/hooks/useExplore";
-import { Feather } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
