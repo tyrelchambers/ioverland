@@ -102,7 +102,7 @@ const Dashboard = () => {
               </Link>
             </div>
           )}
-          <section className="mt-10 p-4 lg:p-0">
+          <section className="mt-10 p-4 2xl:p-0">
             <TabsContent value="builds">
               <H2 className="mb-10">My Builds</H2>
 

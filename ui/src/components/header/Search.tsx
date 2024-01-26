@@ -25,7 +25,7 @@ const Search = ({
       <PopoverTrigger>
         <Input
           type="search"
-          placeholder="Search for a build"
+          placeholder="Search for a build or person"
           className="w-[400px]"
           onChange={(e) => setSearchValue(e.target.value)}
         />
