@@ -24,7 +24,7 @@ export const useBuild = (id?: string) => {
 
   const createBuild = useMutation({
     mutationFn: async (data: BuildPayload) => {
-      return request.post("/api/build", data, {
+      return await request.post("/api/build", data, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
@@ -37,7 +37,7 @@ export const useBuild = (id?: string) => {
     onError: (error) => {
       if (isAxiosError(error)) {
         return toast.error("Error", {
-          description: error.response?.data.message || error.response?.data,
+          description: error.response?.data.error,
         });
       }
       toast.error("Error", {

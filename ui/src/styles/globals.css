@@ -107,6 +107,11 @@
   .builds-item:hover img {
     transform: scale(1.01);
   }
+
+  .required::after {
+    content: "*";
+    @apply text-red-500 ml-1;
+  }
 }
 
 .featured-pricing::before {
