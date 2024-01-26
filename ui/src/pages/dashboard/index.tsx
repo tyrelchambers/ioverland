@@ -138,7 +138,9 @@ const Dashboard = () => {
                                 {build.comments?.length ?? 0}
                               </p>
                             </div>
-                            {build.public && <Badge>public</Badge>}
+                            {build.public && (
+                              <Badge variant="secondary">public</Badge>
+                            )}
                           </footer>
                         }
                       />

@@ -37,7 +37,7 @@ const StepperTab = ({
     <button
       type="button"
       className={cn(
-        "border border-border p-3 rounded-md hover:border-secondary text-secondary",
+        "border border-border p-3 rounded-md hover:border-secondary text-secondary font-bold",
         ctx.active === step &&
           "bg-secondary/10 border-secondary text-secondary",
         step < ctx.active && "complete-step",

@@ -35,7 +35,7 @@ const Subscription = ({
       </Badge>
       <Button
         type="button"
-        variant="secondary"
+        variant="outline"
         className="mt-3"
         onClick={getPortalLink}
       >
