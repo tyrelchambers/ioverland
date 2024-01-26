@@ -91,3 +91,16 @@ export const generateYears = () => {
 
   return years;
 };
+
+export const calculateModificationsCost = (
+  mods: Modification[] | undefined
+) => {
+  if (!mods) return 0;
+
+  let cost = 0;
+  mods.forEach((m) => {
+    if (!m.price) return;
+    cost += Number(m.price);
+  });
+  return cost;
+};

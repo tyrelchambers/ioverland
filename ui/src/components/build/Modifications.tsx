@@ -22,7 +22,9 @@ const Modifications = ({
 
           return (
             <div key={i} className="border-border border rounded-xl p-4">
-              <p className="font-serif text-xl mb-6">{category?.label}</p>
+              <p className="font-sans font-bold text-xl mb-6">
+                {category?.label}
+              </p>
               <ul className="flex flex-col  gap-4">
                 {mod.map((mod) => (
                   <li
@@ -30,8 +32,8 @@ const Modifications = ({
                     className="flex justify-between odd:bg-card p-2 px-4 rounded-md items-center"
                   >
                     <div className="flex flex-col">
-                      <p className="font-bold">{mod.name}</p>
-                      <p className="text-card-foreground text-sm">
+                      <p className="font-medium">{mod.name}</p>
+                      <p className="text-card-foreground/50 text-sm">
                         {mod.subcategory}
                       </p>
                     </div>

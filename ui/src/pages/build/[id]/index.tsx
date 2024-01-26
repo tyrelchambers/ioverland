@@ -21,7 +21,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useBuild } from "@/hooks/useBuild";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { copyToClipboard, formatPrice, hasLiked } from "@/lib/utils";
+import {
+  calculateModificationsCost,
+  copyToClipboard,
+  formatPrice,
+  hasLiked,
+} from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import {
   Bookmark,
@@ -326,8 +331,14 @@ const Build = () => {
             <Photos photos={build?.photos} />
           </div>
 
-          <div className="flex flex-col my-10">
-            <H2 className="mb-6">Modifications</H2>
+          <div className="flex flex-col my-10 mt-20">
+            <H2 className="mb-2">Modifications</H2>
+            <p className="mb-4 text-muted-foreground">
+              Total modifications cost:{" "}
+              <span className="font-bold text-foreground">
+                {formatPrice(calculateModificationsCost(build?.modifications))}
+              </span>
+            </p>
             <Modifications modifications={build?.modifications} />
           </div>
 
