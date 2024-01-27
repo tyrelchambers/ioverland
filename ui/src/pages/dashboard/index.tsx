@@ -18,6 +18,7 @@ import EmptyListText from "@/components/EmptyListText";
 import DesktopTabs from "@/components/dashboard/DesktopTabs";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
 import Head from "next/head";
+import Builds from "@/components/dashboard/Builds";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -104,53 +105,7 @@ const Dashboard = () => {
           )}
           <section className="mt-10 p-4 2xl:p-0">
             <TabsContent value="builds">
-              <H2 className="mb-10">My Builds</H2>
-
-              {user.isLoading ? (
-                <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
-                  <BuildSkeleton />
-                  <BuildSkeleton />
-                  <BuildSkeleton />
-                </ul>
-              ) : builds && builds.length > 0 ? (
-                <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
-                  {builds
-                    ?.toSorted((a, b) => (a.name > b.name ? 1 : -1))
-                    ?.map((build) => (
-                      <BuildItem
-                        build={build}
-                        key={build.uuid}
-                        footer={
-                          <footer className="flex mt-2 gap-4">
-                            <div className="flex text-muted-foreground items-center">
-                              <Eye size={16} className="mr-1" />
-                              <p className="text-sm">{build.views ?? 0}</p>
-                            </div>
-                            <div className="flex text-muted-foreground items-center">
-                              <Heart size={16} className="mr-1" />
-                              <p className="text-sm">
-                                {build.likes?.length ?? 0}
-                              </p>
-                            </div>
-                            <div className="flex text-muted-foreground items-center">
-                              <MessageCircle size={16} className="mr-1" />
-                              <p className="text-sm">
-                                {build.comments?.length ?? 0}
-                              </p>
-                            </div>
-                            {build.public && (
-                              <Badge variant="secondary">public</Badge>
-                            )}
-                          </footer>
-                        }
-                      />
-                    ))}
-                </ul>
-              ) : (
-                <p className="text-card-foreground bg-card p-4 rounded-xl w-full mt-4">
-                  No builds to see here
-                </p>
-              )}
+              <Builds user={user} builds={builds} />
             </TabsContent>
             <TabsContent value="bookmarks">
               <H2 className="mb-4">Bookmarks</H2>
