@@ -144,7 +144,7 @@ export default function Home() {
         <section className="max-w-screen-xl w-full mx-auto lg:py-20 py-20 relative p-6">
           <header className="max-w-2xl w-full">
             <H2 className="mb-5 text-4xl !font-serif">
-              Want to see some cool builds?
+              Want to see something cool?
             </H2>
             <p className="text-muted-foreground mb-8">
               Discover awe-inspiring overlanding builds from across the globe.
@@ -266,7 +266,16 @@ export default function Home() {
 
             <div>
               <History className="text-primary" size={30} />
-              <p className=" font-bold my-2 text-xl">Build history</p>
+              <div className=" font-bold my-2 text-xl flex items-center gap-2">
+                <p>Build history</p>
+                <Badge>
+                  <CheckCircle
+                    size={14}
+                    className="text-primary-foreground mr-1"
+                  />{" "}
+                  Complete
+                </Badge>
+              </div>
               <p className="text-muted-foreground">
                 Track your builds over time
               </p>
