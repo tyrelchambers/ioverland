@@ -6,13 +6,13 @@ export const folderRoot =
   process.env.NODE_ENV === "development" ? "development" : "production";
 
 const testPrices = {
-  explorer: "price_1OXQNUEPapIiG0WqFCMtKQUM",
-  overlander: "price_1OXQOLEPapIiG0WqICw9ZvOj",
+  explorer: "price_1Od4g2EPapIiG0WqxUvRtwf1",
+  overlander: "price_1Od4giEPapIiG0WqnzyweIXd",
 };
 
 const livePrices = {
-  explorer: "price_1OXRlIEPapIiG0WqyEk7J1da",
-  overlander: "price_1OXRlDEPapIiG0WqYc6GfFIS",
+  explorer: "price_1Od4gvEPapIiG0WqxDCqgHqf",
+  overlander: "price_1Od4gyEPapIiG0Wqj9FbkgUv",
 };
 
 const getPrices = () => {
@@ -40,7 +40,7 @@ export const plans: Plan[] = [
   {
     name: "Overlander",
     tagline: "For seasoned Overlanders",
-    price: 25,
+    price: 19,
     plan_name: "overlander",
     features: [
       "Unlimited builds",
@@ -57,7 +57,7 @@ export const plans: Plan[] = [
   {
     name: "Explorer",
     tagline: "For aspiring Overlanders",
-    price: 15,
+    price: 14,
     plan_name: "explorer",
     features: [
       "5 builds",
