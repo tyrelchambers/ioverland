@@ -44,7 +44,7 @@ export const newBuildSchema = z.object({
   }),
   modifications: z.record(z.string(), modification).optional(),
   public: z.boolean(),
-  history: z.record(z.string(), historySchema),
+  history: z.record(z.string(), historySchema).optional(),
 });
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;
@@ -77,7 +77,7 @@ export const buildPayload = z.object({
   photos: z.array(media).optional(),
   uuid: z.string().optional(),
   id: z.string().optional(),
-  history: z.array(historySchema),
+  history: z.array(historySchema).optional(),
 });
 
 export type BuildPayload = z.infer<typeof buildPayload>;

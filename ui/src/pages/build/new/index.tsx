@@ -107,7 +107,7 @@ const Index = () => {
       });
     }
 
-    const payload: BuildPayload = {
+    const payload: Omit<BuildPayload, "history"> = {
       ...data,
       trips: tripsToArray,
       links: linksToArray,
