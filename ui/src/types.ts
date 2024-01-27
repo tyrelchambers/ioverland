@@ -117,6 +117,7 @@ export const buildSchema = z.object({
   views: z.number(),
   likes: z.array(z.string()).nullable(),
   comments: z.array(commentSchema),
+  history: z.array(historySchema),
 });
 
 commentSchema.extend({

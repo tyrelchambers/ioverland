@@ -101,7 +101,7 @@ func GetById(db *gorm.DB, uuid string) (models.Build, error) {
 
 	var build models.Build
 
-	db.Preload("Trips").Preload("Modifications").Where("uuid = ?", uuid).First(&build)
+	db.Preload("Trips").Preload("Modifications").Preload("History").Where("uuid = ?", uuid).First(&build)
 
 	db.Table("media").Where("build_id = ? AND type = 'banner'", uuid).First(&build.Banner)
 

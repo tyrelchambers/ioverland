@@ -149,6 +149,13 @@ const Edit = () => {
         }
       }
 
+      if (data.history && formattedData.history) {
+        for (let index = 0; index < data.history.length; index++) {
+          const element = data.history[index];
+          formattedData.history[createId()] = element;
+        }
+      }
+
       form.reset(formattedData);
     }
   }, [id, editSettings.data?.build]);

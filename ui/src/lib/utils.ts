@@ -3,7 +3,7 @@ import {
   MAX_FILE_SIZE_PRO,
   modificationCategories,
 } from "@/constants";
-import { Modification } from "@/types";
+import { History, Modification } from "@/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -34,6 +34,18 @@ export const groupModificationsByCategory = (mods: Modification[]) => {
     if (!grouped[m.category]) grouped[m.category] = [];
     grouped[m.category].push(m);
   });
+  return grouped;
+};
+
+export const groupHistoryByYear = (history: History[]) => {
+  const grouped: { [key: string]: History[] } = {};
+
+  history.forEach((h) => {
+    if (!h.year) return;
+    if (!grouped[h.year]) grouped[h.year] = [];
+    grouped[h.year].push(h);
+  });
+
   return grouped;
 };
 

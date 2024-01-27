@@ -24,7 +24,7 @@ type Build struct {
 	Likes         pq.StringArray `gorm:"type:text[]" json:"likes"`
 	FeaturedOn    time.Time      `json:"featured_on"`
 	Comments      []*Comment     `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"comments"`
-	History       []*History     `gorm:"foreignKey:BuildId;references:Uuid" json:"history"`
+	History       []*History     `gorm:"foreignKey:BuildId" json:"history"`
 }
 
 type Vehicle struct {
