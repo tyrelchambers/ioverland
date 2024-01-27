@@ -24,7 +24,7 @@ const historySchema = z.object({
   uuid: z.string().optional(),
   year: z.string(),
   event: z.string(),
-  build_id: z.string().optional(),
+  build_id: z.union([z.string(), z.number()]).optional(),
 });
 
 export type History = z.infer<typeof historySchema>;
@@ -77,6 +77,7 @@ export const buildPayload = z.object({
   photos: z.array(media).optional(),
   uuid: z.string().optional(),
   id: z.string().optional(),
+  history: z.array(historySchema),
 });
 
 export type BuildPayload = z.infer<typeof buildPayload>;

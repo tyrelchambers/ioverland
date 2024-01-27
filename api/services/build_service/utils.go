@@ -63,3 +63,34 @@ func DiffModifications(source, newMods []models.Modification) (addedMods, remove
 
 	return addedMods, removedMods
 }
+
+func DiffHistory(source, new []*models.History) (added, removed []*models.History) {
+	sourceMap := make(map[string]models.History)
+
+	// Populate the map with trips from the old state
+	for _, v := range source {
+		sourceMap[v.Uuid] = *v
+	}
+
+	for _, v := range new {
+		if _, ok := sourceMap[v.Uuid]; !ok {
+			added = append(added, v)
+		}
+	}
+
+	for _, v := range source {
+		found := false
+		for _, et := range new {
+			if et.Uuid == v.Uuid {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			removed = append(removed, v)
+		}
+	}
+
+	return added, removed
+}

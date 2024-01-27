@@ -167,6 +167,7 @@ const Edit = () => {
     const modificationsToArray = [];
     const tripsToArray: Trip[] = [];
     const linksToArray = [];
+    const historyToArray = [];
 
     for (const key in data.links) {
       linksToArray.push(data.links[key]);
@@ -186,6 +187,12 @@ const Edit = () => {
       });
     }
 
+    for (const key in data.history) {
+      historyToArray.push({
+        ...data.history[key],
+        build_id: Number(build?.id),
+      });
+    }
     const payload: BuildPayload = {
       ...data,
       id: build?.id,
@@ -194,6 +201,7 @@ const Edit = () => {
       links: linksToArray,
       modifications: modificationsToArray,
       user_id: user.id,
+      history: historyToArray,
     };
 
     const folderRoot =
@@ -458,7 +466,7 @@ const Edit = () => {
 
             <section className="flex flex-col">
               <H3>
-                History <AddHistory form={form} buildId={build.uuid} />
+                History <AddHistory form={form} buildId={build?.id} />
               </H3>
               <p className="text-muted-foreground">
                 Add any repairs, maintenace or additions you&apos;ve done over
