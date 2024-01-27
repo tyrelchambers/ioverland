@@ -59,6 +59,22 @@ func Update(db *gorm.DB, b *models.Build) error {
 		db.Model(&b).Association("Modifications").Clear()
 	}
 
+	if len(b.History) > 0 {
+		var old []*models.History
+
+		db.Table("histories").Where("build_id = ?", b.ID).Find(&old)
+
+		added, removed := DiffHistory(old, b.History)
+
+		for _, r := range removed {
+			db.Table("histories").Where("uuid = ? AND build_id = ?", r.Uuid, b.ID).Delete(&models.Trip{})
+		}
+
+		b.History = added
+	} else {
+		db.Model(&b).Association("History").Clear()
+	}
+
 	db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Likes", "Views").Save(&b)
 
 	if db.Error != nil {
@@ -85,7 +101,7 @@ func GetById(db *gorm.DB, uuid string) (models.Build, error) {
 
 	var build models.Build
 
-	db.Preload("Trips").Preload("Modifications").Where("uuid = ?", uuid).First(&build)
+	db.Preload("Trips").Preload("Modifications").Preload("History").Where("uuid = ?", uuid).First(&build)
 
 	db.Table("media").Where("build_id = ? AND type = 'banner'", uuid).First(&build.Banner)
 

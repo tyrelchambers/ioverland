@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
 import Info from "@/components/Info";
 import VideoWithLoader from "@/components/VideoWithLoader";
+import History from "@/components/build/History";
 import Links from "@/components/build/Links";
 import Modifications from "@/components/build/Modifications";
 import Photos from "@/components/build/Photos";
@@ -352,6 +353,11 @@ const Build = () => {
               <H2 className="mb-6">Links</H2>
               <Links links={build?.links} />
             </div>
+          </div>
+          <div className="flex flex-col my-10 mt-20">
+            <H2 className="mb-2">History</H2>
+
+            <History history={build?.history} />
           </div>
           <Separator />
 
