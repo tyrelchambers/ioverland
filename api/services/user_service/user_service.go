@@ -56,7 +56,7 @@ var Plan_limits = map[string]PlanLimit{
 		MaxFiles:     16,
 		MaxFileSize:  "100mb",
 		VideoSupport: true,
-		MaxBuilds:    5,
+		MaxBuilds:    3,
 	},
 	"Overlander": {
 		MaxFiles:     25,

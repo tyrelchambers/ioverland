@@ -60,7 +60,7 @@ export const plans: Plan[] = [
     price: 14,
     plan_name: "explorer",
     features: [
-      "5 builds",
+      "3 builds",
       "16 images per build",
       "100MB per image or video",
       "Video support",
