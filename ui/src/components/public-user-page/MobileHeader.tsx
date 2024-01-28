@@ -24,17 +24,17 @@ const MobileHeader = ({
         <div className="w-full aspect-video h-[450px] bg-gradient-to-t from-zinc-200 to-zinc-100 rounded-xl"></div>
       )}
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between w-full mt-3">
-        <div className=" flex flex-col md:flex-row items-center md:items-start flex-1">
-          <Avatar className="w-20 h-20 md:mr-4 border-4 border-white  shadow-xl">
+        <div className=" flex flex-col md:flex-row items-center md:items-start flex-1 ">
+          <Avatar className="w-20 h-20 md:mr-4 border-4 border-white  shadow-xl ">
             <AvatarFallback>
               <User />
             </AvatarFallback>
             <AvatarImage src={data.avatar} fetchPriority="high" />
           </Avatar>
           <div className="flex flex-col">
-            <H1>{data.username}</H1>
+            <H1 className="text-center mt-2">{data.username}</H1>
             {data.bio && (
-              <p className="text-muted-foreground text-sm text-center">
+              <p className="text-muted-foreground text-sm text-center my-2">
                 {data.bio}
               </p>
             )}
