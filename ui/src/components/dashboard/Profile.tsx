@@ -119,7 +119,7 @@ const Profile = () => {
       <Form {...form}>
         <form
           className="flex flex-col gap-4 mt-10"
-          onSubmit={form.handleSubmit(submitHandler, console.log)}
+          onSubmit={form.handleSubmit(submitHandler)}
         >
           <H3>Info</H3>
 

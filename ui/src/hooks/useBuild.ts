@@ -60,8 +60,6 @@ export const useBuild = (id?: string) => {
     },
     onError: (error) => {
       if (isAxiosError(error)) {
-        console.log(error);
-
         toast.error("Error", {
           description:
             error.response?.data.message || error.response?.data.error,

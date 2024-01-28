@@ -115,29 +115,25 @@ const Index = () => {
       user_id: user.id,
     };
 
-    try {
-      if (banner[0]) {
-        payload.banner = {
-          mime_type: banner[0].fileType,
-          name: banner[0].filename,
-          url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
-          type: "banner",
-        } satisfies Omit<Media, "uuid">;
-      }
+    if (banner[0]) {
+      payload.banner = {
+        mime_type: banner[0].fileType,
+        name: banner[0].filename,
+        url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${banner[0].serverId}/${banner[0].filename}`,
+        type: "banner",
+      } satisfies Omit<Media, "uuid">;
+    }
 
-      if (photos.length !== 0) {
-        payload.photos = photos.map(
-          (p) =>
-            ({
-              mime_type: p.fileType,
-              name: p.filename,
-              url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${p.serverId}/${p.filename}`,
-              type: "photos",
-            } satisfies Omit<Media, "uuid">)
-        );
-      }
-    } catch (error) {
-      console.log(error);
+    if (photos.length !== 0) {
+      payload.photos = photos.map(
+        (p) =>
+          ({
+            mime_type: p.fileType,
+            name: p.filename,
+            url: `https://ioverland.b-cdn.net/${folderRoot}/${user.id}/${p.serverId}/${p.filename}`,
+            type: "photos",
+          } satisfies Omit<Media, "uuid">)
+      );
     }
 
     try {
