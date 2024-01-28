@@ -1,6 +1,14 @@
 import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { BadgeDollarSign, Home, LayoutDashboard, Mountain } from "lucide-react";
+import {
+  BadgeDollarSign,
+  Home,
+  LayoutDashboard,
+  Map,
+  Mountain,
+  Plus,
+  Wrench,
+} from "lucide-react";
 import { useSearch } from "@/hooks/useSearch";
 import MobileNav from "./header/MobileNav";
 import Search from "./header/Search";
@@ -10,6 +18,14 @@ import { Badge } from "./ui/badge";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "./ui/navigation-menu";
 
 export const routes = [
   {
@@ -119,9 +135,34 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
                     {route.label}
                   </Link>
                 ))}
-                <Link href="/build/new">
-                  <Button size="sm">New build</Button>
-                </Link>
+
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="bg-primary">
+                        Create a...
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="p-2 w-[200px] flex flex-col">
+                          <NavigationMenuLink
+                            href="/build/new"
+                            className="hover:bg-zinc-100 transition-all rounded-md p-2 flex gap-2 items-center text-muted-foreground"
+                          >
+                            <Wrench size={16} />
+                            New build
+                          </NavigationMenuLink>
+                          <NavigationMenuLink
+                            href="/build/new"
+                            className="hover:bg-zinc-100 transition-all rounded-md p-2 flex gap-2 items-center text-muted-foreground"
+                          >
+                            <Map size={16} />
+                            New trip
+                          </NavigationMenuLink>
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
               <SignedOut>

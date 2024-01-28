@@ -55,13 +55,30 @@ const MobileNav = ({
                   {label}
                 </Link>
               ))}
-              <Link
-                href="/build/new"
-                className="w-full block mt-6"
-                onClick={() => setOpen(false)}
-              >
-                <Button className={cn("w-full")}>New build</Button>
-              </Link>
+              <div className="flex flex-col gap-2 mt-6">
+                <Link
+                  href="/build/new"
+                  className="w-full block "
+                  onClick={() => setOpen(false)}
+                >
+                  <Button type="button" className={cn("w-full")}>
+                    New build
+                  </Button>
+                </Link>
+                <Link
+                  href="/trip/new"
+                  className="w-full block"
+                  onClick={() => setOpen(false)}
+                >
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={cn("w-full")}
+                  >
+                    New trip
+                  </Button>
+                </Link>
+              </div>
             </SignedIn>
           </div>
           <SignedOut>
