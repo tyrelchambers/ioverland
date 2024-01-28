@@ -1,9 +1,13 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect } from "react";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 interface StepperContextProps {
   active: number;
   setActive: (active: number) => void;
+  setTotalTabs: (totalTabs: number) => void;
+  totalTabs: number;
 }
 
 interface IStepperTabs {
@@ -37,9 +41,8 @@ const StepperTab = ({
     <button
       type="button"
       className={cn(
-        "border border-border p-3 rounded-md hover:border-secondary text-secondary font-bold text-xs",
-        ctx.active === step &&
-          "bg-secondary/10 border-secondary text-secondary",
+        "border border-border p-3 rounded-md hover:border-zinc-800 text-foreground font-bold text-xs",
+        ctx.active === step && "bg-zinc-800/10 border-zinc-800 text-foreground",
         step < ctx.active && "complete-step",
         className
       )}
@@ -48,8 +51,7 @@ const StepperTab = ({
     >
       <span
         className={cn(
-          "h-4 w-4 rounded-full px-2 bg-secondary mr-2 text-sm font-bold text-secondary-foreground",
-          ctx.active === step && "bg-secondary text-secondary-foreground"
+          "h-4 w-4 rounded-full px-2 bg-zinc-800 mr-2 text-sm font-bold text-background"
         )}
         data-step={step}
       >
@@ -61,6 +63,12 @@ const StepperTab = ({
 };
 
 const StepperTabs = ({ className, children }: IStepperTabs) => {
+  const ctx = useStepper();
+
+  useEffect(() => {
+    ctx.setTotalTabs(React.Children.count(children));
+  }, []);
+
   return (
     <div
       className={cn(
@@ -83,6 +91,7 @@ const Stepper = ({
   className?: string;
 }) => {
   const [active, setActive] = React.useState(1);
+  const [totalTabs, setTotalTabs] = React.useState(0);
 
   useEffect(() => {
     if (activeStep) {
@@ -95,6 +104,8 @@ const Stepper = ({
       value={{
         active,
         setActive,
+        totalTabs,
+        setTotalTabs,
       }}
     >
       <section className={className}>{children}</section>
@@ -106,10 +117,19 @@ interface IStepperPanel {
   children: React.ReactNode;
   className?: string;
   step: number;
+  confirm?: JSX.Element;
 }
 
-const StepperPanel = ({ children, className, step }: IStepperPanel) => {
+const StepperPanel = ({
+  children,
+  className,
+  step,
+  confirm,
+}: IStepperPanel) => {
   const ctx = useStepper();
+
+  const nextHandler = () => ctx.setActive(ctx.active + 1);
+  const prevHandler = () => ctx.setActive(ctx.active - 1);
 
   return (
     <div
@@ -117,6 +137,31 @@ const StepperPanel = ({ children, className, step }: IStepperPanel) => {
       data-step={step}
     >
       {children}
+      <Separator className="my-6" />
+      <footer className="flex justify-end gap-4">
+        {ctx.active > 1 && (
+          <Button
+            variant="outline"
+            type="button"
+            size="lg"
+            onClick={prevHandler}
+          >
+            Back
+          </Button>
+        )}
+        {ctx.totalTabs !== ctx.active ? (
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            onClick={nextHandler}
+          >
+            Next
+          </Button>
+        ) : (
+          confirm
+        )}
+      </footer>
     </div>
   );
 };

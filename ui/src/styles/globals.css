@@ -84,11 +84,11 @@
   }
 
   .complete-step {
-    @apply bg-secondary !text-secondary-foreground;
+    @apply bg-zinc-800 !text-background;
   }
 
   .complete-step span {
-    @apply bg-secondary-foreground text-secondary;
+    @apply bg-white text-foreground;
   }
 }
 

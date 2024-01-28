@@ -367,7 +367,22 @@ const Index = () => {
                   />
                 </StepperPanel>
 
-                <StepperPanel step={6} className="flex flex-col gap-3">
+                <StepperPanel
+                  step={6}
+                  className="flex flex-col gap-3"
+                  confirm={
+                    <Button
+                      disabled={form.formState.isSubmitting}
+                      className="w-fit self-end"
+                    >
+                      {form.formState.isSubmitting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        "Create build"
+                      )}
+                    </Button>
+                  }
+                >
                   <H3>Visibility</H3>
                   <Info>
                     <p>
@@ -396,16 +411,6 @@ const Index = () => {
                       </FormItem>
                     )}
                   />
-                  <Button
-                    disabled={form.formState.isSubmitting}
-                    className="w-fit"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Create build"
-                    )}
-                  </Button>
                 </StepperPanel>
               </form>
             </Form>
