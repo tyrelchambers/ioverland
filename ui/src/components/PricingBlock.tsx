@@ -44,20 +44,12 @@ const PricingBlock = ({
       )}
     </header>
 
-    <section
-      className={cn(
-        "mt-10",
-        plan.featured && "bg-primary p-6 rounded-lg shadow-xl relative z-10"
-      )}
-    >
+    <section className={cn("mt-10")}>
       <ul className="flex flex-col gap-4">
         {plan.features.map((feature) => (
           <li
             key={feature}
-            className={cn(
-              " text-muted-foreground flex gap-6 items-center",
-              plan.featured && "text-primary-foreground"
-            )}
+            className={cn(" text-muted-foreground flex gap-6 items-center")}
           >
             <span className="w-[18px]">
               <CheckCircle2 size={18} />
