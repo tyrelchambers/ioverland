@@ -42,6 +42,7 @@
     "filepond-plugin-image-exif-orientation": "^1.0.11",
     "filepond-plugin-image-preview": "^4.6.12",
     "lucide-react": "^0.309.0",
+    "mapbox-gl": "^3.1.2",
     "next": "14.0.4",
     "next-runtime-env": "^3.2.0",
     "next-themes": "^0.2.1",
@@ -58,6 +59,7 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.17.7",
+    "@types/mapbox-gl": "^2.7.19",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

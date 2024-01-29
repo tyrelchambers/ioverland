@@ -180,6 +180,8 @@ const account = z.object({
     max_files: z.number(),
     max_builds: z.number(),
     video_support: z.boolean(),
+    can_create_adventures: z.boolean(),
+    adventure_num_photos: z.number(),
   }),
   user: z.object({
     banner: media.optional(),
@@ -289,3 +291,59 @@ export interface IComment {
   build: Build;
   reply_id?: string;
 }
+
+const waypoint = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  adventure_id: z.string(),
+});
+
+export type Waypoint = z.infer<typeof waypoint>;
+
+const day = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  notes: z.string(),
+  weather: z.string(),
+});
+
+export type Day = z.infer<typeof day>;
+
+const location = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  lat: z.number(),
+  lng: z.number(),
+});
+
+export type Location = z.infer<typeof location>;
+
+const adventure = z.object({
+  uuid: z.string().optional(),
+  name: z.string(),
+  summary: z.string(),
+  builds: z.array(buildSchema),
+  media: z.array(media).optional(),
+  created_at: z.date(),
+  deleted_at: z.date().nullable(),
+  comments: z.array(commentSchema),
+  likes: z.array(userBase),
+  waypoints: z.array(waypoint),
+  user: userBase,
+  days: z.array(day),
+  locations: z.array(location),
+  youtube_links: z.array(z.string()),
+});
+
+waypoint.extend({
+  adventure: adventure,
+  location: location,
+});
+
+export type Adventure = z.infer<typeof adventure>;
+
+export const newTripSchema = z.object({
+  name: z.string().min(1, { message: "Trip name is required" }),
+  year: z.string(),
+  builds: z.array(buildSchema),
+});

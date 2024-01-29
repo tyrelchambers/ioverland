@@ -152,7 +152,7 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
                             New build
                           </NavigationMenuLink>
                           <NavigationMenuLink
-                            href="/build/new"
+                            href="/trip/new"
                             className="hover:bg-zinc-100 transition-all rounded-md p-2 flex gap-2 items-center text-muted-foreground"
                           >
                             <Map size={16} />

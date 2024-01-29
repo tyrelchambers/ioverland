@@ -34,7 +34,7 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
     >
       <QueryClientProvider client={queryClient}>
-        <div className="bg-yellow-100 p-1">
+        <div className="bg-yellow-100 p-1 relative z-50">
           <p className="text-muted-foreground text-sm max-w-screen-2xl mx-auto">
             <span className="font-bold mr-4 text-foreground">
               WildBarrens Beta
