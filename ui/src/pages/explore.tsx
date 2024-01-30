@@ -13,7 +13,7 @@ const Explore = () => {
   const GOAL = 20;
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen  overflow-x-hidden">
       <Head>
         <title>Explore | iOverland</title>
       </Head>
