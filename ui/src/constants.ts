@@ -1515,3 +1515,42 @@ export const modificationCategories = [
     ],
   },
 ];
+
+export const mapBoxStyles = {
+  outdoors: {
+    label: "Outdoors",
+    style: "mapbox://styles/mapbox/outdoors-v12",
+    image: "/outdoors.png",
+  },
+  streets: {
+    label: "Streets",
+    style: "mapbox://styles/mapbox/streets-v12",
+    image: "/streets.png",
+  },
+  light: {
+    label: "Light",
+    style: "mapbox://styles/mapbox/light-v11",
+    image: "/light.png",
+  },
+  dark: {
+    label: "Dark",
+    style: "mapbox://styles/mapbox/dark-v11",
+    image: "/dark.png",
+  },
+  satellite: {
+    label: "Satellite",
+    style: "mapbox://styles/mapbox/satellite-v9",
+    image: "/satellite_streets.png",
+  },
+
+  navigationDay: {
+    label: "Navigation - Day",
+    style: "mapbox://styles/mapbox/navigation-day-v1",
+    image: "/nav_day.png",
+  },
+  navigationNight: {
+    label: "Navigation - Night",
+    style: "mapbox://styles/mapbox/navigation-night-v1",
+    image: "/nav_night.png",
+  },
+};

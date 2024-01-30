@@ -134,3 +134,13 @@ export const calculateModificationsCost = (
   });
   return cost;
 };
+
+export function getMatch(e: any) {
+  const url = `https://api.mapbox.com/directions/v5/mapbox/cycling/${e}?geometries=geojson&steps=true&access_token=${process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN}`;
+  return fetch(url)
+    .then((res) => res.json())
+    .then((res) => {
+      return res;
+    })
+    .catch(console.log);
+}

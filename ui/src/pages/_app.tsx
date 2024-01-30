@@ -7,6 +7,7 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { Toaster } from "@/components/ui/sonner";
 import { PublicEnvScript, env } from "next-runtime-env";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export const headingFont = Playfair_Display({
   weight: ["400", "700"],
