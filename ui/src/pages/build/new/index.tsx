@@ -26,7 +26,12 @@ import Uploader from "@/components/Uploader";
 import { H1, H3 } from "@/components/Heading";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
-import { acceptedFiletypes, formatPrice, generateYears } from "@/lib/utils";
+import {
+  acceptedFiletypes,
+  formatPrice,
+  formatPricePartToInputValue,
+  generateYears,
+} from "@/lib/utils";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import BuildQuotaMet from "@/components/BuildQuotaMet";
 import Header from "@/components/Header";
@@ -227,12 +232,21 @@ const Index = () => {
                       <FormItem>
                         <FormLabel>Budget</FormLabel>
                         <FormDescription>
-                          Input your total approximate budget in cents (eg: 1000
-                          = $10)
+                          Input your total approximate budget
                         </FormDescription>
-                        <Input type="number" {...field} />
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(v) =>
+                            field.onChange(
+                              formatPricePartToInputValue(
+                                formatPrice(Number(v.currentTarget.value)).parts
+                              ).toString()
+                            )
+                          }
+                        />
                         <FormDescription>
-                          {formatPrice(field.value)}
+                          {formatPrice(field.value).value}
                         </FormDescription>
                       </FormItem>
                     )}

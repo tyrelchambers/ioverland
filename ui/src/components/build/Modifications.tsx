@@ -38,7 +38,7 @@ const Modifications = ({
                       </p>
                     </div>
                     <p className="text-foreground">
-                      {formatPrice(Number(mod.price))}
+                      {formatPrice(Number(mod.price)).value}
                     </p>
                   </li>
                 ))}

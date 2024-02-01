@@ -319,7 +319,7 @@ const Build = () => {
                 <AlertTitle>Budget</AlertTitle>
                 <AlertDescription>
                   {Number(build.budget) ? (
-                    <p>{formatPrice(Number(build.budget))}</p>
+                    <p>{formatPrice(Number(build.budget)).value}</p>
                   ) : null}
                 </AlertDescription>
               </Alert>
@@ -337,7 +337,10 @@ const Build = () => {
             <p className="mb-4 text-muted-foreground">
               Total modifications cost:{" "}
               <span className="font-bold text-foreground">
-                {formatPrice(calculateModificationsCost(build?.modifications))}
+                {
+                  formatPrice(calculateModificationsCost(build?.modifications))
+                    .value
+                }
               </span>
             </p>
             <Modifications modifications={build?.modifications} />

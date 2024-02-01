@@ -81,16 +81,34 @@ export const getMaxFileSize = (has_subscription: boolean | undefined) => {
   return MAX_FILE_SIZE;
 };
 
-export const formatPrice = (itemPrice: number | undefined) => {
-  if (!itemPrice) {
-    return "$0.00";
-  }
+/**
+ * Formats the given item price into a currency value with parts.
+ * Value is used for display strings
+ * Parts is used with formatPricePartToInputValue to get the value for input
+ * @param {number | undefined} itemPrice - the item price to be formatted
+ * @return {{ parts: Intl.NumberFormatPart[]; value: string }} the formatted price with parts
+ */
+export const formatPrice = (
+  itemPrice: number | undefined
+): { parts: Intl.NumberFormatPart[]; value: string } => {
+  if (!itemPrice) return { parts: [], value: "" };
+
   const price = new Intl.NumberFormat("en-CA", {
     currency: "CAD",
     style: "currency",
   });
 
-  return price.format(itemPrice / 100);
+  return {
+    parts: price.formatToParts(itemPrice),
+    value: price.format(itemPrice),
+  };
+};
+
+export const formatPricePartToInputValue = (parts: Intl.NumberFormatPart[]) => {
+  return parts
+    .filter((p) => p.type === "integer")
+    .map((p) => p.value)
+    .join("");
 };
 
 export const generateYears = () => {

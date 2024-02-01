@@ -40,7 +40,9 @@ const ModsList = ({ mods, form }: { mods: Modification[] | {}; form: any }) => {
                     <p>{cat?.label}</p>/<p>{subCat?.label}</p>
                   </div>
                   {mod.price && (
-                    <p className="text-sm">{formatPrice(Number(mod.price))}</p>
+                    <p className="text-sm">
+                      {formatPrice(Number(mod.price)).value}
+                    </p>
                   )}
                 </div>
                 <Button

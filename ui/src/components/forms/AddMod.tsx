@@ -18,7 +18,11 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { modificationCategories } from "@/constants";
-import { findCategorySubcategories, formatPrice } from "@/lib/utils";
+import {
+  findCategorySubcategories,
+  formatPrice,
+  formatPricePartToInputValue,
+} from "@/lib/utils";
 import { Button } from "../ui/button";
 import { PlusCircle } from "lucide-react";
 import { Input } from "../ui/input";
@@ -130,19 +134,21 @@ const AddMod = ({ form, build_id }: Props) => {
 
         <FormItem>
           <FormLabel>Price</FormLabel>
-          <FormDescription>
-            Input your price in cents (eg: 1000 = $10)
-          </FormDescription>
+          <FormDescription>Input your price approximate</FormDescription>
           <Input
             type="number"
             onChange={(e) => {
               setItem({
                 ...item,
-                price: e.target.value,
+                price: formatPricePartToInputValue(
+                  formatPrice(Number(e.currentTarget.value)).parts
+                ).toString(),
               });
             }}
           />
-          <FormDescription>{formatPrice(Number(item.price))}</FormDescription>
+          <FormDescription>
+            {formatPrice(Number(item.price)).value}
+          </FormDescription>
         </FormItem>
         <DialogFooter>
           <Button onClick={addModification}>Add modification</Button>
