@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { Layers, LocateFixed, MousePointerClick } from "lucide-react";
 import { useCoords } from "@/hooks/useCoords";
@@ -6,18 +6,26 @@ import LayerModal from "./LayerModal";
 import { useMapboxConfigStore } from "@/stores/useMapboxLayers";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { cn, getMatch } from "@/lib/utils";
+import { useMapStore } from "@/stores/mapStore";
+import { createId } from "@paralleldrive/cuid2";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string;
-const Map = () => {
+const Map = ({
+  addPointRef,
+  map,
+  setAddingPoint,
+}: {
+  addPointRef: React.MutableRefObject<boolean>;
+  map: React.MutableRefObject<mapboxgl.Map | null>;
+  setAddingPoint: (x: boolean) => void;
+}) => {
   const mapContainer = useRef<any>("");
-  const map = useRef<mapboxgl.Map | null>(null);
   const [lng, setLng] = useState(-70.9);
   const [lat, setLat] = useState(42.35);
   const [zoom, setZoom] = useState(9);
   const coords = useCoords();
   const mapboxConfig = useMapboxConfigStore();
-  const Draw = useRef<MapboxDraw | null>(null);
-  const [mapRoutes, setMapRoutes] = useState([]);
+  const mapStore = useMapStore();
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -30,87 +38,27 @@ const Map = () => {
 
     map.current = mapInit;
 
-    var draw = new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        point: true,
-      },
-      styles: [
-        // ACTIVE (being drawn)
-        // line stroke
-        {
-          id: "gl-draw-line",
-          type: "line",
-          filter: [
-            "all",
-            ["==", "$type", "LineString"],
-            ["!=", "mode", "static"],
-          ],
-          layout: {
-            "line-cap": "round",
-            "line-join": "round",
-          },
-          paint: {
-            "line-color": "#3b9ddd",
-            "line-dasharray": [0.2, 2],
-            "line-width": 4,
-            "line-opacity": 0.7,
-          },
-        },
-        // vertex point halos
-        {
-          id: "gl-draw-polygon-and-line-vertex-halo-active",
-          type: "circle",
-          filter: [
-            "all",
-            ["==", "meta", "vertex"],
-            ["==", "$type", "Point"],
-            ["!=", "mode", "static"],
-          ],
-          paint: {
-            "circle-radius": 10,
-            "circle-color": "#FFF",
-          },
-        },
-        // vertex points
-        {
-          id: "gl-draw-polygon-and-line-vertex-active",
-          type: "circle",
-          filter: [
-            "all",
-            ["==", "meta", "vertex"],
-            ["==", "$type", "Point"],
-            ["!=", "mode", "static"],
-          ],
-          paint: {
-            "circle-radius": 6,
-            "circle-color": "#3b9ddd",
-          },
-        },
-      ],
-    });
-
-    if (draw) {
-      mapInit.addControl(draw, "top-right");
-      Draw.current = draw;
-    }
-    mapInit.on("draw.create", updateRoute);
-    mapInit.on("draw.update", updateRoute);
     mapInit.on("move", () => {
       setLng(Number(mapInit.getCenter().lng.toFixed(4)));
       setLat(Number(mapInit.getCenter().lat.toFixed(4)));
       setZoom(Number(mapInit.getZoom().toFixed(2)));
     });
 
-    map.current.on("click", (ev) => {
-      console.log(ev);
+    map.current.on("load", () => {
+      if (!map.current) return;
 
-      new mapboxgl.Popup({ offset: [0, -15] })
-        .setLngLat(ev.lngLat)
-        .setHTML(
-          `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
-        )
-        .addTo(map);
+      map.current.on("click", (ev) => {
+        if (!addPointRef.current) {
+          return;
+        }
+
+        mapStore.addPoint({
+          id: createId(),
+          lat: ev.lngLat.lat,
+          lng: ev.lngLat.lng,
+        });
+        setAddingPoint(false);
+      });
     });
   });
 
@@ -127,22 +75,6 @@ const Map = () => {
       zoom: 15,
     });
   };
-
-  async function updateRoute() {
-    const data = Draw.current.getAll();
-    const lastFeature = data.features.length - 1;
-    const _coords = data.features[lastFeature].geometry.coordinates;
-    const newCoords = _coords.join(";");
-    const _match = await getMatch(newCoords);
-    const featureId = data.features[lastFeature].id;
-
-    const match = {
-      ..._match,
-      featureId,
-    };
-
-    console.log(match);
-  }
 
   return (
     <div className="w-[calc(100vw-500px)] flex justify-end relative">

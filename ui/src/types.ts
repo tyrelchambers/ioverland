@@ -300,15 +300,6 @@ const waypoint = z.object({
 
 export type Waypoint = z.infer<typeof waypoint>;
 
-const day = z.object({
-  uuid: z.string(),
-  name: z.string(),
-  notes: z.string(),
-  weather: z.string(),
-});
-
-export type Day = z.infer<typeof day>;
-
 const location = z.object({
   uuid: z.string(),
   name: z.string(),
@@ -317,6 +308,22 @@ const location = z.object({
 });
 
 export type Location = z.infer<typeof location>;
+
+const stopSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
+  events: z.string(),
+});
+
+export type Stop = z.infer<typeof stopSchema>;
+
+export const daySchema = z.object({
+  day_number: z.string(),
+  notes: z.string().optional(),
+  stops: z.record(z.string(), stopSchema).optional(),
+});
+
+export type Day = z.infer<typeof daySchema>;
 
 const adventure = z.object({
   uuid: z.string().optional(),
@@ -330,7 +337,7 @@ const adventure = z.object({
   likes: z.array(userBase),
   waypoints: z.array(waypoint),
   user: userBase,
-  days: z.array(day),
+  days: z.array(daySchema),
   locations: z.array(location),
   youtube_links: z.array(z.string()),
 });
@@ -344,6 +351,15 @@ export type Adventure = z.infer<typeof adventure>;
 
 export const newTripSchema = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
+  summary: z.string().optional(),
   year: z.string(),
   builds: z.array(buildSchema),
 });
+
+newTripSchema.extend({ days: z.record(z.string(), daySchema).optional() });
+
+export interface Point {
+  id: string;
+  lat: number;
+  lng: number;
+}
