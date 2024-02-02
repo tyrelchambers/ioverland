@@ -77,8 +77,6 @@ const DayForm = ({
     form.setValue("stops", l);
   };
 
-  console.log(mapStore.points);
-
   return (
     <div className="p-4 rounded-md bg-card my-4">
       <header className="flex justify-between items-center">
@@ -95,7 +93,11 @@ const DayForm = ({
       <Form {...form}>
         <form
           className="flex flex-col gap-4"
-          onSubmit={form.handleSubmit(addDayHandler)}
+          onSubmit={form.handleSubmit((data) => {
+            form.reset();
+            mapStore.clearPoints();
+            addDayHandler(data);
+          })}
         >
           <FormField
             name="day_number"
@@ -133,7 +135,7 @@ const DayForm = ({
             </FormDescription>
             <Button
               type="button"
-              variant={addingPoint ? "default" : "outline"}
+              variant={addingPoint ? "default" : "secondary"}
               className="w-full mt-2"
               onClick={addPointHandler}
             >

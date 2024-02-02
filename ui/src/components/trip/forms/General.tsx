@@ -1,4 +1,5 @@
 import { H2 } from "@/components/Heading";
+import { MaxFileSizeText } from "@/components/MaxFileSize";
 import Uploader from "@/components/Uploader";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,7 +51,7 @@ const General = ({
 
   return (
     <Form {...form}>
-      <form className="mt-6 flex flex-col gap-4 h-full ">
+      <form className="mt-6 flex flex-col gap-4 h-full">
         <FormField
           name="name"
           render={({ field }) => (
@@ -100,8 +101,13 @@ const General = ({
 
         <FormItem>
           <FormLabel>Photos</FormLabel>
+          <MaxFileSizeText
+            maxFileUploads={20}
+            maxFileSize="20MB"
+            type="trip_photos"
+          />
           <Uploader
-            type="trip"
+            type="trip_photos"
             allowMultiple
             maxFiles={account?.plan_limits.adventure_num_photos}
             maxFileSize={account?.plan_limits.max_file_size}
@@ -122,7 +128,7 @@ const General = ({
             </FormControl>
             <SelectContent>
               {builds?.map((build) => (
-                <SelectItem key={build.id} value={build.id as string}>
+                <SelectItem key={build.id} value={JSON.stringify(build)}>
                   {build.name}
                 </SelectItem>
               ))}
@@ -159,18 +165,20 @@ const General = ({
                   <p className="font-bold">Day {day.day_number}</p>
                   {day.notes && <p>{day.notes}</p>}
                   {day.stops && (
-                    <div>
+                    <div className="flex flex-col gap-2">
                       {Object.entries(day.stops).map((stop) => {
                         const stopId = stop[0];
                         const stopData = stop[1];
 
                         return (
-                          <div key={stopId}>
+                          <div key={stopId} className="bg-card p-2 rounded-md">
                             <p className="text-sm text-muted-foreground flex items-baseline gap-2">
                               <TentTree size={18} /> {stopData.lat.toFixed(2)},{" "}
                               {stopData.lng.toFixed(2)}
                             </p>
-                            <p>{stopData.events}</p>
+                            <p className="text-card-foreground text-xs">
+                              {stopData.events}
+                            </p>
                           </div>
                         );
                       })}
@@ -189,6 +197,8 @@ const General = ({
             })}
           </div>
         </div>
+
+        <Button>Create adventure</Button>
       </form>
     </Form>
   );

@@ -5,6 +5,7 @@ interface Props {
   points: Point[];
   addPoint: (points: Point) => void;
   removePoint: (point: Point) => void;
+  clearPoints: () => void;
 }
 export const useMapStore = create<Props>((set) => ({
   points: [],
@@ -17,4 +18,5 @@ export const useMapStore = create<Props>((set) => ({
         ({ lat, lng }) => lat !== point.lat && lng !== point.lng
       ),
     })),
+  clearPoints: () => set((state) => ({ ...state, points: [] })),
 }));
