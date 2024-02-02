@@ -80,7 +80,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center w-full py-20">
+        <div className="flex flex-col items-center w-full py-20 p-4 lg:p-0">
           <H2 className="lg:!text-6xl text-center !font-serif">
             Show off your vehicle
           </H2>
@@ -108,7 +108,7 @@ export default function Home() {
 
       <section className="mb-20 max-w-screen-xl mx-auto">
         <div className="flex items-center flex-col-reverse lg:flex-row p-4 lg:p-0">
-          <div className="flex flex-col lg:p-20 p-6">
+          <div className="flex flex-col lg:p-20 py-6 ">
             <H2 className="lg:text-6xl text-4xl mb-10 !font-serif">
               We would love to see your build
             </H2>
