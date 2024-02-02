@@ -140,12 +140,7 @@ const StepperPanel = ({
       <Separator className="my-6" />
       <footer className="flex justify-end gap-4">
         {ctx.active > 1 && (
-          <Button
-            variant="outline"
-            type="button"
-            size="lg"
-            onClick={prevHandler}
-          >
+          <Button variant="outline" type="button" onClick={prevHandler}>
             Back
           </Button>
         )}
