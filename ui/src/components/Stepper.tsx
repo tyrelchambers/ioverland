@@ -145,12 +145,7 @@ const StepperPanel = ({
           </Button>
         )}
         {ctx.totalTabs !== ctx.active ? (
-          <Button
-            type="button"
-            variant="secondary"
-            size="lg"
-            onClick={nextHandler}
-          >
+          <Button type="button" variant="secondary" onClick={nextHandler}>
             Next
           </Button>
         ) : (
