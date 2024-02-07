@@ -29,7 +29,7 @@ const Profile = () => {
   return (
     <div>
       <Head>
-        <title>{publicUser.data.username} | iOverland</title>
+        <title>{publicUser.data.username} | WildBarrens</title>
       </Head>
       <Header />
 

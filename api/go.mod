@@ -1,6 +1,6 @@
 module api
 
-go 1.21.6
+go 1.22.0
 
 require (
 	git.sr.ht/~jamesponddotco/bunnystorage-go v0.3.0

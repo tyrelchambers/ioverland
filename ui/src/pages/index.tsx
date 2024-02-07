@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <main>
       <Head>
-        <title>iOverland</title>
+        <title>WildBarrens</title>
       </Head>
       <section className="h-screen flex relative">
         <div className="w-full flex flex-col items-center absolute inset-0 z-10 justify-center max-w-screen-xl h-full min-h-screen mx-auto">
@@ -113,7 +113,7 @@ export default function Home() {
               We would love to see your build
             </H2>
             <p className="text-muted-foreground max-w-3xl text-xl leading-relaxed">
-              Welcome to iOverland, the ultimate platform to showcase and
+              Welcome to WildBarrens, the ultimate platform to showcase and
               celebrate your thrilling overlanding builds. Whether you&apos;re
               an avid adventurer, a DIY enthusiast, or simply passionate about
               creating the perfect off-road vehicle, our app has everything you
@@ -180,8 +180,8 @@ export default function Home() {
                 Features
               </H2>
               <p className="text-muted-foreground max-w-3xl text-xl leading-relaxed">
-                iOverland is designed and will continue to be improved upon, to
-                provide you with a fun and easy way to showcase your overland
+                WildBarrens is designed and will continue to be improved upon,
+                to provide you with a fun and easy way to showcase your overland
                 builds. We want you to show-off what you&apos;ve built and be
                 able to connect with other like-minded creators.
               </p>
@@ -213,7 +213,7 @@ export default function Home() {
                 <div className="flex flex-col">
                   <p className=" font-bold  text-xl">Featured</p>
                   <p className="text-muted-foreground">
-                    Have a chance to be featured on iOverland
+                    Have a chance to be featured on WildBarrens
                   </p>
                 </div>
               </div>
@@ -311,7 +311,7 @@ export default function Home() {
               <Users className="text-primary" size={30} />
               <p className=" font-bold my-2 text-xl">Meetups</p>
               <p className="text-muted-foreground">
-                Meet up with other iOverlanders
+                Meet up with other Overlanders
               </p>
             </div>
 

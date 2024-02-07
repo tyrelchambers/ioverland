@@ -61,7 +61,7 @@ const Build = () => {
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const build = getById.data;
-  const shareLink = `https://iover.land/build/${build?.uuid}`;
+  const shareLink = `https://wildbarrens.com/build/${build?.uuid}`;
 
   useEffect(() => {
     if (paramId) {
@@ -173,11 +173,11 @@ const Build = () => {
     toast.info("Copied to clipboard");
   };
 
-  const twitterShareLink = `https://twitter.com/intent/tweet?text=Check%20out%20this%20build%20on%20iover.land&url=${shareLink}`;
+  const twitterShareLink = `https://twitter.com/intent/tweet?text=Check%20out%20this%20build%20on%20wildbarrens.com&url=${shareLink}`;
   return (
     <section>
       <Head>
-        <title>{build?.name} | iOverland</title>
+        <title>{build?.name} | WildBarrens</title>
       </Head>
       <Header />
 

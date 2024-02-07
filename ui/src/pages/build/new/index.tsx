@@ -159,7 +159,7 @@ const Index = () => {
   return (
     <section>
       <Head>
-        <title>Create | iOverland</title>
+        <title>Create | WildBarrens</title>
       </Head>
       <Header />
       <div className="max-w-screen-lg mx-auto my-10 relative h-full">

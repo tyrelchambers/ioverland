@@ -41,7 +41,7 @@ const Dashboard = () => {
   return (
     <div>
       <Head>
-        <title>Dashboard | iOverland</title>
+        <title>Dashboard | WildBarrens</title>
       </Head>
       <Header stickyOnScroll={false} />
 

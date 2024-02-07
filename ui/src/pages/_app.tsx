@@ -37,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <div className="bg-yellow-100 p-1">
           <p className="text-muted-foreground text-sm max-w-screen-2xl mx-auto">
             <span className="font-bold mr-4 text-foreground">
-              iOverland Beta
+              WildBarrens Beta
             </span>
             Please allow a few seconds for certain actions to perform. If an
             action isn&apos;t immediate, please allow for a few seconds.

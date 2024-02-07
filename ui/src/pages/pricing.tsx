@@ -9,7 +9,7 @@ const pricing = () => {
   return (
     <div>
       <Head>
-        <title>Pricing | iOverland</title>
+        <title>Pricing | WildBarrens</title>
       </Head>
       <Header />
 
@@ -19,9 +19,9 @@ const pricing = () => {
             Designed to help you get the most out of your Overland adventures
           </H1>
           <p className="text-muted-foreground text-center md:text-xl text-sm text-balance">
-            iOverland was made to give you a place to show-off your builds and
-            document your trips. We hope iOverland is everything you&apos;d like
-            in a place to showcase what you&apos;ve worked on.
+            WildBarrens was made to give you a place to show-off your builds and
+            document your trips. We hope WildBarrens is everything you&apos;d
+            like in a place to showcase what you&apos;ve worked on.
           </p>
           <p className="text-muted-foreground text-center italic mt-6">
             All plans are paid monthly

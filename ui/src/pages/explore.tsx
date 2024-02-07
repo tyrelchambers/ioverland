@@ -15,7 +15,7 @@ const Explore = () => {
   return (
     <div className="relative min-h-screen  overflow-x-hidden">
       <Head>
-        <title>Explore | iOverland</title>
+        <title>Explore | WildBarrens</title>
       </Head>
       <Header />
 
@@ -35,9 +35,10 @@ const Explore = () => {
           You&apos;ve made it to the explore page!
         </H1>
         <p className="text-muted-foreground text-center">
-          iOverland is a very new project and evidently we don&apos;t have much
-          to show here, yet. We would absolutely love it if you&apos;d help us
-          by creating your own overlanding build so we can add it to this list!{" "}
+          WildBarrens is a very new project and evidently we don&apos;t have
+          much to show here, yet. We would absolutely love it if you&apos;d help
+          us by creating your own overlanding build so we can add it to this
+          list!{" "}
         </p>
         <Link href="/build/new" className="mt-10">
           <Button size="lg">Create a build</Button>

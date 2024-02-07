@@ -24,7 +24,7 @@ const NoSubscription = ({
       <Zap className="text-muted-foreground" />
       <p className="font-bold mt-6">Not currently subscribed to any plan.</p>
       <p className="text-muted-foreground text-sm">
-        If you&apos;d like to experience all iOverland has to offer, please
+        If you&apos;d like to experience all WildBarrens has to offer, please
         purchase a plan.
       </p>
 

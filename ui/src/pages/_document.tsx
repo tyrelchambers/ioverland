@@ -10,7 +10,7 @@ export default function Document() {
 
         <script
           defer
-          data-domain="iover.land"
+          data-domain="wildbarrens.com"
           src="https://plausible.io/js/script.js"
         ></script>
       </Head>

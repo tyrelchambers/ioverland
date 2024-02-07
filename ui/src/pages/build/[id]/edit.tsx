@@ -277,7 +277,7 @@ const Edit = () => {
   return (
     <section>
       <Head>
-        <title>Edit Build | iOverland</title>
+        <title>Edit Build | WildBarrens</title>
       </Head>
       <Header />
       <div className="py-10 p-4  max-w-screen-md mx-auto">
