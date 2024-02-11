@@ -1,6 +1,7 @@
 import {
   Bookmark,
   Fingerprint,
+  FlameKindling,
   Grid2x2,
   LucideIcon,
   Sparkle,
@@ -18,6 +19,11 @@ export const dashboardTabs: Tab[] = [
     tab: "builds",
     icon: Grid2x2,
     label: "Builds",
+  },
+  {
+    tab: "adventures",
+    icon: FlameKindling,
+    label: "Adventures",
   },
   {
     tab: "bookmarks",

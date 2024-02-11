@@ -7,6 +7,7 @@ import {
   Map,
   Mountain,
   Plus,
+  PlusCircle,
   Wrench,
 } from "lucide-react";
 import { useSearch } from "@/hooks/useSearch";
@@ -140,7 +141,7 @@ const Header = ({ on, className, stickyOnScroll }: Props) => {
                   <NavigationMenuList>
                     <NavigationMenuItem>
                       <NavigationMenuTrigger className="bg-primary">
-                        Create a...
+                        <PlusCircle size={16} className="mr-2" /> New
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
                         <div className="p-2 w-[200px] flex flex-col">

@@ -77,7 +77,7 @@ const Map = ({
   };
 
   return (
-    <div className="w-[calc(100vw-500px)] flex justify-end relative">
+    <div className="h-[650px] w-full flex justify-end relative">
       <div className="absolute top-4 left-3 z-20 flex flex-col rounded-full bg-white shadow-lg p-3">
         <p className="text-xs text-muted-foreground">
           Long: <span className="font-bold">{lng}</span> Lat:{" "}
@@ -94,7 +94,7 @@ const Map = ({
           <LocateFixed />
         </button>
       </div>
-      <div ref={mapContainer} className="map-container h-screen w-full" />
+      <div ref={mapContainer} className=" h-full w-full" />
     </div>
   );
 };

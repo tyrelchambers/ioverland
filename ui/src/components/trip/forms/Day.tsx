@@ -15,28 +15,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useMapStore } from "@/stores/mapStore";
 import { Point, Stop, daySchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import cuid2, { createId } from "@paralleldrive/cuid2";
-import { X } from "lucide-react";
+import { createId } from "@paralleldrive/cuid2";
 import mapboxgl from "mapbox-gl";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import Map from "../Map";
 
 interface Props {
-  setShow: (x: boolean) => void;
-  addingPoint: boolean;
-  addPointHandler: () => void;
   map: React.MutableRefObject<mapboxgl.Map | null>;
   addDayHandler: (data: any) => void;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DayForm = ({
-  setShow,
-  addingPoint,
-  addPointHandler,
-  addDayHandler,
-}: Props) => {
+const DayForm = ({ addDayHandler, map, setOpen }: Props) => {
   const mapStore = useMapStore();
+  const [addingPoint, setAddingPoint] = useState(false);
+  const addPointRef = useRef(addingPoint);
   const form = useForm({
     resolver: zodResolver(daySchema),
     defaultValues: {
@@ -75,24 +69,19 @@ const DayForm = ({
       delete l[id];
     }
     form.setValue("stops", l);
+    setOpen(false);
+  };
+
+  const addPointHandler = () => {
+    setAddingPoint(!addingPoint);
+    addPointRef.current = !addingPoint;
   };
 
   return (
-    <div className="p-4 rounded-md bg-card my-4">
-      <header className="flex justify-between items-center">
-        <H3 className="text-xl">Adding day...</H3>
-        <button
-          type="button"
-          className="hover:bg-foreground hover:text-background h-10 w-10 rounded-full flex justify-center items-center transition-all"
-          onClick={() => setShow(false)}
-        >
-          <X size={18} />
-        </button>
-      </header>
-
+    <div className="flex gap-4">
       <Form {...form}>
         <form
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-4 p-4"
           onSubmit={form.handleSubmit((data) => {
             form.reset();
             mapStore.clearPoints();
@@ -143,6 +132,7 @@ const DayForm = ({
             </Button>
           </div>
           <Separator />
+
           <div>
             <Label>Stops</Label>
             <FormDescription>Stops currently added to the nap.</FormDescription>
@@ -185,6 +175,12 @@ const DayForm = ({
           <Button>Save day</Button>
         </form>
       </Form>
+      <Map
+        addPointRef={addPointRef}
+        map={map}
+        setAddingPoint={setAddingPoint}
+      />
+      ;
     </div>
   );
 };

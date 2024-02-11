@@ -144,3 +144,23 @@ export function getMatch(e: any) {
     })
     .catch(console.log);
 }
+
+export const convertToArray = <T>(
+  obj: Record<string, T>,
+  unroll?: Array<keyof T>
+): T[] => {
+  const arr = [];
+  for (const key in obj) {
+    const element = obj[key];
+
+    if (unroll) {
+      unroll.forEach((u) => {
+        // @ts-ignore
+        element[u] = convertToArray(element[u]);
+      });
+    }
+
+    arr.push(element);
+  }
+  return arr;
+};

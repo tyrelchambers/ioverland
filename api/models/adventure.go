@@ -11,7 +11,7 @@ type Adventure struct {
 	Name         string         `gorm:"type:varchar(255)" json:"name"`
 	Summary      string         `json:"summary"`
 	Media        []*Media       `json:"media"`
-	Builds       []*Build       `json:"builds"`
+	Builds       *Build         `json:"builds"`
 	User         *User          `json:"user"`
 	Waypoints    []*Waypoint    `json:"waypoints"`
 	Days         []*Day         `json:"days"`
@@ -22,6 +22,7 @@ type Adventure struct {
 	Comments     []*Comment     `json:"comments"`
 	Year         string         `json:"year"`
 	YoutubeLinks pq.StringArray `gorm:"type:text[]" json:"youtube_links"`
+	Views        int            `gorm:"default:0" json:"views"`
 }
 
 type Day struct {

@@ -340,6 +340,7 @@ const adventure = z.object({
   days: z.array(daySchema),
   locations: z.array(location),
   youtube_links: z.array(z.string()),
+  views: z.number(),
 });
 
 waypoint.extend({
@@ -353,10 +354,29 @@ export const newTripSchema = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
   summary: z.string().optional(),
   year: z.string(),
-  builds: z.array(buildSchema),
+  builds: z.custom(),
+  days: z.record(z.string(), daySchema).optional(),
 });
 
 newTripSchema.extend({ days: z.record(z.string(), daySchema).optional() });
+
+export const newTripPayload = z.object({
+  name: z.string().min(1, { message: "Trip name is required" }),
+  summary: z.string().optional(),
+  year: z.string(),
+  builds: z.custom(),
+  days: z
+    .array(
+      z.object({
+        day_number: z.string(),
+        notes: z.string().optional(),
+        stops: z.array(stopSchema).optional(),
+      })
+    )
+    .optional(),
+});
+
+export type NewTripPayload = z.infer<typeof newTripPayload>;
 
 export interface Point {
   id: string;
