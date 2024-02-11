@@ -142,10 +142,13 @@ func main() {
 	billingG := api.Group("/billing")
 	exploreG := api.Group("/explore")
 	commentG := api.Group("/comment")
-	adventureG := api.Group("/adventures")
+	adventuresG := api.Group("/adventures")
+	adventureG := api.Group("/adventure")
 
-	adventureG.POST("/new", AuthRequired, controllers.CreateNewAdventure)
-	adventureG.GET("/:user_id", AuthRequired, controllers.GetUserAdventures)
+	adventuresG.POST("/new", AuthRequired, controllers.CreateNewAdventure)
+	adventuresG.GET("/:user_id", AuthRequired, controllers.GetUserAdventures)
+
+	adventureG.GET("/:adventure_id", AuthRequired, controllers.GetAdventure)
 
 	buildG.POST("", AuthRequired, controllers.CreateBuild)
 	buildG.GET("/:build_id", controllers.GetById)

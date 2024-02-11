@@ -66,7 +66,7 @@ const MobileNav = ({
                   </Button>
                 </Link>
                 <Link
-                  href="/trip/new"
+                  href="/adventure/new"
                   className="w-full block"
                   onClick={() => setOpen(false)}
                 >
@@ -75,7 +75,7 @@ const MobileNav = ({
                     variant="outline"
                     className={cn("w-full")}
                   >
-                    New trip
+                    New adventure
                   </Button>
                 </Link>
               </div>

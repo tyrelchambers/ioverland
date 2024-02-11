@@ -47,3 +47,20 @@ func GetUserAdventures(c *gin.Context) {
 
 	c.JSON(http.StatusOK, adv)
 }
+
+func GetAdventure(c *gin.Context) {
+	id := c.Param("adventure_id")
+
+	adv, err := adventure_service.GetById(dbConfig.Client, id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [GETADVENTURE] Error getting adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, adv)
+}

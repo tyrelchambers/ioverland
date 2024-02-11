@@ -13,11 +13,23 @@ func Create(db *gorm.DB, a *models.Adventure) error {
 func GetAdventuresByUser(db *gorm.DB, user_id string) ([]*models.Adventure, error) {
 	var adventures []*models.Adventure
 
-	err := db.Where("user_id = ?", user_id).Find(&adventures).Error
+	err := db.Preload("Photos").Where("user_id = ?", user_id).Find(&adventures).Error
 
 	if err != nil {
 		return adventures, err
 	}
 
 	return adventures, nil
+}
+
+func GetById(db *gorm.DB, uuid string) (*models.Adventure, error) {
+	var adventure *models.Adventure
+
+	err := db.Preload("Photos").Where("uuid = ?", uuid).First(&adventure).Error
+
+	if err != nil {
+		return adventure, err
+	}
+
+	return adventure, nil
 }

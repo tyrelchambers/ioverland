@@ -10,7 +10,7 @@ type Adventure struct {
 	Uuid         string         `gorm:"primaryKey;default:gen_random_uuid()" json:"uuid"`
 	Name         string         `gorm:"type:varchar(255)" json:"name"`
 	Summary      string         `json:"summary"`
-	Media        []*Media       `json:"media"`
+	Photos       []*Media       `json:"photos"`
 	Builds       *Build         `json:"builds"`
 	User         *User          `json:"user"`
 	Waypoints    []*Waypoint    `json:"waypoints"`

@@ -330,7 +330,7 @@ const adventure = z.object({
   name: z.string(),
   summary: z.string(),
   builds: z.array(buildSchema),
-  media: z.array(media).optional(),
+  photos: z.array(media).optional(),
   created_at: z.date(),
   deleted_at: z.date().nullable(),
   comments: z.array(commentSchema),
@@ -360,6 +360,8 @@ export const newTripSchema = z.object({
 
 newTripSchema.extend({ days: z.record(z.string(), daySchema).optional() });
 
+export type NewTripSchema = z.infer<typeof newTripSchema>;
+
 export const newTripPayload = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
   summary: z.string().optional(),
@@ -374,6 +376,7 @@ export const newTripPayload = z.object({
       })
     )
     .optional(),
+  photos: z.array(media).optional(),
 });
 
 export type NewTripPayload = z.infer<typeof newTripPayload>;

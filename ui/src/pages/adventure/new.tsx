@@ -19,7 +19,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { convertToArray, generateYears } from "@/lib/utils";
-import { Day, NewTripPayload, daySchema, newTripSchema } from "@/types";
+import {
+  Day,
+  Media,
+  NewTripPayload,
+  NewTripSchema,
+  daySchema,
+  newTripSchema,
+} from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import {
@@ -44,6 +51,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
+import { folderRoot } from "@/constants";
 
 const NewTrip = () => {
   const { account, user } = useDomainUser();
@@ -85,14 +93,29 @@ const NewTrip = () => {
   const submitHandler = async (data: z.infer<typeof newTripSchema>) => {
     try {
       const payload: NewTripPayload = {
-        ...data,
+        name: data.name,
+        summary: data.summary,
+        year: data.year,
       };
+
       if (data.days) {
         payload.days = convertToArray<Day>(data.days, ["stops"]);
       }
 
       if (payload.builds) {
         payload.builds = JSON.parse(payload.builds);
+      }
+
+      if (photos.length !== 0) {
+        payload.photos = photos.map(
+          (p) =>
+            ({
+              mime_type: p.fileType,
+              name: p.filename,
+              url: `https://ioverland.b-cdn.net/${folderRoot}/${user.data?.uuid}/${p.serverId}/${p.filename}`,
+              type: "photos",
+            } satisfies Omit<Media, "uuid">)
+        );
       }
 
       await create.mutateAsync(payload, {
