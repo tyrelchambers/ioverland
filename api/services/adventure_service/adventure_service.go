@@ -25,11 +25,15 @@ func GetAdventuresByUser(db *gorm.DB, user_id string) ([]*models.Adventure, erro
 func GetById(db *gorm.DB, uuid string) (*models.Adventure, error) {
 	var adventure *models.Adventure
 
-	err := db.Preload("Photos").Where("uuid = ?", uuid).First(&adventure).Error
+	err := db.Preload("Photos").Preload("User").Where("uuid = ?", uuid).First(&adventure).Error
 
 	if err != nil {
 		return adventure, err
 	}
 
 	return adventure, nil
+}
+
+func IncreaseViews(db *gorm.DB, uuid string) error {
+	return db.Table("adventures").Where("uuid = ?", uuid).Update("views", gorm.Expr("views + 1")).Error
 }

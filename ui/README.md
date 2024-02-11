@@ -30,3 +30,7 @@ Trip: (only for the top tier)
   - Enable users to rate and review waypoints or entire trips, providing valuable insights for the community.
 
 Add support for third party builds on an adventure
+
+adventure
+
+- add ability to search location like peterborough, ontario

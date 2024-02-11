@@ -62,5 +62,16 @@ func GetAdventure(c *gin.Context) {
 		return
 	}
 
+	err = adventure_service.IncreaseViews(dbConfig.Client, id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [GETADVENTURE] Error increasing views",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.JSON(http.StatusOK, adv)
 }

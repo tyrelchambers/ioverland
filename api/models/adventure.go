@@ -13,7 +13,6 @@ type Adventure struct {
 	Photos       []*Media       `json:"photos"`
 	Builds       *Build         `json:"builds"`
 	User         *User          `json:"user"`
-	Waypoints    []*Waypoint    `json:"waypoints"`
 	Days         []*Day         `json:"days"`
 	UserId       string         `json:"user_id"`
 	CreatedAt    time.Time      `json:"created_at" gorm:"autoCreateTime"`
@@ -30,27 +29,7 @@ type Day struct {
 	Name        string    `json:"name"`
 	Notes       string    `json:"notes"`
 	Weather     string    `json:"weather"`
-	Location    *Location `gorm:"foreignKey:DayId;references:Uuid" json:"location"`
 	AdventureId string    `json:"adventure_id"`
-	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime"`
-	DeletedAt   *time.Time
-}
-
-type Location struct {
-	Uuid       string    `gorm:"primaryKey;default:gen_random_uuid()" json:"uuid"`
-	Lat        string    `json:"lat"`
-	Lng        string    `json:"lng"`
-	WaypointId *string   `json:"waypoint_id"`
-	DayId      *string   `json:"day_id"`
-	CreatedAt  time.Time `json:"created_at" gorm:"autoCreateTime"`
-	DeletedAt  *time.Time
-}
-
-type Waypoint struct {
-	Uuid        string    `gorm:"primaryKey;default:gen_random_uuid()" json:"uuid"`
-	Name        string    `json:"name"`
-	AdventureId string    `json:"adventure_id"`
-	Location    *Location `gorm:"foreignKey:WaypointId;references:Uuid" json:"location"`
 	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime"`
 	DeletedAt   *time.Time
 }

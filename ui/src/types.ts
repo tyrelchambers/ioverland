@@ -338,9 +338,10 @@ const adventure = z.object({
   waypoints: z.array(waypoint),
   user: userBase,
   days: z.array(daySchema),
-  locations: z.array(location),
+  location: z.string().optional(),
   youtube_links: z.array(z.string()),
   views: z.number(),
+  year: z.string(),
 });
 
 waypoint.extend({
