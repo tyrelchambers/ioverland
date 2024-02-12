@@ -72,7 +72,7 @@ func main() {
 	}
 
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
@@ -149,6 +149,7 @@ func main() {
 	adventuresG.GET("/:user_id", AuthRequired, controllers.GetUserAdventures)
 
 	adventureG.GET("/:adventure_id", AuthRequired, controllers.GetAdventure)
+	adventureG.DELETE("/:adv_id/image/:media_id", AuthRequired, controllers.RemoveImage)
 
 	buildG.POST("", AuthRequired, controllers.CreateBuild)
 	buildG.GET("/:build_id", controllers.GetById)

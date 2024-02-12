@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAdventure } from "@/hooks/useAdventure";
+import { useDomainUser } from "@/hooks/useDomainUser";
 import { useUser } from "@clerk/nextjs";
 import { Calendar, Eye, Heart, HeartOff } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import React, { useState } from "react";
 
 const Adventure = () => {
   const { isSignedIn } = useUser();
+  const { user } = useDomainUser();
   const router = useRouter();
   const { adventureById } = useAdventure({
     adventureId: router.query.id as string,
@@ -72,9 +74,11 @@ const Adventure = () => {
       <div className="my-10 max-w-screen-xl mx-auto">
         <header className="max-w-4xl ">
           <div className="flex items-center mb-4">
-            <Link href={`/adventure/${adv.uuid}/edit`}>
-              <Button size="sm">Edit</Button>
-            </Link>
+            {user.data?.uuid === adv.user.uuid && (
+              <Link href={`/adventure/${adv.uuid}/edit`}>
+                <Button size="sm">Edit</Button>
+              </Link>
+            )}
             <LikeButton />
             <span className="flex items-center font-bold text-sm">
               <Eye size={20} className="text-muted-foreground mr-2" />

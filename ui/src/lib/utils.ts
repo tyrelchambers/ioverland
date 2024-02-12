@@ -4,6 +4,7 @@ import {
   modificationCategories,
 } from "@/constants";
 import { History, Modification } from "@/types";
+import { createId } from "@paralleldrive/cuid2";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -163,4 +164,22 @@ export const convertToArray = <T>(
     arr.push(element);
   }
   return arr;
+};
+
+export const convertToObject = <T>(
+  arr: T[],
+  unroll?: Array<keyof T>
+): Record<string, T> => {
+  const obj = {};
+  arr.forEach((a) => {
+    if (unroll) {
+      unroll.forEach((u) => {
+        // @ts-ignore
+        a[u] = convertToObject(a[u]);
+      });
+    }
+    // @ts-ignore
+    obj[createId()] = a;
+  });
+  return obj;
 };

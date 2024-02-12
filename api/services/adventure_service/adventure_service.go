@@ -25,7 +25,7 @@ func GetAdventuresByUser(db *gorm.DB, user_id string) ([]*models.Adventure, erro
 func GetById(db *gorm.DB, uuid string) (*models.Adventure, error) {
 	var adventure *models.Adventure
 
-	err := db.Preload("Photos").Preload("User").Where("uuid = ?", uuid).First(&adventure).Error
+	err := db.Preload("Photos").Preload("Days").Preload("User").Where("uuid = ?", uuid).First(&adventure).Error
 
 	if err != nil {
 		return adventure, err
