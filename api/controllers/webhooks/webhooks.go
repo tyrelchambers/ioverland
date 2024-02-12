@@ -1,4 +1,4 @@
-package controllers
+package webhooks_controller
 
 import (
 	dbConfig "api/db"

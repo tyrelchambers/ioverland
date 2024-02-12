@@ -1,4 +1,4 @@
-package controllers
+package upload_controller
 
 import (
 	"api/utils"

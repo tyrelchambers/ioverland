@@ -49,7 +49,7 @@ import { z } from "zod";
 const Edit = () => {
   const { account, user } = useDomainUser();
   const router = useRouter();
-  const { update, adventureById } = useAdventure({
+  const { update, adventureById, removeImage } = useAdventure({
     adventureId: router.query.id as string,
   });
   const [photos, setPhotos] = React.useState<FilePondFile[]>([]);
@@ -113,7 +113,7 @@ const Edit = () => {
     removeImage.mutate({
       image_id,
       url,
-      build_id: adventureById.data?.uuid,
+      adv_id: adventureById.data?.uuid,
     });
   };
 

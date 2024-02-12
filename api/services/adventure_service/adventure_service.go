@@ -37,3 +37,9 @@ func GetById(db *gorm.DB, uuid string) (*models.Adventure, error) {
 func IncreaseViews(db *gorm.DB, uuid string) error {
 	return db.Table("adventures").Where("uuid = ?", uuid).Update("views", gorm.Expr("views + 1")).Error
 }
+
+func RemoveImage(db *gorm.DB, adventure_id, media_id string) error {
+	db.Table("media").Where("id = ? AND adventure_id = ?", media_id, adventure_id).Delete(&models.Media{})
+
+	return nil
+}

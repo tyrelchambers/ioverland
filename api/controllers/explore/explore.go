@@ -1,4 +1,4 @@
-package controllers
+package explore_controller
 
 import (
 	dbConfig "api/db"

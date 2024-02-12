@@ -1,4 +1,4 @@
-package controllers
+package adventure_controller
 
 import (
 	dbConfig "api/db"
@@ -74,4 +74,22 @@ func GetAdventure(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, adv)
+}
+
+func RemoveImage(c *gin.Context) {
+	media_id := c.Param("media_id")
+	adv_id := c.Param("adv_id")
+
+	err := adventure_service.RemoveImage(dbConfig.Client, adv_id, media_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [REMOVEIMAGE] Error removing image",
+			Extra:   map[string]interface{}{"error": err.Error(), "media_id": media_id, "adv_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
 }

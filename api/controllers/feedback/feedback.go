@@ -1,4 +1,4 @@
-package controllers
+package feedback_controller
 
 import (
 	"api/utils"

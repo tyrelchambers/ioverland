@@ -1,4 +1,4 @@
-package controllers
+package build_controller
 
 import (
 	dbConfig "api/db"
