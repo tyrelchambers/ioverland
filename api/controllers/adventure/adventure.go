@@ -93,3 +93,60 @@ func RemoveImage(c *gin.Context) {
 
 	c.String(http.StatusOK, "success")
 }
+func Update(c *gin.Context) {
+	var reqBody *models.Adventure
+
+	if err := c.Bind(&reqBody); err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err := adventure_service.Update(dbConfig.Client, reqBody)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [BUILD] [GETBUILDBYID] Error updating build",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": reqBody.UserId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, reqBody)
+}
+
+func RemoveBuild(c *gin.Context) {
+	id := c.Param("adv_id")
+	build_id := c.Param("build_id")
+	err := adventure_service.RemoveBuild(dbConfig.Client, id, build_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [REMOVEBUILD] Error removing build",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": id, "build_id": build_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+
+}
+
+func RemoveDay(c *gin.Context) {
+	id := c.Param("adv_id")
+	day_id := c.Param("day_id")
+	err := adventure_service.RemoveDay(dbConfig.Client, day_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [REMOVEBUILD] Error removing build",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": id, "day_id": day_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+
+}

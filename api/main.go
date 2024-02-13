@@ -161,6 +161,9 @@ func main() {
 
 	adventureG.GET("/:adventure_id", AuthRequired, adventure_controller.GetAdventure)
 	adventureG.DELETE("/:adv_id/image/:media_id", AuthRequired, adventure_controller.RemoveImage)
+	adventureG.PUT("/:adv_id", AuthRequired, adventure_controller.Update)
+	adventureG.DELETE("/:adv_id/build/:build_id", AuthRequired, adventure_controller.RemoveBuild)
+	adventureG.DELETE("/:adv_id/day/:day_id", AuthRequired, adventure_controller.RemoveDay)
 
 	buildG.POST("", AuthRequired, build_controller.CreateBuild)
 	buildG.GET("/:build_id", build_controller.GetById)

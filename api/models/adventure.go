@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 type Adventure struct {
@@ -11,7 +12,7 @@ type Adventure struct {
 	Name         string         `gorm:"type:varchar(255)" json:"name"`
 	Summary      string         `json:"summary"`
 	Photos       []*Media       `json:"photos"`
-	Builds       *Build         `json:"builds"`
+	Builds       []Build        `json:"builds" gorm:"many2many:build_adventures;"`
 	User         *User          `json:"user"`
 	Days         []*Day         `json:"days"`
 	UserId       string         `json:"user_id"`
@@ -32,4 +33,13 @@ type Day struct {
 	AdventureId string    `json:"adventure_id"`
 	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime"`
 	DeletedAt   *time.Time
+	Stops       []*Stops `json:"stops"`
+}
+
+type Stops struct {
+	gorm.Model
+	DayId   string  `json:"day_id"`
+	Summary string  `json:"summary"`
+	Lat     float64 `json:"lat"`
+	Lng     float64 `json:"lng"`
 }

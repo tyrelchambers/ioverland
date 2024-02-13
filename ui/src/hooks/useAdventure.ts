@@ -50,7 +50,7 @@ export const useAdventure = ({
 
   const update = useMutation({
     mutationFn: async (payload: NewTripPayload) => {
-      return request.post(`/api/adventure/${adventureId}/edit`, payload, {
+      return request.put(`/api/adventure/${adventureId}`, payload, {
         headers: {
           Authorization: `Bearer ${await getToken()}`,
         },
@@ -79,5 +79,47 @@ export const useAdventure = ({
     },
   });
 
-  return { create, adventures, adventureById, update, removeImage };
+  const removeBuild = useMutation({
+    mutationFn: async (data: { adv_id: string; build_id: string }) => {
+      return request.delete(
+        `/api/adventure/${data.adv_id}/build/${data.build_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      toast.success("Build removed");
+      context.invalidateQueries({ queryKey: ["adventure", adventureId] });
+    },
+  });
+
+  const removeDay = useMutation({
+    mutationFn: async (data: { adv_id: string; day_id: string }) => {
+      return request.delete(
+        `/api/adventure/${data.adv_id}/day/${data.day_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      toast.success("Day removed");
+      context.invalidateQueries({ queryKey: ["adventure", adventureId] });
+    },
+  });
+
+  return {
+    create,
+    adventures,
+    adventureById,
+    update,
+    removeImage,
+    removeBuild,
+    removeDay,
+  };
 };

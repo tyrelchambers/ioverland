@@ -18,6 +18,7 @@ type Build struct {
 	Modifications []Modification `gorm:"constraint:OnUpdate:CASCADE;foreignKey:BuildId" json:"modifications"`
 	Public        bool           `gorm:"default:false" json:"public"`
 	UserId        string         `gorm:"not null" json:"user_id"`
+	User          *User          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:UserId;references:Uuid" json:"user"`
 	Banner        Media          `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"banner"`
 	Photos        []Media        `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"photos"`
 	Views         int            `gorm:"default:0" json:"views"`
@@ -25,7 +26,7 @@ type Build struct {
 	FeaturedOn    time.Time      `json:"featured_on"`
 	Comments      []*Comment     `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"comments"`
 	History       []*History     `gorm:"foreignKey:BuildId" json:"history"`
-	AdventureId   string         `json:"adventure_id"`
+	Adventures    []*Adventure   `gorm:"many2many:build_adventures;" json:"adventures"`
 }
 
 type Vehicle struct {

@@ -76,7 +76,7 @@ const NewTrip = () => {
   const daysWatch = form.watch("days");
 
   const removeDayHandler = (id: string) => {
-    const clone = form.getValues("days");
+    const clone: Record<string, Day> = form.getValues("days");
     if (clone[id]) {
       delete clone[id];
       form.setValue("days", clone);
@@ -206,7 +206,7 @@ const NewTrip = () => {
               />
             </FormItem>
 
-            <FormField
+            {/* <FormField
               name="builds"
               render={({ field }) => (
                 <FormItem>
@@ -233,7 +233,7 @@ const NewTrip = () => {
                   </Select>
                 </FormItem>
               )}
-            />
+            /> */}
 
             <Separator className="my-6" />
             <div className="flex flex-col">

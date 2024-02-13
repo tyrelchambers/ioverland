@@ -118,6 +118,7 @@ export const buildSchema = z.object({
   likes: z.array(z.string()).nullable(),
   comments: z.array(commentSchema),
   history: z.array(historySchema),
+  user: z.custom(),
 });
 
 commentSchema.extend({
@@ -318,6 +319,7 @@ const stopSchema = z.object({
 export type Stop = z.infer<typeof stopSchema>;
 
 export const daySchema = z.object({
+  uuid: z.string(),
   day_number: z.string(),
   notes: z.string().optional(),
   stops: z.record(z.string(), stopSchema).optional(),
@@ -355,7 +357,7 @@ export const newTripSchema = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
   summary: z.string().optional(),
   year: z.string(),
-  builds: z.custom(),
+  builds: z.custom().optional(),
   days: z.record(z.string(), daySchema).optional(),
 });
 
@@ -378,6 +380,7 @@ export const newTripPayload = z.object({
     )
     .optional(),
   photos: z.array(media).optional(),
+  uuid: z.string().optional(),
 });
 
 export type NewTripPayload = z.infer<typeof newTripPayload>;

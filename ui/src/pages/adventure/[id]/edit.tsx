@@ -1,8 +1,10 @@
 import Header from "@/components/Header";
-import { H2 } from "@/components/Heading";
+import { H1, H2 } from "@/components/Heading";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
+import RenderMedia from "@/components/RenderMedia";
 import Uploader from "@/components/Uploader";
 import PhotosList from "@/components/forms/PhotosList";
+import ChooseBuild from "@/components/trip/ChooseBuild";
 import DayForm from "@/components/trip/forms/Day";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +24,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -32,10 +35,19 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { folderRoot } from "@/constants";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { convertToObject, generateYears } from "@/lib/utils";
-import { Day, NewTripSchema, daySchema, newTripSchema } from "@/types";
+import { convertToArray, convertToObject, generateYears } from "@/lib/utils";
+import {
+  Build,
+  Day,
+  Media,
+  NewTripPayload,
+  NewTripSchema,
+  daySchema,
+  newTripSchema,
+} from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
@@ -44,14 +56,16 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef } from "react";
 import { FilePond } from "react-filepond";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const Edit = () => {
   const { account, user } = useDomainUser();
   const router = useRouter();
-  const { update, adventureById, removeImage } = useAdventure({
-    adventureId: router.query.id as string,
-  });
+  const { update, adventureById, removeImage, removeBuild, removeDay } =
+    useAdventure({
+      adventureId: router.query.id as string,
+    });
   const [photos, setPhotos] = React.useState<FilePondFile[]>([]);
   const [open, setOpen] = React.useState(false);
   const form = useForm({
@@ -60,12 +74,15 @@ const Edit = () => {
       name: "",
       summary: "",
       year: "",
+      builds: [],
       days: {},
       photos: [],
     },
   });
   const daysWatch = form.watch("days");
   const photosWatch = form.watch("photos");
+  const buildsWatch: Build[] = form.watch("builds");
+
   const map = useRef<mapboxgl.Map | null>(null);
 
   const builds = user.data?.builds;
@@ -80,27 +97,66 @@ const Edit = () => {
     };
 
     if (payload.days) {
+      console.log("payload.days", payload.days);
+
       payload.days = convertToObject<Day>(adv.days, ["stops"]);
     }
-    console.log(payload);
 
     form.reset(payload);
   }, [adventureById.data]);
 
-  const submitHandler = async () => {};
+  const submitHandler = async (data: z.infer<typeof newTripSchema>) => {
+    try {
+      const payload: NewTripPayload = {
+        uuid: adventureById.data?.uuid,
+        name: data.name,
+        summary: data.summary,
+        year: data.year,
+        builds: data.builds,
+      };
+
+      if (data.days) {
+        payload.days = convertToArray<Day>(data.days, ["stops"]);
+      }
+
+      if (photos.length !== 0) {
+        payload.photos = photos.map(
+          (p) =>
+            ({
+              mime_type: p.fileType,
+              name: p.filename,
+              url: `https://ioverland.b-cdn.net/${folderRoot}/${user.data?.uuid}/${p.serverId}/${p.filename}`,
+              type: "photos",
+            } satisfies Omit<Media, "uuid">)
+        );
+      }
+
+      console.log(data);
+
+      await update.mutateAsync(payload, {
+        onSuccess: () => {
+          toast.success("Adventure created");
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const removeDayHandler = (id: string) => {
-    const clone = form.getValues("days");
-    if (clone[id]) {
-      delete clone[id];
-      form.setValue("days", clone);
-    }
+    if (!adventureById.data?.uuid || !id) return;
+
+    removeDay.mutate({
+      adv_id: adventureById.data?.uuid,
+      day_id: id,
+    });
   };
 
   const addDayHandler = (data: z.infer<typeof daySchema>) => {
     const newDay: Record<string, Day> = {
       [createId()]: data,
     };
+
     form.setValue("days", { ...form.getValues("days"), ...newDay });
   };
 
@@ -117,15 +173,28 @@ const Edit = () => {
     });
   };
 
+  const addBuildHandler = (builds: Build[]) => {
+    form.setValue("builds", builds);
+  };
+
+  const removeBuildHandler = (buildId: string | undefined) => {
+    if (!adventureById.data?.uuid || !buildId) return;
+    removeBuild.mutate({
+      adv_id: adventureById.data?.uuid,
+      build_id: buildId,
+    });
+  };
+
   return (
     <div>
       <Header />
 
-      <section className="max-w-screen-md mx-auto">
+      <section className="max-w-screen-md mx-auto my-10">
+        <H1>Editing &quot;{adventureById.data?.name}&quot;</H1>
         <Form {...form}>
           <form
             className="mt-6 flex flex-col gap-4 h-full"
-            onSubmit={form.handleSubmit(submitHandler)}
+            onSubmit={form.handleSubmit(submitHandler, console.log)}
           >
             <FormField
               name="name"
@@ -195,34 +264,49 @@ const Edit = () => {
               />
             </FormItem>
 
-            <FormField
-              name="builds"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select your builds</FormLabel>
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col">
+                  <Label>Builds</Label>
                   <FormDescription>
-                    Were any of your builds a part of this trip?
+                    These builds took part in your adventure
                   </FormDescription>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a build" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {builds?.map((build) => (
-                        <SelectItem
-                          key={build.id}
-                          value={JSON.stringify(build)}
-                        >
-                          {build.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+                </div>
+
+                <ChooseBuild
+                  builds={builds ?? []}
+                  adventureBuilds={buildsWatch}
+                  addBuildHandler={addBuildHandler}
+                />
+              </div>
+              <div className="mt-4 flex flex-col gap-3">
+                {buildsWatch?.map((build: Build) => (
+                  <div
+                    key={build.uuid}
+                    className="p-4 rounded-md border border-border flex items-center justify-between gap-4 bg-card"
+                  >
+                    <div className="flex gap-4 items-center">
+                      <div className="w-[80px] rounded-lg overflow-hidden h-[80px] relative">
+                        <RenderMedia media={build.banner} />
+                      </div>
+                      <div className="flex flex-col">
+                        <p className="font-bold mb-2">{build.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {build.user?.username}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="destructiveMuted"
+                      onClick={() => removeBuildHandler(build.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <Separator className="my-6" />
             <div className="flex flex-col">
@@ -297,7 +381,7 @@ const Edit = () => {
                           type="button"
                           variant="link"
                           className="w-fit p-0 m-0 text-red-500 self-end"
-                          onClick={() => removeDayHandler(id)}
+                          onClick={() => removeDayHandler(day.uuid)}
                         >
                           Remove day
                         </Button>

@@ -175,6 +175,8 @@ export const convertToObject = <T>(
     if (unroll) {
       unroll.forEach((u) => {
         // @ts-ignore
+        if (!a[u]) return obj;
+        // @ts-ignore
         a[u] = convertToObject(a[u]);
       });
     }

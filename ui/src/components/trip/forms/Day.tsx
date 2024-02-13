@@ -180,7 +180,6 @@ const DayForm = ({ addDayHandler, map, setOpen }: Props) => {
         map={map}
         setAddingPoint={setAddingPoint}
       />
-      ;
     </div>
   );
 };
