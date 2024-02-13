@@ -46,6 +46,7 @@ export const useAdventure = ({
         .then((res) => res.data);
     },
     enabled: !!adventureId,
+    refetchOnWindowFocus: false,
   });
 
   const update = useMutation({

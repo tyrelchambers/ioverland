@@ -83,8 +83,6 @@ const Edit = () => {
   const photosWatch = form.watch("photos");
   const buildsWatch: Build[] = form.watch("builds");
 
-  const map = useRef<mapboxgl.Map | null>(null);
-
   const builds = user.data?.builds;
 
   useEffect(() => {
@@ -143,8 +141,15 @@ const Edit = () => {
     }
   };
 
-  const removeDayHandler = (id: string) => {
-    if (!adventureById.data?.uuid || !id) return;
+  const removeDayHandler = (id: string | undefined, tempId: string) => {
+    if (!adventureById.data?.uuid) return;
+
+    const clone: Record<string, Day> = { ...form.getValues("days") };
+
+    if (clone[tempId]) {
+      delete clone[tempId];
+      form.setValue("days", clone);
+    }
 
     removeDay.mutate({
       adv_id: adventureById.data?.uuid,
@@ -308,7 +313,7 @@ const Edit = () => {
               </div>
             </div>
 
-            <Separator className="my-6" />
+            {/* <Separator className="my-6" />
             <div className="flex flex-col">
               <H2 className="text-xl !mb-0">Days</H2>
               <p className="text-muted-foreground">
@@ -331,11 +336,7 @@ const Edit = () => {
                       </DialogDescription>
                     </DialogHeader>
 
-                    <DayForm
-                      map={map}
-                      addDayHandler={addDayHandler}
-                      setOpen={setOpen}
-                    />
+                    <DayForm addDayHandler={addDayHandler} setOpen={setOpen} />
                   </ScrollArea>
                 </DialogContent>
               </Dialog>
@@ -352,7 +353,9 @@ const Edit = () => {
                         className="border border-border p-4 rounded-md flex flex-col gap-2"
                       >
                         <p className="font-bold">Day {day.day_number}</p>
-                        {day.notes && <p>{day.notes}</p>}
+                        {day.notes && (
+                          <p className="text-muted-foreground">{day.notes}</p>
+                        )}
                         {day.stops && (
                           <div className="flex flex-col gap-2">
                             {Object.entries(day.stops).map((stop) => {
@@ -381,7 +384,7 @@ const Edit = () => {
                           type="button"
                           variant="link"
                           className="w-fit p-0 m-0 text-red-500 self-end"
-                          onClick={() => removeDayHandler(day.uuid)}
+                          onClick={() => removeDayHandler(day.uuid, id)}
                         >
                           Remove day
                         </Button>
@@ -389,7 +392,7 @@ const Edit = () => {
                     );
                   })}
               </div>
-            </div>
+            </div> */}
 
             <Button disabled={update.isPending}>
               {update.isPending ? (

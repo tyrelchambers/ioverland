@@ -20,6 +20,7 @@ import { useAdventure } from "@/hooks/useAdventure";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { convertToArray, generateYears } from "@/lib/utils";
 import {
+  Build,
   Day,
   Media,
   NewTripPayload,
@@ -52,6 +53,9 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Separator } from "@/components/ui/separator";
 import { folderRoot } from "@/constants";
+import { Label } from "@/components/ui/label";
+import ChooseBuild from "@/components/trip/ChooseBuild";
+import RenderMedia from "@/components/RenderMedia";
 
 const NewTrip = () => {
   const { account, user } = useDomainUser();
@@ -68,13 +72,13 @@ const NewTrip = () => {
       name: "",
       summary: "",
       year: "",
-      builds: {},
+      builds: [],
       days: {},
     },
   });
 
   const daysWatch = form.watch("days");
-
+  const buildsWatch: Build[] = form.watch("builds");
   const removeDayHandler = (id: string) => {
     const clone: Record<string, Day> = form.getValues("days");
     if (clone[id]) {
@@ -126,6 +130,15 @@ const NewTrip = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const addBuildHandler = (builds: Build[]) => {
+    form.setValue("builds", builds);
+  };
+
+  const removeBuildHandler = (build: Build) => {
+    const builds = buildsWatch.filter((b) => b.uuid !== build.uuid);
+    form.setValue("builds", builds);
   };
   return (
     <>
@@ -206,36 +219,51 @@ const NewTrip = () => {
               />
             </FormItem>
 
-            {/* <FormField
-              name="builds"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select your builds</FormLabel>
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col">
+                  <Label>Builds</Label>
                   <FormDescription>
-                    Were any of your builds a part of this trip?
+                    These builds took part in your adventure
                   </FormDescription>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a build" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {builds?.map((build) => (
-                        <SelectItem
-                          key={build.id}
-                          value={JSON.stringify(build)}
-                        >
-                          {build.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            /> */}
+                </div>
 
-            <Separator className="my-6" />
+                <ChooseBuild
+                  builds={builds ?? []}
+                  adventureBuilds={buildsWatch}
+                  addBuildHandler={addBuildHandler}
+                />
+              </div>
+              <div className="mt-4 flex flex-col gap-3">
+                {buildsWatch?.map((build: Build) => (
+                  <div
+                    key={build.uuid}
+                    className="p-4 rounded-md border border-border flex items-center justify-between gap-4 bg-card"
+                  >
+                    <div className="flex gap-4 items-center">
+                      <div className="w-[80px] rounded-lg overflow-hidden h-[80px] relative">
+                        <RenderMedia media={build.banner} />
+                      </div>
+                      <div className="flex flex-col">
+                        <p className="font-bold mb-2">{build.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {build.user?.username}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="destructiveMuted"
+                      onClick={() => removeBuildHandler(build)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* <Separator className="my-6" />
             <div className="flex flex-col">
               <H2 className="text-xl !mb-0">Days</H2>
               <p className="text-muted-foreground">
@@ -315,7 +343,7 @@ const NewTrip = () => {
                   );
                 })}
               </div>
-            </div>
+            </div> */}
 
             <Button disabled={create.isPending}>
               {create.isPending ? (

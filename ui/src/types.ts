@@ -319,10 +319,10 @@ const stopSchema = z.object({
 export type Stop = z.infer<typeof stopSchema>;
 
 export const daySchema = z.object({
-  uuid: z.string(),
-  day_number: z.string(),
+  uuid: z.string().optional(),
+  day_number: z.number(),
   notes: z.string().optional(),
-  stops: z.record(z.string(), stopSchema).optional(),
+  stops: z.record(z.string(), stopSchema).optional().nullable(),
 });
 
 export type Day = z.infer<typeof daySchema>;
@@ -357,7 +357,7 @@ export const newTripSchema = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
   summary: z.string().optional(),
   year: z.string(),
-  builds: z.custom().optional(),
+  builds: z.array(buildSchema).optional(),
   days: z.record(z.string(), daySchema).optional(),
 });
 

@@ -27,6 +27,7 @@ type Adventure struct {
 
 type Day struct {
 	Uuid        string    `gorm:"primaryKey;default:gen_random_uuid()" json:"uuid"`
+	DayNumber   int       `json:"day_number"`
 	Name        string    `json:"name"`
 	Notes       string    `json:"notes"`
 	Weather     string    `json:"weather"`
