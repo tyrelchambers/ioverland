@@ -131,6 +131,40 @@ export const useAdventure = ({
     },
   });
 
+  const like = useMutation({
+    mutationFn: async (data: { adv_id: string }) => {
+      return request.post(
+        `/api/adventure/${data.adv_id}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["adventures", userId] });
+    },
+  });
+
+  const dislike = useMutation({
+    mutationFn: async (data: { adv_id: string }) => {
+      return request.post(
+        `/api/adventure/${data.adv_id}/dislike`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      context.invalidateQueries({ queryKey: ["adventures", userId] });
+    },
+  });
+
   return {
     create,
     adventures,
@@ -140,5 +174,7 @@ export const useAdventure = ({
     removeBuild,
     removeDay,
     deleteAdventure,
+    like,
+    dislike,
   };
 };

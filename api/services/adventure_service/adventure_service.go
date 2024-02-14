@@ -74,3 +74,34 @@ func RemoveDay(db *gorm.DB, uuid string) error {
 func Delete(db *gorm.DB, uuid string) error {
 	return db.Table("adventures").Where("uuid = ?", uuid).Delete(&uuid).Error
 }
+
+func Like(db *gorm.DB, user_id string, a *models.Adventure) error {
+	likes := a.Likes
+	likes = append(likes, user_id)
+
+	err := db.Model(&a).Where("uuid = ?", a.Uuid).Update("likes", likes).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DisLike(db *gorm.DB, user_id string, a *models.Adventure) error {
+	likes := a.Likes
+	for i, like := range likes {
+		if like == user_id {
+			likes = append(likes[:i], likes[i+1:]...)
+			break
+		}
+	}
+
+	err := db.Model(&a).Where("uuid = ?", a.Uuid).Update("likes", likes).Error
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -6,48 +6,63 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAdventure } from "@/hooks/useAdventure";
 import { useDomainUser } from "@/hooks/useDomainUser";
+import { hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import { Calendar, Eye, Heart, HeartOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Adventure = () => {
+  const router = useRouter();
+  const advId = router.query.id as string;
   const { isSignedIn } = useUser();
   const { user } = useDomainUser();
-  const router = useRouter();
-  const { adventureById } = useAdventure({
-    adventureId: router.query.id as string,
+  const { adventureById, like, dislike } = useAdventure({
+    adventureId: advId,
   });
   const [liked, setLiked] = useState<boolean | undefined>(undefined);
 
   const adv = adventureById.data;
 
-  // const likeHandler = () => {
-  //   likeBuild.mutate(
-  //     {
-  //       build_id: paramId,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setLiked(true);
-  //       },
-  //     }
-  //   );
-  // };
+  useEffect(() => {
+    if (advId && user.data?.uuid) {
+      setLiked(
+        hasLiked(
+          adv?.likes.map((l) => l.uuid),
+          user.data?.uuid
+        )
+      );
+    } else {
+      setLiked(false);
+    }
+  }, [advId, adv?.likes, user.data?.uuid]);
 
-  // const dislikeHandler = () => {
-  //   dislikeBuild.mutate(
-  //     {
-  //       build_id: paramId,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         setLiked(false);
-  //       },
-  //     }
-  //   );
-  // };
+  const likeHandler = () => {
+    like.mutate(
+      {
+        adv_id: advId,
+      },
+      {
+        onSuccess: () => {
+          setLiked(true);
+        },
+      }
+    );
+  };
+
+  const dislikeHandler = () => {
+    dislike.mutate(
+      {
+        adv_id: advId,
+      },
+      {
+        onSuccess: () => {
+          setLiked(false);
+        },
+      }
+    );
+  };
 
   if (!adv) return null;
 
@@ -55,14 +70,14 @@ const Adventure = () => {
     liked ? (
       <Button
         variant="destructive"
-        // onClick={dislikeHandler}
+        onClick={dislikeHandler}
         disabled={!isSignedIn}
       >
         <HeartOff size={20} className="mr-2" />{" "}
         <span className="font-bold">{adv?.likes?.length}</span>
       </Button>
     ) : (
-      <Button variant="ghost" disabled={!isSignedIn}>
+      <Button variant="ghost" disabled={!isSignedIn} onClick={likeHandler}>
         <Heart size={20} className="text-muted-foreground mr-2" />{" "}
         <span className="font-bold">{adv?.likes?.length || 0}</span>
       </Button>
@@ -71,7 +86,7 @@ const Adventure = () => {
   return (
     <>
       <Header />
-      <div className="my-10 max-w-screen-xl mx-auto">
+      <div className="my-10 max-w-screen-xl mx-auto px-4">
         <header className="max-w-4xl ">
           <div className="flex items-center mb-4">
             {user.data?.uuid === adv.user.uuid && (

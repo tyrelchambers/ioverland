@@ -167,3 +167,63 @@ func Delete(c *gin.Context) {
 
 	c.String(http.StatusOK, "success")
 }
+
+func Like(c *gin.Context) {
+	adv_id := c.Param("adv_id")
+	user := utils.UserFromContext(c)
+
+	adv, err := adventure_service.GetById(dbConfig.Client, adv_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [LIKE] Error getting adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = adventure_service.Like(dbConfig.Client, user.Uuid, adv)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [LIKE] Error liking adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+
+}
+
+func Dislike(c *gin.Context) {
+	adv_id := c.Param("adv_id")
+	user := utils.UserFromContext(c)
+
+	adv, err := adventure_service.GetById(dbConfig.Client, adv_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [DISLIKE] Error getting adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = adventure_service.DisLike(dbConfig.Client, user.Uuid, adv)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [DISLIKE] Error disliking adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+
+}
