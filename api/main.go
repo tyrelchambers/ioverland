@@ -82,13 +82,16 @@ func main() {
 		fmt.Printf("Sentry initialization failed: %v", err)
 	}
 
+	// ------- DB SETUP
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
 		os.Exit(1)
 	}
+
+	// -------- END DB SETUP
 
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))

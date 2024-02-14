@@ -144,7 +144,7 @@ export const useAdventure = ({
       );
     },
     onSuccess: () => {
-      context.invalidateQueries({ queryKey: ["adventures", userId] });
+      context.invalidateQueries({ queryKey: ["adventure", adventureId] });
     },
   });
 
@@ -161,7 +161,7 @@ export const useAdventure = ({
       );
     },
     onSuccess: () => {
-      context.invalidateQueries({ queryKey: ["adventures", userId] });
+      context.invalidateQueries({ queryKey: ["adventure", adventureId] });
     },
   });
 

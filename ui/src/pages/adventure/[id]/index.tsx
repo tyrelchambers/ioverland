@@ -88,10 +88,10 @@ const Adventure = () => {
       <Header />
       <div className="my-10 max-w-screen-xl mx-auto px-4">
         <header className="max-w-4xl ">
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4 gap-3">
             {user.data?.uuid === adv.user.uuid && (
               <Link href={`/adventure/${adv.uuid}/edit`}>
-                <Button size="sm">Edit</Button>
+                <Button>Edit</Button>
               </Link>
             )}
             <LikeButton />

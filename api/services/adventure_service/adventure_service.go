@@ -27,7 +27,7 @@ func GetById(db *gorm.DB, uuid string) (*models.Adventure, error) {
 
 	err := db.Preload("Photos").Preload("Days").Preload("Builds").Preload("User").Preload("Builds.User").Preload("Builds.Banner", func(db *gorm.DB) *gorm.DB {
 		return db.Where("type = 'banner'")
-	}).Where("uuid = ?", uuid).First(&adventure).Error
+	}).Preload("Likes").Where("uuid = ?", uuid).First(&adventure).Error
 
 	if err != nil {
 		return adventure, err
@@ -76,31 +76,23 @@ func Delete(db *gorm.DB, uuid string) error {
 }
 
 func Like(db *gorm.DB, user_id string, a *models.Adventure) error {
-	likes := a.Likes
-	likes = append(likes, user_id)
+	db.Table("adventure_likes").Create(map[string]interface{}{
+		"adventure_uuid": a.Uuid,
+		"user_uuid":      user_id,
+	})
 
-	err := db.Model(&a).Where("uuid = ?", a.Uuid).Update("likes", likes).Error
-
-	if err != nil {
-		return err
+	if db.Error != nil {
+		return db.Error
 	}
 
 	return nil
 }
 
 func DisLike(db *gorm.DB, user_id string, a *models.Adventure) error {
-	likes := a.Likes
-	for i, like := range likes {
-		if like == user_id {
-			likes = append(likes[:i], likes[i+1:]...)
-			break
-		}
-	}
+	db.Table("adventure_likes").Where("adventure_uuid = ? AND user_uuid = ?", a.Uuid, user_id).Delete(map[string]interface{}{"adventure_uuid": a.Uuid, "user_uuid": user_id})
 
-	err := db.Model(&a).Where("uuid = ?", a.Uuid).Update("likes", likes).Error
-
-	if err != nil {
-		return err
+	if db.Error != nil {
+		return db.Error
 	}
 
 	return nil

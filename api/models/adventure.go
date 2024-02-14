@@ -18,7 +18,7 @@ type Adventure struct {
 	UserId       string         `json:"user_id"`
 	CreatedAt    time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	DeletedAt    *time.Time     `json:"deleted_at"`
-	Likes        pq.StringArray `gorm:"type:text[]" json:"likes"`
+	Likes        []*User        `gorm:"many2many:adventure_likes" json:"likes"`
 	Comments     []*Comment     `json:"comments"`
 	Year         string         `json:"year"`
 	YoutubeLinks pq.StringArray `gorm:"type:text[]" json:"youtube_links"`
