@@ -70,3 +70,7 @@ func RemoveDay(db *gorm.DB, uuid string) error {
 
 	return nil
 }
+
+func Delete(db *gorm.DB, uuid string) error {
+	return db.Table("adventures").Where("uuid = ?", uuid).Delete(&uuid).Error
+}

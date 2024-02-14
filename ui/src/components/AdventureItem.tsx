@@ -25,7 +25,7 @@ const AdventureItem = ({
 }) => {
   return (
     <Link href={`/adventure/${adventure.uuid}`} key={adventure.uuid}>
-      <header className="relative w-full aspect-video shadow-md">
+      <header className="relative w-full aspect-video shadow-md rounded-md">
         <RenderMedia media={adventure.photos?.[0]} autoPlay={playVideo} />
       </header>
       <div className="flex mt-3 justify-between">

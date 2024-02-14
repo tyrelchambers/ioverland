@@ -150,3 +150,20 @@ func RemoveDay(c *gin.Context) {
 	c.String(http.StatusOK, "success")
 
 }
+
+func Delete(c *gin.Context) {
+	id := c.Param("adv_id")
+
+	err := adventure_service.Delete(dbConfig.Client, id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [DELETE] Error deleting adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.String(http.StatusOK, "success")
+}

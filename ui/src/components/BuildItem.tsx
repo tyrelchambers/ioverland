@@ -26,7 +26,7 @@ const BuildItem = ({
 }) => {
   return (
     <Link href={`/build/${build.uuid}`} key={build.uuid}>
-      <header className="relative w-full aspect-video shadow-md">
+      <header className="relative w-full aspect-video shadow-md rounded-md overflow-hidden">
         <RenderMedia media={build.banner} autoPlay={playVideo} />
       </header>
       <div className="flex mt-3 justify-between">

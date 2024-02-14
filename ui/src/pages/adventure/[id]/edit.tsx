@@ -62,10 +62,16 @@ import { z } from "zod";
 const Edit = () => {
   const { account, user } = useDomainUser();
   const router = useRouter();
-  const { update, adventureById, removeImage, removeBuild, removeDay } =
-    useAdventure({
-      adventureId: router.query.id as string,
-    });
+  const {
+    update,
+    adventureById,
+    removeImage,
+    removeBuild,
+    removeDay,
+    deleteAdventure,
+  } = useAdventure({
+    adventureId: router.query.id as string,
+  });
   const [photos, setPhotos] = React.useState<FilePondFile[]>([]);
   const [open, setOpen] = React.useState(false);
   const form = useForm({
@@ -188,6 +194,11 @@ const Edit = () => {
       adv_id: adventureById.data?.uuid,
       build_id: buildId,
     });
+  };
+
+  const deleteHandler = () => {
+    if (!adventureById.data?.uuid) return;
+    deleteAdventure.mutate({ adv_id: adventureById.data?.uuid });
   };
 
   return (
@@ -394,13 +405,22 @@ const Edit = () => {
               </div>
             </div> */}
 
-            <Button disabled={update.isPending}>
-              {update.isPending ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                "Update adventure"
-              )}
-            </Button>
+            <footer className="flex items-center justify-between">
+              <Button
+                type="button"
+                variant="destructiveMuted"
+                onClick={deleteHandler}
+              >
+                Delete adventure
+              </Button>
+              <Button disabled={update.isPending}>
+                {update.isPending ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Update adventure"
+                )}
+              </Button>
+            </footer>
           </form>
         </Form>
       </section>

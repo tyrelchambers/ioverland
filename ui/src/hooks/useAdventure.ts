@@ -2,12 +2,14 @@ import { request } from "@/lib/axios";
 import { Adventure, NewTripPayload } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { toast } from "sonner";
 
 export const useAdventure = ({
   userId,
   adventureId,
 }: { userId?: string | undefined; adventureId?: string } = {}) => {
+  const router = useRouter();
   const context = useQueryClient();
   const { getToken } = useAuth();
   const create = useMutation({
@@ -114,6 +116,21 @@ export const useAdventure = ({
     },
   });
 
+  const deleteAdventure = useMutation({
+    mutationFn: async (data: { adv_id: string }) => {
+      return request.delete(`/api/adventure/${data.adv_id}`, {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+    },
+    onSuccess: () => {
+      toast.success("Adventure removed");
+      router.push("/dashboard");
+      context.invalidateQueries({ queryKey: ["adventures", userId] });
+    },
+  });
+
   return {
     create,
     adventures,
@@ -122,5 +139,6 @@ export const useAdventure = ({
     removeImage,
     removeBuild,
     removeDay,
+    deleteAdventure,
   };
 };
