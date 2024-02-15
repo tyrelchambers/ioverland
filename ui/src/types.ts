@@ -112,12 +112,15 @@ export const buildSchema = z.object({
   user_id: z.string(),
   photos: z.array(media).optional(),
   banner: media.optional(),
-  id: z.string().optional(),
   uuid: z.string(),
   views: z.number(),
-  likes: z.array(z.string()).nullable(),
   comments: z.array(commentSchema),
   history: z.array(historySchema),
+  likes: z.array(
+    z.object({
+      uuid: z.string(),
+    })
+  ),
   user: z.custom(),
 });
 

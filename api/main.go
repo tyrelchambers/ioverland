@@ -84,7 +84,7 @@ func main() {
 
 	// ------- DB SETUP
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())

@@ -39,8 +39,7 @@ func canBePublic(user *models.User) bool {
 }
 
 func CreateBuild(c *gin.Context) {
-	userParam, _ := c.Get("user")
-	user := userParam.(*models.User)
+	user := utils.UserFromContext(c)
 
 	var reqBody models.Build
 
@@ -181,7 +180,7 @@ func UpdateBuild(c *gin.Context) {
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [BUILD] [GETBUILDBYID] Error updating build",
-			Extra:   map[string]interface{}{"error": err.Error(), "build_id": reqBody.ID, "user_id": reqBody.UserId},
+			Extra:   map[string]interface{}{"error": err.Error(), "build_id": reqBody.Uuid, "user_id": reqBody.UserId},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return
@@ -241,8 +240,7 @@ func IncrementViews(c *gin.Context) {
 func Like(c *gin.Context) {
 	build_id := c.Param("build_id")
 
-	userParam, _ := c.Get("user")
-	user := userParam.(*models.User)
+	user := utils.UserFromContext(c)
 
 	build, err := build_service.GetById(dbConfig.Client, build_id)
 
