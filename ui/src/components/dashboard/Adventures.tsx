@@ -74,11 +74,6 @@ export const Adventures = () => {
                       <Heart size={16} className="mr-1" />
                       <p className="text-sm">{adv.likes?.length ?? 0}</p>
                     </div>
-                    <div className="flex text-muted-foreground items-center">
-                      <MessageCircle size={16} className="mr-1" />
-                      <p className="text-sm">{adv.comments?.length ?? 0}</p>
-                    </div>
-                    {/* {adv.public && <Badge variant="secondary">public</Badge>} */}
                   </footer>
                 }
               />

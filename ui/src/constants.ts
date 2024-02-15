@@ -57,7 +57,7 @@ export const plans: Plan[] = [
   {
     name: "Explorer",
     tagline: "For aspiring Overlanders",
-    price: 14,
+    price: 9,
     plan_name: "explorer",
     features: [
       "3 builds",
