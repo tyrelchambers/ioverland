@@ -1,4 +1,4 @@
-package controllers
+package search_controller
 
 import (
 	dbConfig "api/db"

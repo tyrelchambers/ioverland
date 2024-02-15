@@ -13,7 +13,7 @@ export const MaxFileSizeText = ({
   isProPlan?: boolean | undefined;
   maxFileUploads: number | undefined;
   maxFileSize: string | undefined;
-  type?: "banner";
+  type?: "banner" | "trip_photos";
   remainingPhotos?: number;
   showLink?: boolean;
 }) => {

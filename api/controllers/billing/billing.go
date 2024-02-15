@@ -1,4 +1,4 @@
-package controllers
+package billing_controller
 
 import (
 	dbConfig "api/db"

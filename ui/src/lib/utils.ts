@@ -4,6 +4,7 @@ import {
   modificationCategories,
 } from "@/constants";
 import { History, Modification } from "@/types";
+import { createId } from "@paralleldrive/cuid2";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -133,4 +134,54 @@ export const calculateModificationsCost = (
     cost += Number(m.price);
   });
   return cost;
+};
+
+export function getMatch(e: any) {
+  const url = `https://api.mapbox.com/directions/v5/mapbox/cycling/${e}?geometries=geojson&steps=true&access_token=${process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN}`;
+  return fetch(url)
+    .then((res) => res.json())
+    .then((res) => {
+      return res;
+    })
+    .catch(console.log);
+}
+
+export const convertToArray = <T>(
+  obj: Record<string, T>,
+  unroll?: Array<keyof T>
+): T[] => {
+  const arr = [];
+  for (const key in obj) {
+    const element = obj[key];
+
+    if (unroll) {
+      unroll.forEach((u) => {
+        // @ts-ignore
+        element[u] = convertToArray(element[u]);
+      });
+    }
+
+    arr.push(element);
+  }
+  return arr;
+};
+
+export const convertToObject = <T>(
+  arr: T[],
+  unroll?: Array<keyof T>
+): Record<string, T> => {
+  const obj = {};
+  arr.forEach((a) => {
+    if (unroll) {
+      unroll.forEach((u) => {
+        // @ts-ignore
+        if (!a[u]) return obj;
+        // @ts-ignore
+        a[u] = convertToObject(a[u]);
+      });
+    }
+    // @ts-ignore
+    obj[createId()] = a;
+  });
+  return obj;
 };

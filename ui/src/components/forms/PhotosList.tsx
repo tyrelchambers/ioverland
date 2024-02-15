@@ -52,10 +52,7 @@ const PhotosList = ({ photos, removeImageHandler }: Props) => {
           })}
         </div>
       ) : (
-        <StyledBlock
-          text="No uploaded photos for this build."
-          icon={<ImageIcon />}
-        />
+        <StyledBlock text="No uploaded photos" icon={<ImageIcon />} />
       )}
     </>
   );

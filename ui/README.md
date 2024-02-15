@@ -14,3 +14,23 @@
 
 - TEST FOLLOWER/FOLLOWING
 - CONFIRM COMMENT COUNT ON DASHBOARD
+
+Trip: (only for the top tier)
+
+- media attachments
+- Comments and Interactions:
+  - Enable users to leave comments on specific waypoints, fostering community engagement and conversation.
+- Weather Integration:
+  - Integrate weather information for each waypoint or the entire trip to help users plan for different conditions.
+- Timeline View:
+  - Provide a timeline view of the trip, allowing users to see the chronological sequence of waypoints and activities.
+- Trip Statistics:
+  - Display statistics about the trip, such as total distance, elevation changes, and estimated travel time.
+- Reviews and Ratings:
+  - Enable users to rate and review waypoints or entire trips, providing valuable insights for the community.
+
+Add support for third party builds on an adventure
+
+adventure
+
+- add ability to search location like peterborough, ontario

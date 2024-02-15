@@ -73,7 +73,12 @@ const Build = () => {
 
   useEffect(() => {
     if (paramId && user?.id) {
-      setLiked(hasLiked(build?.likes, user?.id));
+      setLiked(
+        hasLiked(
+          build?.likes?.map((l) => l.uuid),
+          user?.id
+        )
+      );
     } else {
       setLiked(false);
     }
@@ -209,7 +214,7 @@ const Build = () => {
                 <BookmarkButton
                   isBookmarked={
                     domainUser.data?.bookmarks.some(
-                      (bookmark) => bookmark.id === build?.id
+                      (bookmark) => bookmark.uuid === build?.uuid
                     ) || false
                   }
                   bookmarkHandler={bookmarkHandler}

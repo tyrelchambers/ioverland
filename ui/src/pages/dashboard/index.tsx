@@ -2,10 +2,8 @@ import BuildItem, { BuildSkeleton } from "@/components/BuildItem";
 import Header from "@/components/Header";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Eye, Heart, MessageCircle } from "lucide-react";
 import { useRouter } from "next/router";
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 import Account from "@/components/dashboard/Account";
 import { H2 } from "@/components/Heading";
 import { useUser } from "@clerk/nextjs";
@@ -19,6 +17,7 @@ import DesktopTabs from "@/components/dashboard/DesktopTabs";
 import { useViewportWidth } from "@/hooks/useViewportWidth";
 import Head from "next/head";
 import Builds from "@/components/dashboard/Builds";
+import { Adventures } from "@/components/dashboard/Adventures";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -124,6 +123,10 @@ const Dashboard = () => {
               ) : (
                 <EmptyListText text="No bookmarks" />
               )}
+            </TabsContent>
+
+            <TabsContent value="adventures">
+              <Adventures />
             </TabsContent>
 
             <TabsContent value="account">

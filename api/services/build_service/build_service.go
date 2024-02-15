@@ -30,12 +30,12 @@ func Update(db *gorm.DB, b *models.Build) error {
 
 	if len(b.Trips) > 0 {
 		var old_trips []models.Trip
-		db.Table("trips").Where("build_id = ?", b.ID).Find(&old_trips)
+		db.Table("trips").Where("build_id = ?", b.Uuid).Find(&old_trips)
 
 		added, removed := DiffTrips(old_trips, b.Trips)
 
 		for _, r := range removed {
-			db.Table("trips").Where("id = ? AND build_id = ?", r.ID, b.ID).Delete(&models.Trip{})
+			db.Table("trips").Where("id = ? AND build_id = ?", r.Uuid, b.Uuid).Delete(&models.Trip{})
 		}
 
 		b.Trips = added
@@ -46,12 +46,12 @@ func Update(db *gorm.DB, b *models.Build) error {
 	if len(b.Modifications) > 0 {
 		var old_mods []models.Modification
 
-		db.Table("modifications").Where("build_id = ?", b.ID).Find(&old_mods)
+		db.Table("modifications").Where("build_id = ?", b.Uuid).Find(&old_mods)
 
 		added, removed := DiffModifications(old_mods, b.Modifications)
 
 		for _, r := range removed {
-			db.Table("modifications").Where("id = ? AND build_id = ?", r.ID, b.ID).Delete(&models.Trip{})
+			db.Table("modifications").Where("id = ? AND build_id = ?", r.Uuid, b.Uuid).Delete(&models.Trip{})
 		}
 
 		b.Modifications = added
@@ -62,12 +62,12 @@ func Update(db *gorm.DB, b *models.Build) error {
 	if len(b.History) > 0 {
 		var old []*models.History
 
-		db.Table("histories").Where("build_id = ?", b.ID).Find(&old)
+		db.Table("histories").Where("build_id = ?", b.Uuid).Find(&old)
 
 		added, removed := DiffHistory(old, b.History)
 
 		for _, r := range removed {
-			db.Table("histories").Where("uuid = ? AND build_id = ?", r.Uuid, b.ID).Delete(&models.Trip{})
+			db.Table("histories").Where("uuid = ? AND build_id = ?", r.Uuid, b.Uuid).Delete(&models.Trip{})
 		}
 
 		b.History = added
@@ -101,7 +101,7 @@ func GetById(db *gorm.DB, uuid string) (models.Build, error) {
 
 	var build models.Build
 
-	db.Preload("Trips").Preload("Modifications").Preload("History").Where("uuid = ?", uuid).First(&build)
+	db.Preload("Trips").Preload("Modifications").Preload("Likes").Preload("History").Where("uuid = ?", uuid).First(&build)
 
 	db.Table("media").Where("build_id = ? AND type = 'banner'", uuid).First(&build.Banner)
 
@@ -121,24 +121,24 @@ func RemoveImage(db *gorm.DB, build_id, media_id string) error {
 }
 
 func Like(db *gorm.DB, user_id string, b models.Build) error {
-	likes := b.Likes
-	likes = append(likes, user_id)
+	db.Table("build_likes").Create(map[string]interface{}{
+		"build_uuid": b.Uuid,
+		"user_uuid":  user_id,
+	})
 
-	db.Model(&b).Where("uuid = ?", b.Uuid).Update("likes", likes)
+	if db.Error != nil {
+		return db.Error
+	}
 
 	return nil
 }
 
 func DisLike(db *gorm.DB, user_id string, b models.Build) error {
-	likes := b.Likes
-	for i, like := range likes {
-		if like == user_id {
-			likes = append(likes[:i], likes[i+1:]...)
-			break
-		}
-	}
+	db.Table("build_likes").Where("build_uuid = ? AND user_uuid = ?", b.Uuid, user_id).Delete(map[string]interface{}{"build_uuid": b.Uuid, "user_uuid": user_id})
 
-	db.Model(&b).Where("uuid = ?", b.Uuid).Update("likes", likes)
+	if db.Error != nil {
+		return db.Error
+	}
 
 	return nil
 }

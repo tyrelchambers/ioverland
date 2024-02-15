@@ -7,6 +7,7 @@ import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { Toaster } from "@/components/ui/sonner";
 import { PublicEnvScript, env } from "next-runtime-env";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export const headingFont = Playfair_Display({
   weight: ["400", "700"],
@@ -34,7 +35,7 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
     >
       <QueryClientProvider client={queryClient}>
-        <div className="bg-yellow-100 p-1">
+        <div className="bg-yellow-100 p-1 relative z-50">
           <p className="text-muted-foreground text-sm max-w-screen-2xl mx-auto">
             <span className="font-bold mr-4 text-foreground">
               WildBarrens Beta

@@ -3,15 +3,15 @@ package build_service
 import "api/models"
 
 func DiffTrips(source, newTrips []models.Trip) (addedTrips, removedTrips []models.Trip) {
-	sourceMap := make(map[int]models.Trip)
+	sourceMap := make(map[string]models.Trip)
 
 	// Populate the map with trips from the old state
 	for _, trip := range source {
-		sourceMap[trip.ID] = trip
+		sourceMap[trip.Uuid] = trip
 	}
 
 	for _, trip := range newTrips {
-		if _, ok := sourceMap[trip.ID]; !ok {
+		if _, ok := sourceMap[trip.Uuid]; !ok {
 			addedTrips = append(addedTrips, trip)
 		}
 	}
@@ -19,7 +19,7 @@ func DiffTrips(source, newTrips []models.Trip) (addedTrips, removedTrips []model
 	for _, trip := range source {
 		found := false
 		for _, et := range newTrips {
-			if et.ID == trip.ID {
+			if et.Uuid == trip.Uuid {
 				found = true
 				break
 			}
@@ -34,15 +34,15 @@ func DiffTrips(source, newTrips []models.Trip) (addedTrips, removedTrips []model
 }
 
 func DiffModifications(source, newMods []models.Modification) (addedMods, removedMods []models.Modification) {
-	sourceMap := make(map[int]models.Modification)
+	sourceMap := make(map[string]models.Modification)
 
 	// Populate the map with trips from the old state
 	for _, mod := range source {
-		sourceMap[mod.ID] = mod
+		sourceMap[mod.Uuid] = mod
 	}
 
 	for _, mod := range newMods {
-		if _, ok := sourceMap[mod.ID]; !ok {
+		if _, ok := sourceMap[mod.Uuid]; !ok {
 			addedMods = append(addedMods, mod)
 		}
 	}
@@ -50,7 +50,7 @@ func DiffModifications(source, newMods []models.Modification) (addedMods, remove
 	for _, mod := range source {
 		found := false
 		for _, et := range newMods {
-			if et.ID == mod.ID {
+			if et.Uuid == mod.Uuid {
 				found = true
 				break
 			}

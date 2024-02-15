@@ -18,10 +18,12 @@ type GetCurrentUserWithStripeResponse struct {
 }
 
 type PlanLimit struct {
-	MaxBuilds    int64  `json:"max_builds"`
-	MaxFiles     int64  `json:"max_files"`
-	VideoSupport bool   `json:"video"`
-	MaxFileSize  string `json:"max_file_size"`
+	MaxBuilds           int64  `json:"max_builds"`
+	MaxFiles            int64  `json:"max_files"`
+	VideoSupport        bool   `json:"video"`
+	MaxFileSize         string `json:"max_file_size"`
+	AdventureNumPhotos  int    `json:"adventure_num_photos"`
+	CanCreateAdventures bool   `json:"can_create_adventure"`
 }
 type AccountResponse struct {
 	HasSubscription bool `json:"has_subscription"`
@@ -47,22 +49,26 @@ type AccountResponse struct {
 
 var Plan_limits = map[string]PlanLimit{
 	"Free": {
-		MaxFiles:     6,
-		MaxFileSize:  "5mb",
-		VideoSupport: false,
-		MaxBuilds:    1,
+		MaxFiles:            6,
+		MaxFileSize:         "5mb",
+		VideoSupport:        false,
+		MaxBuilds:           1,
+		CanCreateAdventures: false,
 	},
 	"Explorer": {
-		MaxFiles:     16,
-		MaxFileSize:  "100mb",
-		VideoSupport: true,
-		MaxBuilds:    3,
+		MaxFiles:            16,
+		MaxFileSize:         "100mb",
+		VideoSupport:        true,
+		MaxBuilds:           3,
+		CanCreateAdventures: false,
 	},
 	"Overlander": {
-		MaxFiles:     25,
-		MaxFileSize:  "300mb",
-		VideoSupport: false,
-		MaxBuilds:    -1,
+		MaxFiles:            25,
+		MaxFileSize:         "300mb",
+		VideoSupport:        false,
+		MaxBuilds:           -1,
+		AdventureNumPhotos:  25,
+		CanCreateAdventures: true,
 	},
 }
 

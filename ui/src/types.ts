@@ -112,12 +112,16 @@ export const buildSchema = z.object({
   user_id: z.string(),
   photos: z.array(media).optional(),
   banner: media.optional(),
-  id: z.string().optional(),
   uuid: z.string(),
   views: z.number(),
-  likes: z.array(z.string()).nullable(),
   comments: z.array(commentSchema),
   history: z.array(historySchema),
+  likes: z.array(
+    z.object({
+      uuid: z.string(),
+    })
+  ),
+  user: z.custom(),
 });
 
 commentSchema.extend({
@@ -180,6 +184,8 @@ const account = z.object({
     max_files: z.number(),
     max_builds: z.number(),
     video_support: z.boolean(),
+    can_create_adventures: z.boolean(),
+    adventure_num_photos: z.number(),
   }),
   user: z.object({
     banner: media.optional(),
@@ -288,4 +294,102 @@ export interface IComment {
   build_id: string;
   build: Build;
   reply_id?: string;
+}
+
+const waypoint = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  adventure_id: z.string(),
+});
+
+export type Waypoint = z.infer<typeof waypoint>;
+
+const location = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  lat: z.number(),
+  lng: z.number(),
+});
+
+export type Location = z.infer<typeof location>;
+
+const stopSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
+  events: z.string(),
+});
+
+export type Stop = z.infer<typeof stopSchema>;
+
+export const daySchema = z.object({
+  uuid: z.string().optional(),
+  day_number: z.number(),
+  notes: z.string().optional(),
+  stops: z.record(z.string(), stopSchema).optional().nullable(),
+});
+
+export type Day = z.infer<typeof daySchema>;
+
+const adventure = z.object({
+  uuid: z.string().optional(),
+  name: z.string(),
+  summary: z.string(),
+  builds: z.array(buildSchema),
+  photos: z.array(media).optional(),
+  created_at: z.date(),
+  deleted_at: z.date().nullable(),
+  comments: z.array(commentSchema),
+  likes: z.array(userBase),
+  waypoints: z.array(waypoint),
+  user: userBase,
+  days: z.array(daySchema),
+  location: z.string().optional(),
+  youtube_links: z.array(z.string()),
+  views: z.number(),
+  year: z.string(),
+});
+
+waypoint.extend({
+  adventure: adventure,
+  location: location,
+});
+
+export type Adventure = z.infer<typeof adventure>;
+
+export const newTripSchema = z.object({
+  name: z.string().min(1, { message: "Trip name is required" }),
+  summary: z.string().optional(),
+  year: z.string(),
+  builds: z.array(buildSchema).optional(),
+  days: z.record(z.string(), daySchema).optional(),
+});
+
+newTripSchema.extend({ days: z.record(z.string(), daySchema).optional() });
+
+export type NewTripSchema = z.infer<typeof newTripSchema>;
+
+export const newTripPayload = z.object({
+  name: z.string().min(1, { message: "Trip name is required" }),
+  summary: z.string().optional(),
+  year: z.string(),
+  builds: z.custom(),
+  days: z
+    .array(
+      z.object({
+        day_number: z.string(),
+        notes: z.string().optional(),
+        stops: z.array(stopSchema).optional(),
+      })
+    )
+    .optional(),
+  photos: z.array(media).optional(),
+  uuid: z.string().optional(),
+});
+
+export type NewTripPayload = z.infer<typeof newTripPayload>;
+
+export interface Point {
+  id: string;
+  lat: number;
+  lng: number;
 }

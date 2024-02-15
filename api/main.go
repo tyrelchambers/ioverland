@@ -1,7 +1,18 @@
 package main
 
 import (
-	"api/controllers"
+	adventure_controller "api/controllers/adventure"
+	billing_controller "api/controllers/billing"
+	build_controller "api/controllers/build"
+	builds_controller "api/controllers/builds"
+	comment_controller "api/controllers/comment"
+	explore_controller "api/controllers/explore"
+	feedback_controller "api/controllers/feedback"
+	health_controller "api/controllers/health"
+	search_controller "api/controllers/search"
+	upload_controller "api/controllers/upload"
+	user_controller "api/controllers/user"
+	webhooks_controller "api/controllers/webhooks"
 	dbConfig "api/db"
 	"api/middleware"
 	"api/models"
@@ -71,13 +82,16 @@ func main() {
 		fmt.Printf("Sentry initialization failed: %v", err)
 	}
 
+	// ------- DB SETUP
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
 		os.Exit(1)
 	}
+
+	// -------- END DB SETUP
 
 	clerkId := utils.GoDotEnvVariable("CLERK_ID")
 	client, err := clerk.NewClient(fmt.Sprint(clerkId))
@@ -142,56 +156,70 @@ func main() {
 	billingG := api.Group("/billing")
 	exploreG := api.Group("/explore")
 	commentG := api.Group("/comment")
+	adventuresG := api.Group("/adventures")
+	adventureG := api.Group("/adventure")
 
-	buildG.POST("", AuthRequired, controllers.CreateBuild)
-	buildG.GET("/:build_id", controllers.GetById)
-	buildG.PUT("/:build_id", AuthRequired, controllers.UpdateBuild)
-	buildG.GET("/:build_id/edit", AuthRequired, controllers.BuildEditSettings)
-	buildG.POST("/:build_id/view", controllers.IncrementViews)
-	buildG.POST("/:build_id/like", AuthRequired, controllers.Like)
-	buildG.POST("/:build_id/dislike", AuthRequired, controllers.Dislike)
-	buildG.DELETE("/:build_id/delete", AuthRequired, controllers.DeleteBuild)
-	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, controllers.RemoveImage)
-	buildG.DELETE("/:build_id/:trip_id/delete", AuthRequired, controllers.DeleteTrip)
-	buildG.GET("/:build_id/comments", controllers.GetComments)
+	adventuresG.POST("/new", AuthRequired, adventure_controller.CreateNewAdventure)
+	adventuresG.GET("/:user_id", AuthRequired, adventure_controller.GetUserAdventures)
 
-	buildsG.GET("/user/:user_id", AuthRequired, controllers.GetUserBuilds)
+	adventureG.GET("/:adventure_id", AuthRequired, adventure_controller.GetAdventure)
+	adventureG.DELETE("/:adv_id/image/:media_id", AuthRequired, adventure_controller.RemoveImage)
+	adventureG.PUT("/:adv_id", AuthRequired, adventure_controller.Update)
+	adventureG.DELETE("/:adv_id/build/:build_id", AuthRequired, adventure_controller.RemoveBuild)
+	adventureG.DELETE("/:adv_id/day/:day_id", AuthRequired, adventure_controller.RemoveDay)
+	adventureG.DELETE("/:adv_id", AuthRequired, adventure_controller.Delete)
+	adventureG.POST("/:adv_id/like", AuthRequired, adventure_controller.Like)
+	adventureG.POST("/:adv_id/dislike", AuthRequired, adventure_controller.Dislike)
 
-	billingG.POST("/checkout", AuthRequired, controllers.CreateCheckout)
-	billingG.GET("/checkout", AuthRequired, controllers.CreateCheckout)
-	billingG.POST("/portal", AuthRequired, controllers.CreateCustomerPortal)
+	buildG.POST("", AuthRequired, build_controller.CreateBuild)
+	buildG.GET("/:build_id", build_controller.GetById)
+	buildG.PUT("/:build_id", AuthRequired, build_controller.UpdateBuild)
+	buildG.GET("/:build_id/edit", AuthRequired, build_controller.BuildEditSettings)
+	buildG.POST("/:build_id/view", build_controller.IncrementViews)
+	buildG.POST("/:build_id/like", AuthRequired, build_controller.Like)
+	buildG.POST("/:build_id/dislike", AuthRequired, build_controller.Dislike)
+	buildG.DELETE("/:build_id/delete", AuthRequired, build_controller.DeleteBuild)
+	buildG.DELETE("/:build_id/image/:media_id", AuthRequired, build_controller.RemoveImage)
+	buildG.DELETE("/:build_id/:trip_id/delete", AuthRequired, build_controller.DeleteTrip)
+	buildG.GET("/:build_id/comments", build_controller.GetComments)
 
-	commentG.POST("/create", AuthRequired, controllers.CreateComment)
-	commentG.PATCH("/:comment_id/like", AuthRequired, controllers.LikeComment)
-	commentG.PATCH("/:comment_id/dislike", AuthRequired, controllers.RemoveLike)
-	commentG.DELETE("/:comment_id/delete", AuthRequired, controllers.DeleteComment)
+	buildsG.GET("/user/:user_id", AuthRequired, builds_controller.GetUserBuilds)
 
-	uploadG.POST("/process", UploadAuth, controllers.ProcessUpload)
-	uploadG.PATCH("", UploadAuth, controllers.ProcessUpload)
-	uploadG.POST("/revert", UploadAuth, controllers.Revert)
+	billingG.POST("/checkout", AuthRequired, billing_controller.CreateCheckout)
+	billingG.GET("/checkout", AuthRequired, billing_controller.CreateCheckout)
+	billingG.POST("/portal", AuthRequired, billing_controller.CreateCustomerPortal)
 
-	userG.POST("/me/bookmark", AuthRequired, controllers.Bookmark)
-	userG.POST("/me/remove-bookmark", AuthRequired, controllers.Unbookmark)
-	userG.GET("/me", AuthRequired, controllers.GetCurrentUser)
-	userG.GET("/me/account", AuthRequired, controllers.GetAccount)
-	userG.DELETE("/me", AuthRequired, controllers.DeleteUser)
-	userG.POST("/me/restore", AuthRequired, controllers.RestoreUser)
-	userG.GET("/:username", controllers.GetUserPublicProfile)
-	userG.POST("/:username/follow", AuthRequired, controllers.FollowUser)
-	userG.POST("/:username/unfollow", AuthRequired, controllers.UnfollowUser)
-	userG.POST("/:username/view-profile", controllers.ViewProfile)
-	userG.PATCH("/me/update", AuthRequired, controllers.UpdateUser)
-	userG.POST("/me/remove-banner", AuthRequired, controllers.RemoveBanner)
+	commentG.POST("/create", AuthRequired, comment_controller.CreateComment)
+	commentG.PATCH("/:comment_id/like", AuthRequired, comment_controller.LikeComment)
+	commentG.PATCH("/:comment_id/dislike", AuthRequired, comment_controller.RemoveLike)
+	commentG.DELETE("/:comment_id/delete", AuthRequired, comment_controller.DeleteComment)
 
-	webhooksG.POST("", controllers.Webhooks)
-	webhooksG.POST("/stripe", controllers.StripeWebhooks)
+	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
+	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)
+	uploadG.POST("/revert", UploadAuth, upload_controller.Revert)
 
-	exploreG.GET("", controllers.Explore)
+	userG.POST("/me/bookmark", AuthRequired, user_controller.Bookmark)
+	userG.POST("/me/remove-bookmark", AuthRequired, user_controller.Unbookmark)
+	userG.GET("/me", AuthRequired, user_controller.GetCurrentUser)
+	userG.GET("/me/account", AuthRequired, user_controller.GetAccount)
+	userG.DELETE("/me", AuthRequired, user_controller.DeleteUser)
+	userG.POST("/me/restore", AuthRequired, user_controller.RestoreUser)
+	userG.GET("/:username", user_controller.GetUserPublicProfile)
+	userG.POST("/:username/follow", AuthRequired, user_controller.FollowUser)
+	userG.POST("/:username/unfollow", AuthRequired, user_controller.UnfollowUser)
+	userG.POST("/:username/view-profile", user_controller.ViewProfile)
+	userG.PATCH("/me/update", AuthRequired, user_controller.UpdateUser)
+	userG.POST("/me/remove-banner", AuthRequired, user_controller.RemoveBanner)
 
-	api.GET("/search", controllers.Search)
+	webhooksG.POST("", webhooks_controller.Webhooks)
+	webhooksG.POST("/stripe", webhooks_controller.StripeWebhooks)
 
-	r.GET("/health", controllers.Health)
-	api.POST("/feedback", controllers.Feedback)
+	exploreG.GET("", explore_controller.Explore)
+
+	api.GET("/search", search_controller.Search)
+
+	r.GET("/health", health_controller.Health)
+	api.POST("/feedback", feedback_controller.Feedback)
 
 	// create a scheduler
 	s, err := gocron.NewScheduler()

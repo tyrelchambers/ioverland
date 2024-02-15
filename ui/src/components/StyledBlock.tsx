@@ -14,7 +14,7 @@ const StyledBlock = ({
   return (
     <div
       className={cn(
-        "w-full h-full bg-gradient-to-tr from-gray-300 to-muted  text-muted-foreground flex justify-center items-center flex-col p-8",
+        "w-full h-full bg-gradient-to-tr from-gray-300 to-muted  text-muted-foreground rounded-md flex justify-center items-center flex-col p-8 overflow-hidden",
         className
       )}
     >
