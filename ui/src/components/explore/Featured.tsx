@@ -26,7 +26,7 @@ const Featured = ({ featured }: { featured: Build[] | undefined }) => {
       >
         <CarouselContent>
           {featured?.map((build, index) => (
-            <CarouselItem key={build.id + "_" + index}>
+            <CarouselItem key={build.uuid + "_" + index}>
               <Link href={`/build/${build.uuid}`}>
                 <div className="relative">
                   <header className="relative h-[200px] lg:h-[600px] shadow-md">

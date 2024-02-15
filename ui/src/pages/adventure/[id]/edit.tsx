@@ -96,6 +96,7 @@ const Edit = () => {
 
     if (!adv) return;
 
+    // @ts-ignore
     const payload: NewTripSchema = {
       ...adv,
     };
@@ -106,6 +107,7 @@ const Edit = () => {
       payload.days = convertToObject<Day>(adv.days, ["stops"]);
     }
 
+    // @ts-ignore
     form.reset(payload);
   }, [adventureById.data]);
 
@@ -120,6 +122,7 @@ const Edit = () => {
       };
 
       if (data.days) {
+        // @ts-ignore
         payload.days = convertToArray<Day>(data.days, ["stops"]);
       }
 
@@ -159,6 +162,7 @@ const Edit = () => {
 
     removeDay.mutate({
       adv_id: adventureById.data?.uuid,
+      // @ts-ignore
       day_id: id,
     });
   };
@@ -185,6 +189,7 @@ const Edit = () => {
   };
 
   const addBuildHandler = (builds: Build[]) => {
+    // @ts-ignore
     form.setValue("builds", builds);
   };
 
@@ -315,7 +320,7 @@ const Edit = () => {
 
                     <Button
                       variant="destructiveMuted"
-                      onClick={() => removeBuildHandler(build.id)}
+                      onClick={() => removeBuildHandler(build.uuid)}
                     >
                       Remove
                     </Button>

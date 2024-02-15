@@ -103,6 +103,7 @@ const NewTrip = () => {
       };
 
       if (data.days) {
+        // @ts-ignore
         payload.days = convertToArray<Day>(data.days, ["stops"]);
       }
 
@@ -133,11 +134,13 @@ const NewTrip = () => {
   };
 
   const addBuildHandler = (builds: Build[]) => {
+    // @ts-ignore
     form.setValue("builds", builds);
   };
 
   const removeBuildHandler = (build: Build) => {
     const builds = buildsWatch.filter((b) => b.uuid !== build.uuid);
+    // @ts-ignore
     form.setValue("builds", builds);
   };
   return (

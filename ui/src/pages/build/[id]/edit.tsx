@@ -188,26 +188,25 @@ const Edit = () => {
     for (const key in data.modifications) {
       modificationsToArray.push({
         ...data.modifications[key],
-        build_id: Number(build?.id),
+        build_id: Number(build?.uuid),
       });
     }
 
     for (const key in data.trips) {
       tripsToArray.push({
         ...data.trips[key],
-        build_id: Number(build?.id),
+        build_id: Number(build?.uuid),
       });
     }
 
     for (const key in data.history) {
       historyToArray.push({
         ...data.history[key],
-        build_id: Number(build?.id),
+        build_id: Number(build?.uuid),
       });
     }
     const payload: BuildPayload = {
       ...data,
-      id: build?.id,
       uuid: build?.uuid,
       trips: tripsToArray,
       links: linksToArray,
@@ -447,7 +446,7 @@ const Edit = () => {
 
             <div className="flex flex-col">
               <H3>
-                Trips <AddTrip form={form} buildId={build.id} />
+                Trips <AddTrip form={form} buildId={build.uuid} />
               </H3>
               <p className="text-muted-foreground">
                 Include any trips you&apos;d like to have included with this
@@ -460,7 +459,7 @@ const Edit = () => {
 
             <section className="flex flex-col">
               <H3>
-                Modifications <AddMod form={form} build_id={build.id} />
+                Modifications <AddMod form={form} build_id={build.uuid} />
               </H3>
               <p className="text-muted-foreground">
                 Include any modifications you&apos;d like to have included with
@@ -485,7 +484,7 @@ const Edit = () => {
 
             <section className="flex flex-col">
               <H3>
-                History <AddHistory form={form} buildId={build?.id} />
+                History <AddHistory form={form} buildId={build?.uuid} />
               </H3>
               <p className="text-muted-foreground">
                 Add any repairs, maintenace or additions you&apos;ve done over
