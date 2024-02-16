@@ -46,6 +46,7 @@ import ChooseBuild from "@/components/trip/ChooseBuild";
 import RenderMedia from "@/components/RenderMedia";
 import Info from "@/components/Info";
 import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const NewTrip = () => {
   const { account, user } = useDomainUser();
@@ -64,6 +65,7 @@ const NewTrip = () => {
       year: "",
       builds: [],
       days: {},
+      public: false,
     },
     disabled: account.data?.plan_limits.can_create_adventures === false,
   });
@@ -139,7 +141,7 @@ const NewTrip = () => {
       <Header />
       <section className="max-w-3xl my-10 mx-auto">
         {account.data?.plan_limits.can_create_adventures === false && (
-          <Info>
+          <Info variant="warning">
             <p>
               Looks like your plan doesn&apos;t allow you to create adventures.
               You&apos;ll need to{" "}
@@ -247,6 +249,7 @@ const NewTrip = () => {
                   builds={builds ?? []}
                   adventureBuilds={buildsWatch}
                   addBuildHandler={addBuildHandler}
+                  disabled={!account.data?.plan_limits.can_create_adventures}
                 />
               </div>
               <div className="mt-4 flex flex-col gap-3">
@@ -360,6 +363,29 @@ const NewTrip = () => {
               </div>
             </div> */}
 
+            <FormField
+              control={form.control}
+              name="public"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={
+                        !account.data?.plan_limits.can_create_adventures
+                      }
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Make this adventure public?</FormLabel>
+                    <FormDescription>
+                      Anyone with the link can access this adventure.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
             <Button
               disabled={
                 create.isPending ||

@@ -20,10 +20,12 @@ const ChooseBuild = ({
   builds,
   addBuildHandler,
   adventureBuilds,
+  disabled,
 }: {
   builds: Build[];
   addBuildHandler: (builds: Build[]) => void;
   adventureBuilds: Build[];
+  disabled: boolean;
 }) => {
   const [chosen, setChosen] = useState<Build[] | []>([]);
   const [open, setOpen] = useState(false);
@@ -48,7 +50,7 @@ const ChooseBuild = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" type="button">
+        <Button variant="outline" size="sm" type="button" disabled={disabled}>
           Add build
         </Button>
       </DialogTrigger>

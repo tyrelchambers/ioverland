@@ -13,6 +13,7 @@ import {
 import { Eye, Heart, MoreHorizontal, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { Badge } from "../ui/badge";
 
 export const Adventures = () => {
   const { user, account } = useDomainUser();
@@ -71,6 +72,7 @@ export const Adventures = () => {
                       <Heart size={16} className="mr-1" />
                       <p className="text-sm">{adv.likes?.length ?? 0}</p>
                     </div>
+                    {adv.public && <Badge>Public</Badge>}
                   </footer>
                 }
               />

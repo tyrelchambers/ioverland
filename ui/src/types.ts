@@ -356,6 +356,7 @@ const adventure = z.object({
   youtube_links: z.array(z.string()),
   views: z.number(),
   year: z.string(),
+  public: z.boolean(),
 });
 
 waypoint.extend({
@@ -371,6 +372,7 @@ export const newTripSchema = z.object({
   year: z.string(),
   builds: z.array(buildSchema).optional(),
   days: z.record(z.string(), daySchema).optional(),
+  public: z.boolean().default(false),
 });
 
 newTripSchema.extend({ days: z.record(z.string(), daySchema).optional() });

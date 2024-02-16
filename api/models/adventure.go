@@ -23,6 +23,7 @@ type Adventure struct {
 	Year         string         `json:"year"`
 	YoutubeLinks pq.StringArray `gorm:"type:text[]" json:"youtube_links"`
 	Views        int            `gorm:"default:0" json:"views"`
+	Public       bool           `gorm:"default:false" json:"public"`
 }
 
 type Day struct {
