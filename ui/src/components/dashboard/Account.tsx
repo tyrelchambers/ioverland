@@ -1,12 +1,10 @@
 import { format } from "date-fns";
-import { Zap, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import React from "react";
 import { H3 } from "../Heading";
 import { Button } from "../ui/button";
-import { DrawerClose } from "../ui/drawer";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { env } from "next-runtime-env";
-import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import {
   Dialog,
@@ -18,8 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import PricingBlock from "../PricingBlock";
-import { plans } from "@/constants";
 import BuildTotals, { BuildTotalsSkeleton } from "./BuildTotals";
 import Subscription, { SubscriptionSekelton } from "./Subscription";
 import NoSubscription from "./NoSubscription";
@@ -78,9 +74,11 @@ const Account = () => {
           Your subscription is managed by Stripe.
         </p>
         <p className="text-muted-foreground mt-2 bg-card p-2 rounded-md italic text-sm">
-          Please keep in mind if you cancel your subscription, your builds will
-          be made private except for the first one you created. You will be able
-          to swap between which one build will be public.
+          Please keep in mind if you cancel your subscription, your{" "}
+          <span className="font-bold">builds</span> and{" "}
+          <span className="font-bold">adventures</span> will be made private.
+          You will be able to swap between which one build and adenture will be
+          public depending on your plan.
         </p>
 
         {isLoading ? (
