@@ -16,7 +16,7 @@ import Link from "next/link";
 import { Badge } from "../ui/badge";
 
 export const Adventures = () => {
-  const { user, account } = useDomainUser();
+  const { user } = useDomainUser();
 
   const adventures = user.data?.adventures;
   return (

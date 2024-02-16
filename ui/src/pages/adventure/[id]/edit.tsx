@@ -104,8 +104,6 @@ const Edit = () => {
     };
 
     if (payload.days) {
-      console.log("payload.days", payload.days);
-
       payload.days = convertToObject<Day>(adv.days, ["stops"]);
     }
 
