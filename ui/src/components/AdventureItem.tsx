@@ -23,8 +23,6 @@ const AdventureItem = ({
   playVideo?: boolean;
   actions?: JSX.Element;
 }) => {
-  console.log(adventure.photos);
-
   return (
     <Link href={`/adventure/${adventure.uuid}`} key={adventure.uuid}>
       <header className="relative w-full aspect-video shadow-md rounded-md overflow-hidden">
