@@ -191,7 +191,13 @@ const NewTrip = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    disabled={
+                      account.data?.plan_limits.can_create_adventures === false
+                    }
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a year" />
@@ -222,6 +228,9 @@ const NewTrip = () => {
                 maxFiles={account.data?.plan_limits.adventure_num_photos}
                 maxFileSize={account.data?.plan_limits.max_file_size}
                 onUpdate={setPhotos}
+                disabled={
+                  account.data?.plan_limits.can_create_adventures === false
+                }
               />
             </FormItem>
 
