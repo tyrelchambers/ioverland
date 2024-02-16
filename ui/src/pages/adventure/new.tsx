@@ -1,11 +1,8 @@
 import Header from "@/components/Header";
-import { H1, H2 } from "@/components/Heading";
+import { H1 } from "@/components/Heading";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
 import Uploader from "@/components/Uploader";
-import Map from "@/components/trip/Map";
-import DayForm from "@/components/trip/forms/Day";
 import { Button } from "@/components/ui/button";
-import { DialogHeader } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -24,20 +21,12 @@ import {
   Day,
   Media,
   NewTripPayload,
-  NewTripSchema,
   daySchema,
   newTripSchema,
 } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@radix-ui/react-dialog";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+
 import {
   Select,
   SelectTrigger,
@@ -46,16 +35,17 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { FilePondFile } from "filepond";
-import { Loader2, TentTree } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Separator } from "@/components/ui/separator";
 import { folderRoot } from "@/constants";
 import { Label } from "@/components/ui/label";
 import ChooseBuild from "@/components/trip/ChooseBuild";
 import RenderMedia from "@/components/RenderMedia";
+import Info from "@/components/Info";
+import Link from "next/link";
 
 const NewTrip = () => {
   const { account, user } = useDomainUser();
@@ -75,6 +65,7 @@ const NewTrip = () => {
       builds: [],
       days: {},
     },
+    disabled: account.data?.plan_limits.can_create_adventures === false,
   });
 
   const daysWatch = form.watch("days");
@@ -147,6 +138,18 @@ const NewTrip = () => {
     <>
       <Header />
       <section className="max-w-3xl my-10 mx-auto">
+        {account.data?.plan_limits.can_create_adventures === false && (
+          <Info>
+            <p>
+              Looks like your plan doesn&apos;t allow you to create adventures.
+              You&apos;ll need to{" "}
+              <Link className="underline" href="/dashboard?tab=account">
+                upgrade
+              </Link>{" "}
+              to another plan to create an adventure.
+            </p>
+          </Info>
+        )}
         <div>
           <H1>Create an adventure</H1>
           <p className="text-muted-foreground">
@@ -348,7 +351,12 @@ const NewTrip = () => {
               </div>
             </div> */}
 
-            <Button disabled={create.isPending}>
+            <Button
+              disabled={
+                create.isPending ||
+                !account.data?.plan_limits.can_create_adventures
+              }
+            >
               {create.isPending ? (
                 <Loader2 className="animate-spin" />
               ) : (

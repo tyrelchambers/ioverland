@@ -10,25 +10,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import {
-  Eye,
-  Heart,
-  MessageCircle,
-  MoreHorizontal,
-  Pencil,
-} from "lucide-react";
+import { Eye, Heart, MoreHorizontal, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { Badge } from "../ui/badge";
 
 export const Adventures = () => {
-  const { user } = useDomainUser();
-  const { adventures } = useAdventure({
-    userId: user.data?.uuid,
-  });
+  const { user, account } = useDomainUser();
+
+  const adventures = user.data?.adventures;
   return (
     <div>
-      <H2 className="mb-10">My Adventures</H2>
+      <header className="mb-10 flex gap-4 items-baseline">
+        <H2>My Adventures</H2>
+        <p className="text-muted-foreground">
+          {user.data?.adventures?.length ?? 0} adventures
+        </p>
+      </header>
 
       {user.isLoading ? (
         <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
@@ -36,9 +33,9 @@ export const Adventures = () => {
           <BuildSkeleton />
           <BuildSkeleton />
         </ul>
-      ) : adventures.data && adventures.data.length > 0 ? (
+      ) : adventures && adventures.length > 0 ? (
         <ul className="grid grid-cols-1 lg:grid-cols-3 lg:p-0 p-4 gap-6">
-          {adventures.data
+          {adventures
             ?.toSorted((a, b) => (a.name > b.name ? 1 : -1))
             ?.map((adv) => (
               <AdventureItem

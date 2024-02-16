@@ -23,7 +23,8 @@ type PlanLimit struct {
 	VideoSupport        bool   `json:"video"`
 	MaxFileSize         string `json:"max_file_size"`
 	AdventureNumPhotos  int    `json:"adventure_num_photos"`
-	CanCreateAdventures bool   `json:"can_create_adventure"`
+	CanCreateAdventures bool   `json:"can_create_adventures"`
+	MaxAdventures       int    `json:"max_adventures"`
 }
 type AccountResponse struct {
 	HasSubscription bool `json:"has_subscription"`
@@ -60,7 +61,9 @@ var Plan_limits = map[string]PlanLimit{
 		MaxFileSize:         "100mb",
 		VideoSupport:        true,
 		MaxBuilds:           3,
-		CanCreateAdventures: false,
+		CanCreateAdventures: true,
+		AdventureNumPhotos:  25,
+		MaxAdventures:       6,
 	},
 	"Overlander": {
 		MaxFiles:            25,
@@ -69,6 +72,7 @@ var Plan_limits = map[string]PlanLimit{
 		MaxBuilds:           -1,
 		AdventureNumPhotos:  25,
 		CanCreateAdventures: true,
+		MaxAdventures:       -1,
 	},
 }
 
@@ -192,7 +196,7 @@ func Unbookmark(db *gorm.DB, u *models.User, build models.Build) error {
 func FindUser(db *gorm.DB, uuid string) (*models.User, error) {
 	var user *models.User
 
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Builds.Comments").Preload("Banner").Unscoped().Where("uuid = ?", uuid).First(&user).Error
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Builds.Comments").Preload("Banner").Preload("Adventures").Unscoped().Where("uuid = ?", uuid).First(&user).Error
 
 	if err != nil {
 		return nil, err

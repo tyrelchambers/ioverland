@@ -143,6 +143,13 @@ const userBase = z.object({
   banner: media.optional(),
   username: z.string().optional(),
   image_url: z.string(),
+  adventures: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+    })
+  ),
 });
 
 const domainUser = z
@@ -165,6 +172,7 @@ export type DomainUser = {
   uuid: string;
   image_url: string;
   bookmarks: Build[];
+  adventures: Adventure[];
 };
 
 const account = z.object({
@@ -186,6 +194,7 @@ const account = z.object({
     video_support: z.boolean(),
     can_create_adventures: z.boolean(),
     adventure_num_photos: z.number(),
+    max_adventures: z.number(),
   }),
   user: z.object({
     banner: media.optional(),
