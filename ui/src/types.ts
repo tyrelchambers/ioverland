@@ -395,6 +395,8 @@ export const newTripPayload = z.object({
     .optional(),
   photos: z.array(media).optional(),
   uuid: z.string().optional(),
+  user_id: z.string(),
+  public: z.boolean(),
 });
 
 export type NewTripPayload = z.infer<typeof newTripPayload>;
@@ -403,4 +405,9 @@ export interface Point {
   id: string;
   lat: number;
   lng: number;
+}
+
+export interface AdventureSettings {
+  adventure: Adventure;
+  can_be_public: boolean;
 }

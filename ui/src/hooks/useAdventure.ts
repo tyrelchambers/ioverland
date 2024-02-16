@@ -1,5 +1,5 @@
 import { request } from "@/lib/axios";
-import { Adventure, NewTripPayload } from "@/types";
+import { Adventure, AdventureSettings, NewTripPayload } from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -165,6 +165,20 @@ export const useAdventure = ({
     },
   });
 
+  const adventureSettings = useQuery({
+    queryKey: ["adventureSettings", adventureId],
+    queryFn: async (): Promise<AdventureSettings> => {
+      return request
+        .get(`/api/adventure/${adventureId}/edit`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+    enabled: !!adventureId,
+    refetchOnWindowFocus: false,
+  });
   return {
     create,
     adventures,
@@ -176,5 +190,6 @@ export const useAdventure = ({
     deleteAdventure,
     like,
     dislike,
+    adventureSettings,
   };
 };

@@ -55,6 +55,7 @@ var Plan_limits = map[string]PlanLimit{
 		VideoSupport:        false,
 		MaxBuilds:           1,
 		CanCreateAdventures: false,
+		MaxAdventures:       0,
 	},
 	"Explorer": {
 		MaxFiles:            16,

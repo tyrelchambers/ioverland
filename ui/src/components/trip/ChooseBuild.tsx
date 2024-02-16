@@ -20,12 +20,12 @@ const ChooseBuild = ({
   builds,
   addBuildHandler,
   adventureBuilds,
-  disabled,
+  disabled = false,
 }: {
   builds: Build[];
   addBuildHandler: (builds: Build[]) => void;
   adventureBuilds: Build[];
-  disabled: boolean;
+  disabled?: boolean;
 }) => {
   const [chosen, setChosen] = useState<Build[] | []>([]);
   const [open, setOpen] = useState(false);

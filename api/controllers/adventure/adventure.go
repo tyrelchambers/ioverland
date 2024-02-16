@@ -4,6 +4,7 @@ import (
 	dbConfig "api/db"
 	"api/models"
 	"api/services/adventure_service"
+	"api/services/user_service"
 	"api/utils"
 	"net/http"
 
@@ -49,7 +50,7 @@ func GetUserAdventures(c *gin.Context) {
 }
 
 func GetAdventure(c *gin.Context) {
-	id := c.Param("adventure_id")
+	id := c.Param("adv_id")
 
 	adv, err := adventure_service.GetById(dbConfig.Client, id)
 
@@ -226,4 +227,62 @@ func Dislike(c *gin.Context) {
 
 	c.String(http.StatusOK, "success")
 
+}
+
+func countVisibleAdventures(user *models.User) int {
+	count := 0
+
+	for _, adv := range user.Adventures {
+		if adv.Public {
+			count++
+		}
+	}
+
+	return count
+}
+
+func canBePublic(user *models.User) bool {
+	if user.MaxPublicAdventures == -1 {
+		return true
+	}
+	return countVisibleAdventures(user) < user.MaxPublicAdventures
+}
+
+func AdventureEditSettings(c *gin.Context) {
+	var resp struct {
+		Adventure   models.Adventure `json:"adventure"`
+		CanBePublic bool             `json:"can_be_public"`
+	}
+
+	adv_id := c.Param("adv_id")
+
+	adv, err := adventure_service.GetById(dbConfig.Client, adv_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [EDITSETTINGS] Error getting adventure",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	account, err := user_service.FindUser(dbConfig.Client, adv.UserId)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [ADVENTURE] [EDITSETTINGS] Error getting account",
+			Extra:   map[string]interface{}{"error": err.Error(), "adventure_id": adv_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.Adventure = *adv
+
+	can_toggle := canBePublic(account)
+
+	resp.CanBePublic = can_toggle
+
+	c.JSON(http.StatusOK, resp)
 }

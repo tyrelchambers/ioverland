@@ -15,8 +15,8 @@ import (
 )
 
 type EditResponse struct {
-	Build         models.Build `json:"build"`
-	Can_be_public bool         `json:"can_be_public"`
+	Build       models.Build `json:"build"`
+	CanBePublic bool         `json:"can_be_public"`
 }
 
 func countVisibleBuilds(user *models.User) int {
@@ -366,7 +366,7 @@ func BuildEditSettings(c *gin.Context) {
 
 	can_toggle := canBePublic(account)
 
-	resp.Can_be_public = can_toggle
+	resp.CanBePublic = can_toggle
 
 	resp.Build = build
 

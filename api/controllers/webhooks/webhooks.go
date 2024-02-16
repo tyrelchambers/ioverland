@@ -3,10 +3,12 @@ package webhooks_controller
 import (
 	dbConfig "api/db"
 	"api/models"
+	"api/services/adventure_service"
 	"api/services/build_service"
 	"api/services/user_service"
 	"api/utils"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -27,6 +29,18 @@ func Webhooks(c *gin.Context) {
 	var body map[string]interface{}
 
 	payload, err := io.ReadAll(c.Request.Body)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[WEBHOOKS] [CLERK] Could not read request body",
+			Extra: map[string]interface{}{
+				"error": err.Error(),
+			},
+		})
+		c.String(http.StatusBadRequest, "Bad Request")
+		return
+	}
+
 	headers := c.Request.Header
 	wh_secret := utils.GoDotEnvVariable("CLERK_WH_SECRET")
 
@@ -146,7 +160,6 @@ func Webhooks(c *gin.Context) {
 	}
 
 	c.String(http.StatusAccepted, "success")
-	return
 
 }
 
@@ -210,6 +223,8 @@ func StripeWebhooks(c *gin.Context) {
 			return
 		}
 
+		fmt.Println(data)
+
 		usr, err := user_service.FindUserByCustomerId(dbConfig.Client, data.Customer.ID)
 
 		if err != nil {
@@ -257,7 +272,11 @@ func StripeWebhooks(c *gin.Context) {
 			c.String(http.StatusInternalServerError, "Something went wrong")
 			return
 		}
-		usr.MaxPublicBuilds = int(user_service.Plan_limits[stripe_sub.Items.Data[0].Price.Product.Name].MaxBuilds)
+
+		plan := stripe_sub.Items.Data[0].Price.Product.Name
+
+		usr.MaxPublicBuilds = int(user_service.Plan_limits[plan].MaxBuilds)
+		usr.MaxPublicAdventures = int(user_service.Plan_limits[plan].MaxAdventures)
 
 		user_service.Update(dbConfig.Client, usr)
 
@@ -376,6 +395,26 @@ func StripeWebhooks(c *gin.Context) {
 		}
 
 		usr.MaxPublicBuilds = 1
+		usr.MaxPublicAdventures = 1
+
+		advs, err := adventure_service.GetAdventuresByUser(dbConfig.Client, usr.Uuid)
+
+		if err != nil {
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[WEBHOOKS] [STRIPE] [customer.subscription.deleted] Could not find adventures for user from adventure_service",
+				Extra: map[string]interface{}{
+					"error":   err.Error(),
+					"user_id": usr.Uuid,
+				},
+			})
+			c.String(http.StatusInternalServerError, "Something went wrong")
+			return
+		}
+
+		for _, adv := range advs[1:] {
+			adv.Public = false
+			adventure_service.Update(dbConfig.Client, adv)
+		}
 
 		user_service.Update(dbConfig.Client, usr)
 	}

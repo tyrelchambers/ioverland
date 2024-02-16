@@ -8,7 +8,7 @@ import { useAdventure } from "@/hooks/useAdventure";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { hasLiked } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
-import { Calendar, Eye, Heart, HeartOff } from "lucide-react";
+import { Calendar, Eye, EyeOff, Heart, HeartOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -83,10 +83,36 @@ const Adventure = () => {
       </Button>
     );
 
+  if (!adv.public && adv.user.uuid !== user.data?.uuid) {
+    return (
+      <section>
+        <Header />
+        <section className="relative z-10 max-w-screen-xl w-full mx-auto my-10">
+          <div className="flex flex-col items-center ">
+            <EyeOff size={40} className="mb-8" />
+            <H1 className="mb-2">This adventure has been made private</H1>
+            <p className="text-muted-foreground">
+              The owner of this adventure has made it private so it cannot be
+              viewed by anyone.
+            </p>
+          </div>
+        </section>
+      </section>
+    );
+  }
+
   return (
     <>
       <Header />
       <div className="my-10 max-w-screen-xl mx-auto px-4">
+        {!adv.public && (
+          <div className="bg-warning p-4 rounded-md flex items-center gap-4 mb-10">
+            <EyeOff />
+            <p className="text-warning-foreground">
+              This adventure is private. No one can see this.
+            </p>
+          </div>
+        )}
         <header className="max-w-4xl ">
           <div className="flex items-center mb-4 gap-3">
             {user.data?.uuid === adv.user.uuid && (

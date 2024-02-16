@@ -1,20 +1,23 @@
 import Header from "@/components/Header";
-import { H1, H2 } from "@/components/Heading";
+import { H1 } from "@/components/Heading";
 import { MaxFileSizeText } from "@/components/MaxFileSize";
 import RenderMedia from "@/components/RenderMedia";
 import Uploader from "@/components/Uploader";
 import PhotosList from "@/components/forms/PhotosList";
 import ChooseBuild from "@/components/trip/ChooseBuild";
-import DayForm from "@/components/trip/forms/Day";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -25,7 +28,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -33,7 +35,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { folderRoot } from "@/constants";
 import { useAdventure } from "@/hooks/useAdventure";
@@ -51,10 +52,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { FilePondFile } from "filepond";
-import { Loader2, TentTree } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef } from "react";
-import { FilePond } from "react-filepond";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -64,7 +64,7 @@ const Edit = () => {
   const router = useRouter();
   const {
     update,
-    adventureById,
+    adventureSettings,
     removeImage,
     removeBuild,
     removeDay,
@@ -83,6 +83,7 @@ const Edit = () => {
       builds: [],
       days: {},
       photos: [],
+      public: false,
     },
   });
   const daysWatch = form.watch("days");
@@ -90,9 +91,10 @@ const Edit = () => {
   const buildsWatch: Build[] = form.watch("builds");
 
   const builds = user.data?.builds;
+  const adventure = adventureSettings.data?.adventure;
 
   useEffect(() => {
-    const adv = adventureById.data;
+    const adv = adventure;
 
     if (!adv) return;
 
@@ -109,16 +111,20 @@ const Edit = () => {
 
     // @ts-ignore
     form.reset(payload);
-  }, [adventureById.data]);
+  }, [adventure]);
 
   const submitHandler = async (data: z.infer<typeof newTripSchema>) => {
+    if (!user.data?.uuid) return;
+
     try {
       const payload: NewTripPayload = {
-        uuid: adventureById.data?.uuid,
+        uuid: adventure?.uuid,
         name: data.name,
         summary: data.summary,
         year: data.year,
         builds: data.builds,
+        user_id: user.data?.uuid,
+        public: data.public,
       };
 
       if (data.days) {
@@ -138,8 +144,6 @@ const Edit = () => {
         );
       }
 
-      console.log(data);
-
       await update.mutateAsync(payload, {
         onSuccess: () => {
           toast.success("Adventure created");
@@ -151,7 +155,7 @@ const Edit = () => {
   };
 
   const removeDayHandler = (id: string | undefined, tempId: string) => {
-    if (!adventureById.data?.uuid) return;
+    if (!adventure?.uuid) return;
 
     const clone: Record<string, Day> = { ...form.getValues("days") };
 
@@ -161,7 +165,7 @@ const Edit = () => {
     }
 
     removeDay.mutate({
-      adv_id: adventureById.data?.uuid,
+      adv_id: adventure?.uuid,
       // @ts-ignore
       day_id: id,
     });
@@ -179,12 +183,12 @@ const Edit = () => {
     image_id: string | undefined,
     url: string | undefined
   ) => {
-    if (!adventureById.data?.uuid || !image_id || !url) return;
+    if (!adventure?.uuid || !image_id || !url) return;
 
     removeImage.mutate({
       image_id,
       url,
-      adv_id: adventureById.data?.uuid,
+      adv_id: adventure?.uuid,
     });
   };
 
@@ -194,16 +198,16 @@ const Edit = () => {
   };
 
   const removeBuildHandler = (buildId: string | undefined) => {
-    if (!adventureById.data?.uuid || !buildId) return;
+    if (!adventure?.uuid || !buildId) return;
     removeBuild.mutate({
-      adv_id: adventureById.data?.uuid,
+      adv_id: adventure?.uuid,
       build_id: buildId,
     });
   };
 
   const deleteHandler = () => {
-    if (!adventureById.data?.uuid) return;
-    deleteAdventure.mutate({ adv_id: adventureById.data?.uuid });
+    if (!adventure?.uuid) return;
+    deleteAdventure.mutate({ adv_id: adventure?.uuid });
   };
 
   return (
@@ -211,7 +215,7 @@ const Edit = () => {
       <Header />
 
       <section className="max-w-screen-md mx-auto my-10">
-        <H1>Editing &quot;{adventureById.data?.name}&quot;</H1>
+        <H1>Editing &quot;{adventure?.name}&quot;</H1>
         <Form {...form}>
           <form
             className="mt-6 flex flex-col gap-4 h-full"
@@ -409,15 +413,59 @@ const Edit = () => {
                   })}
               </div>
             </div> */}
-
+            <FormField
+              control={form.control}
+              name="public"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={
+                        !adventureSettings.data?.adventure?.public &&
+                        !adventureSettings.data?.can_be_public
+                      }
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Make this adventure public?</FormLabel>
+                    <FormDescription>
+                      Anyone with the link can access this adventure.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
             <footer className="flex items-center justify-between">
-              <Button
-                type="button"
-                variant="destructiveMuted"
-                onClick={deleteHandler}
-              >
-                Delete adventure
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructiveMuted">Delete build</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your build.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <Button
+                        type="button"
+                        className="!bg-red-500"
+                        onClick={deleteHandler}
+                      >
+                        Delete
+                      </Button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Button disabled={update.isPending}>
                 {update.isPending ? (
                   <Loader2 className="animate-spin" />
