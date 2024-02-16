@@ -88,11 +88,14 @@ const NewTrip = () => {
   };
 
   const submitHandler = async (data: z.infer<typeof newTripSchema>) => {
+    if (!user.data?.uuid) return;
     try {
       const payload: NewTripPayload = {
         name: data.name,
         summary: data.summary,
         year: data.year,
+        public: data.public,
+        user_id: user.data?.uuid,
       };
 
       if (data.days) {

@@ -1,4 +1,4 @@
-import { Adventure, Build } from "@/types";
+import { Adventure } from "@/types";
 import Link from "next/link";
 import React from "react";
 import RenderMedia from "./RenderMedia";
