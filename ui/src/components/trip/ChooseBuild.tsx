@@ -61,7 +61,7 @@ const ChooseBuild = ({
           <DialogDescription>Add a build to your adventure</DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[400px]">
+        <ScrollArea className="h-[300px] lg:h-[400px]">
           <div className=" flex flex-col gap-4">
             {builds.map((build) => (
               <div
@@ -111,7 +111,7 @@ const ChooseBuild = ({
             ))}
           </div>
         </ScrollArea>
-        <DialogFooter className="border-t border-border pt-4">
+        <DialogFooter className="border-t border-border pt-4 flex flex-row justify-between">
           <DialogClose>
             <Button variant="outline" type="button">
               Close

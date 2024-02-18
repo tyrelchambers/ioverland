@@ -142,7 +142,7 @@ const NewTrip = () => {
   return (
     <>
       <Header />
-      <section className="max-w-3xl my-10 mx-auto">
+      <section className="max-w-3xl my-10 mx-auto p-4 lg:p-0">
         {account.data?.plan_limits.can_create_adventures === false && (
           <Info variant="warning">
             <p>
