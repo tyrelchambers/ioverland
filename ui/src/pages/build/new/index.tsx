@@ -382,7 +382,10 @@ const Index = () => {
                   className="flex flex-col gap-3"
                   confirm={
                     <Button
-                      disabled={form.formState.isSubmitting}
+                      disabled={
+                        form.formState.isSubmitting ||
+                        account?.builds_remaining === 0
+                      }
                       className="w-fit self-end"
                     >
                       {form.formState.isSubmitting ? (
