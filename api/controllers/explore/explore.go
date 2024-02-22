@@ -2,6 +2,7 @@ package explore_controller
 
 import (
 	dbConfig "api/db"
+	"api/models"
 	"api/services/build_service"
 	"api/utils"
 	"net/http"
@@ -10,8 +11,9 @@ import (
 )
 
 type ExploreRes struct {
-	GoalRemaining int   `json:"goal_remaining"`
-	BuildCount    int64 `json:"build_count"`
+	GoalRemaining int            `json:"goal_remaining"`
+	BuildCount    int64          `json:"build_count"`
+	Builds        []models.Build `json:"builds"`
 }
 
 func Explore(c *gin.Context) {
@@ -28,6 +30,17 @@ func Explore(c *gin.Context) {
 		return
 	}
 
+	allBuilds, err := build_service.All(dbConfig.Client)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [EXPLORE] Error getting builds",
+			Extra:   map[string]interface{}{"error": err.Error()},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	if 20-int(count) < 0 {
 		res.GoalRemaining = 0
 	} else {
@@ -35,6 +48,8 @@ func Explore(c *gin.Context) {
 	}
 
 	res.BuildCount = count
+
+	res.Builds = allBuilds
 
 	c.JSON(http.StatusOK, res)
 

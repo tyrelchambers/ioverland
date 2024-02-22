@@ -17,6 +17,12 @@ func Create(db *gorm.DB, b *models.Build) error {
 	return nil
 }
 
+func All(db *gorm.DB) ([]models.Build, error) {
+	var builds []models.Build
+	err := db.Preload("Banner", "type='banner'").Where("public = true").Order("name").Find(&builds).Error
+	return builds, err
+}
+
 func IncrementViews(db *gorm.DB, b models.Build) error {
 	db.Model(&b).Select("views").Update("views", b.Views+1)
 

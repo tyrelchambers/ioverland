@@ -38,9 +38,10 @@ export const newBuildSchema = z.object({
     .record(z.string(), z.string().min(1, { message: "Link is required" }))
     .optional(),
   vehicle: z.object({
-    model: z.string().optional(),
-    make: z.string().optional(),
-    year: z.string().optional(),
+    model: z.string(),
+    make: z.string(),
+    year: z.string(),
+    type: z.string(),
   }),
   modifications: z.record(z.string(), modification).optional(),
   public: z.boolean(),
@@ -103,9 +104,10 @@ export const buildSchema = z.object({
   trips: z.array(trip).optional(),
   links: z.array(z.string().optional()).optional(),
   vehicle: z.object({
-    model: z.string().optional(),
-    make: z.string().optional(),
-    year: z.string().optional(),
+    model: z.string(),
+    make: z.string(),
+    year: z.string(),
+    type: z.string(),
   }),
   modifications: z.array(modification).optional(),
   public: z.boolean(),
@@ -122,6 +124,7 @@ export const buildSchema = z.object({
     })
   ),
   user: z.custom(),
+  sample: z.boolean(),
 });
 
 commentSchema.extend({
@@ -214,6 +217,7 @@ const explore = z.object({
   top_10: z.array(buildSchema),
   goal_remaining: z.number(),
   build_count: z.number(),
+  builds: z.array(buildSchema),
 });
 
 export type Explore = z.infer<typeof explore>;

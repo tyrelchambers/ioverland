@@ -26,12 +26,14 @@ type Build struct {
 	Comments      []*Comment     `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:BuildId;references:Uuid" json:"comments"`
 	History       []*History     `gorm:"foreignKey:BuildId" json:"history"`
 	Adventures    []*Adventure   `gorm:"many2many:build_adventures;" json:"adventures"`
+	Sample        bool           `gorm:"default:false" json:"sample"`
 }
 
 type Vehicle struct {
 	Model string `gorm:"type:varchar(255)" json:"model"`
 	Make  string `gorm:"type:varchar(255)" json:"make"`
 	Year  string `gorm:"type:varchar(255)" json:"year"`
+	Type  string `json:"type"`
 }
 
 type Modification struct {
