@@ -5,7 +5,7 @@ import FeedbackForm from "./FeedbackForm";
 
 const Footer = () => {
   return (
-    <footer className=" p-4 dark:bg-gray-800">
+    <footer className=" p-4 dark:bg-gray-800 border-t border-border">
       <div className="flex flex-col items-start mx-auto max-w-screen-xl p-4 ">
         <div className="w-full  md:flex md:items-center md:justify-between">
           <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">

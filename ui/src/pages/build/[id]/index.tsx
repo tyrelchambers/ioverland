@@ -1,4 +1,5 @@
 import { CommentInput, CommentList } from "@/components/Comments";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { H1, H2 } from "@/components/Heading";
 import Info from "@/components/Info";
@@ -392,6 +393,7 @@ const Build = () => {
           </section>
         </section>
       </section>
+      <Footer />
     </section>
   );
 };
