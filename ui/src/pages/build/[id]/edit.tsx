@@ -103,6 +103,7 @@ const Edit = () => {
         model: "",
         make: "",
         year: "",
+        type: "",
       },
       public: false,
       banner: "",
@@ -376,7 +377,32 @@ const Edit = () => {
               )}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 items-end gap-4 ">
+            <div className="grid grid-cols-1 lg:grid-cols-4 items-end gap-4 ">
+              <FormField
+                name="vehicle.type"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem className=" flex-1">
+                    <FormLabel>Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a type..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="car">Car</SelectItem>
+                        <SelectItem value="truck">Truck</SelectItem>
+                        <SelectItem value="other">SUV</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 name="vehicle.make"
                 render={({ field }) => (

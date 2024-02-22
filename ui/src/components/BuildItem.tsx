@@ -18,11 +18,13 @@ const BuildItem = ({
   footer,
   playVideo,
   actions,
+  showDescription = true,
 }: {
   build: Build;
   footer?: JSX.Element;
   playVideo?: boolean;
   actions?: JSX.Element;
+  showDescription?: boolean;
 }) => {
   return (
     <Link href={`/build/${build.uuid}`} key={build.uuid}>
@@ -36,9 +38,16 @@ const BuildItem = ({
 
         {actions}
       </div>
-      <p className="text-muted-foreground line-clamp-3 text-sm mt-1">
-        {build.description}
-      </p>
+      {showDescription && (
+        <p className="text-muted-foreground line-clamp-3 text-sm mt-1">
+          {build.description}
+        </p>
+      )}
+      {build.sample && (
+        <p className="text-muted-foreground text-sm italic mt-1">
+          This build is a sample
+        </p>
+      )}
 
       {footer}
     </Link>
