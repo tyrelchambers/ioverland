@@ -298,16 +298,20 @@ const Build = () => {
                 {build?.description}
               </p>
             )}
+            {console.log(build)}
 
-            {user && (
-              <div className="flex items-center  w-full max-w-xs  ">
+            {build.user && (
+              <Link
+                href={`/user/${build.user.username}`}
+                className="flex items-center  w-full max-w-xs hover:underline "
+              >
                 <div className="rounded-full relative">
                   <Avatar className="mr-2">
-                    <AvatarImage src={user.imageUrl} />
+                    <AvatarImage src={build.user.image_url} />
                   </Avatar>
                 </div>
-                <p className="font-bold flex-1">{user.fullName}</p>
-              </div>
+                <p className="font-bold flex-1">{build.user.username}</p>
+              </Link>
             )}
 
             <div className="flex flex-col lg:flex-row mt-10 gap-4">
