@@ -10,7 +10,7 @@ import Photos from "@/components/build/Photos";
 import Trips from "@/components/build/Trips";
 import Vehicle from "@/components/build/Vehicle";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -42,6 +42,7 @@ import {
   PencilRuler,
   Share,
   Truck,
+  User,
 } from "lucide-react";
 import Head from "next/head";
 import Image from "next/image";
@@ -298,7 +299,6 @@ const Build = () => {
                 {build?.description}
               </p>
             )}
-            {console.log(build)}
 
             {build.user && (
               <Link
@@ -308,6 +308,9 @@ const Build = () => {
                 <div className="rounded-full relative">
                   <Avatar className="mr-2">
                     <AvatarImage src={build.user.image_url} />
+                    <AvatarFallback>
+                      <User size={18} />
+                    </AvatarFallback>
                   </Avatar>
                 </div>
                 <p className="font-bold flex-1">{build.user.username}</p>
