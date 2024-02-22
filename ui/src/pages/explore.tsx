@@ -13,11 +13,10 @@ import React from "react";
 
 const Explore = () => {
   const { explore } = useExplore();
-  const GOAL = 20;
 
   const allBuilds = explore.data?.builds;
   const truckBuilds =
-    explore.data?.builds?.filter((b) => b.vehicle.type === "Truck") || [];
+    explore.data?.builds?.filter((b) => b.vehicle.type === "truck") || [];
 
   return (
     <div className="relative min-h-screen  overflow-x-hidden">
