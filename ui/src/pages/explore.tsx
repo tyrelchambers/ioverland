@@ -25,7 +25,7 @@ const Explore = () => {
       </Head>
       <Header />
 
-      <div className="h-[400px] max-w-screen-2xl mx-auto my-10 rounded-lg overflow-hidden relative flex">
+      <div className="h-[400px] max-w-screen-2xl mx-auto my-10 rounded-lg overflow-hidden relative flex p-4 2xl:p-0">
         <div className="absolute inset-0 p-10 z-10 flex flex-col items-center justify-center gap-4">
           <H1 className="text-white">Find the next best Overland build</H1>
           <p className="max-w-3xl text-white/80 text-xl text-center">
@@ -55,7 +55,7 @@ const Explore = () => {
       <section className="w-full max-w-screen-2xl mx-auto">
         <header>
           <Tabs defaultValue="all">
-            <TabsList className="bg-card rounded-md">
+            <TabsList className="bg-card rounded-md m-4 2xl:m-0">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="car">Cars</TabsTrigger>
               <TabsTrigger value="truck">Trucks</TabsTrigger>
@@ -63,16 +63,16 @@ const Explore = () => {
               <TabsTrigger value="suv">SUVs</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="all" className="mt-10">
-              <div className="grid grid-cols-5 gap-4">
+            <TabsContent value="all" className="mt-10 p-4 2xl:p-0">
+              <div className="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
                 {allBuilds?.map((b) => (
                   <BuildItem build={b} key={b.uuid} showDescription={false} />
                 ))}
               </div>
             </TabsContent>
 
-            <TabsContent value="truck" className="mt-10">
-              <div className="grid grid-cols-5 gap-4">
+            <TabsContent value="truck" className="mt-10 p-4 2xl:p-0">
+              <div className="grid grid-cols-1 xl:grid-cols-5 2xl:grid-cols-3 gap-4">
                 {truckBuilds.map((b) => (
                   <BuildItem build={b} key={b.uuid} showDescription={false} />
                 ))}
