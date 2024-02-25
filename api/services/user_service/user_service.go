@@ -198,7 +198,7 @@ func Unbookmark(db *gorm.DB, u *models.User, build models.Build) error {
 func FindUser(db *gorm.DB, uuid string) (*models.User, error) {
 	var user *models.User
 
-	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Builds.Comments").Preload("Banner").Preload("Adventures").Preload("Adventures.Photos").Unscoped().Where("uuid = ?", uuid).First(&user).Error
+	err := db.Preload("Bookmarks.Banner", "type='banner'").Preload("Builds.Banner", "type='banner'").Preload("Builds.Comments").Preload("Banner").Preload("Adventures").Preload("Adventures.Photos").Preload("Adventures.Likes").Unscoped().Where("uuid = ?", uuid).First(&user).Error
 
 	if err != nil {
 		return nil, err
