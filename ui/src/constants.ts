@@ -34,6 +34,7 @@ export const plans: Plan[] = [
       "6 images per build",
       "5MB per image",
       "Public profile",
+      "1 adventure",
     ],
     redirect_link: "/sign-up",
   },
