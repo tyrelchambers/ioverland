@@ -1,8 +1,10 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { H2 } from "@/components/Heading";
+import LatestArticles from "@/components/LatestArticles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useBlog } from "@/hooks/useBlog";
 import { useAuth } from "@clerk/nextjs";
 import {
   Bookmark,
@@ -24,13 +26,17 @@ import Link from "next/link";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
+  const { blog } = useBlog();
+
+  const latestArticles = blog.data?.items.slice(0, 3);
+
   return (
     <main>
       <Head>
         <title>WildBarrens</title>
       </Head>
       <section className="h-screen flex relative">
-        <div className="w-full flex flex-col items-center absolute inset-0 z-10 justify-center max-w-screen-xl h-full min-h-screen mx-auto">
+        <div className="w-full flex flex-col items-center absolute inset-0 z-10 justify-center h-full min-h-screen mx-auto">
           <Header className="absolute top-0 bg-transparent border-0 w-full" />
           <div className="flex flex-col p-4 w-full items-center">
             {" "}
@@ -134,6 +140,13 @@ export default function Home() {
             />
           </div>
         </div>
+      </section>
+
+      <section className="my-40 max-w-screen-xl mx-auto">
+        <H2 className="lg:text-6xl text-4xl mb-16 !font-serif text-center">
+          Recent articles from the blog
+        </H2>
+        <LatestArticles articles={latestArticles} />
       </section>
 
       <section className="relative">
