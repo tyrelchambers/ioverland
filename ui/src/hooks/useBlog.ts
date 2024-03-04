@@ -6,7 +6,9 @@ export const useBlog = () => {
   const query = useQuery({
     queryKey: ["blog"],
     queryFn: async () => {
-      const data = parser.parseURL("http://localhost:4321/rss.xml");
+      const data = parser.parseURL(
+        `${process.env.NEXT_PUBLIC_RSS_URL}/rss.xml`
+      );
       return data;
     },
   });
