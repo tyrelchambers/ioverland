@@ -4,7 +4,6 @@ import { H2 } from "@/components/Heading";
 import LatestArticles from "@/components/LatestArticles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useBlog } from "@/hooks/useBlog";
 import { useAuth } from "@clerk/nextjs";
 import {
   Bookmark,
@@ -26,9 +25,6 @@ import Link from "next/link";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
-  const { blog } = useBlog();
-
-  const latestArticles = blog.data?.items.slice(0, 3);
 
   return (
     <main>
@@ -140,13 +136,6 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
-
-      <section className="my-40 max-w-screen-xl mx-auto">
-        <H2 className="lg:text-6xl text-4xl mb-16 !font-serif text-center">
-          Recent articles from the blog
-        </H2>
-        <LatestArticles articles={latestArticles} />
       </section>
 
       <section className="relative">
