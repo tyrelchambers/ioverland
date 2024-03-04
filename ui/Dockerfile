@@ -26,7 +26,10 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-# RUN yarn build
+ENV NEXT_PUBLIC_BACKEND_URL="https://api.wildbarrens.com"
+ENV NEXT_PUBLIC_FRONTEND_URL="https://wildbarrens.com"
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsud2lsZGJhcnJlbnMuY29tJA"
+ENV NEXT_PUBLIC_RSS_URL="https://blog.wildbarrens.com"
 
 # If using npm comment out above and use below instead
 RUN npm run build
