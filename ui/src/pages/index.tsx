@@ -44,15 +44,14 @@ export default function Home() {
               adventures and connect with other Overlanders
             </p>
             <div className="flex items-center mt-10 gap-6 flex-col md:flex-row">
-              <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
-                <Button type="button" className="w-full" size="lg">
-                  Create your build
-                </Button>
-              </Link>
-
               <Link href="/explore">
                 <Button type="button" variant="outline" size="lg">
                   Find your inspiration
+                </Button>
+              </Link>
+              <Link href={isSignedIn ? "/build/new" : "/sign-up"}>
+                <Button type="button" className="w-full" size="lg">
+                  Create your build
                 </Button>
               </Link>
             </div>
