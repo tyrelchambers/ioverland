@@ -84,6 +84,7 @@ const Index = () => {
       },
       modifications: {},
       public: false,
+      allow_comments: true,
     },
     disabled: account?.builds_remaining === 0 ? true : false,
   });
@@ -445,6 +446,30 @@ const Index = () => {
                           <FormLabel>Make this build public?</FormLabel>
                           <FormDescription>
                             Anyone with the link can access this build.
+                          </FormDescription>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <H3>Comments</H3>
+
+                  <FormField
+                    control={form.control}
+                    name="allow_comments"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Allow comments?</FormLabel>
+                          <FormDescription>
+                            Anyone with a WildBarrens account will be able to
+                            comment.
                           </FormDescription>
                         </div>
                       </FormItem>

@@ -46,6 +46,7 @@ export const newBuildSchema = z.object({
   modifications: z.record(z.string(), modification).optional(),
   public: z.boolean(),
   history: z.record(z.string(), historySchema).optional(),
+  allow_comments: z.boolean(),
 });
 
 export type NewBuildSchema = z.infer<typeof newBuildSchema>;
@@ -125,6 +126,7 @@ export const buildSchema = z.object({
   ),
   user: z.custom(),
   sample: z.boolean(),
+  allow_comments: z.boolean(),
 });
 
 commentSchema.extend({

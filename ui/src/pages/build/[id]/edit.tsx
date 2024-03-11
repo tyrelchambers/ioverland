@@ -110,6 +110,7 @@ const Edit = () => {
       photos: [],
       modifications: {},
       history: {},
+      allow_comments: true,
     },
   });
 
@@ -120,50 +121,50 @@ const Edit = () => {
   const historyWatch = form.watch("history");
 
   useEffect(() => {
-    if (id && build) {
-      const data = build;
-      const formattedData: NewBuildSchema = {
-        ...data,
-        trips: {},
-        links: {},
-        modifications: {},
-        history: {},
-      };
+    if (!id || !build) return;
 
-      if (data.trips && formattedData.trips) {
-        for (let index = 0; index < data.trips.length; index++) {
-          const element = data.trips[index];
-          if (element.uuid) {
-            formattedData.trips[element.uuid] = element;
-          }
+    const data = build;
+    const formattedData: NewBuildSchema = {
+      ...data,
+      trips: {},
+      links: {},
+      modifications: {},
+      history: {},
+    };
+
+    if (data.trips && formattedData.trips) {
+      for (let index = 0; index < data.trips.length; index++) {
+        const element = data.trips[index];
+        if (element.uuid) {
+          formattedData.trips[element.uuid] = element;
         }
       }
-
-      if (data.links && formattedData.links) {
-        for (let index = 0; index < data.links.length; index++) {
-          const element = data.links[index];
-          if (element) {
-            formattedData.links[createId()] = element;
-          }
-        }
-      }
-
-      if (data.modifications && formattedData.modifications) {
-        for (let index = 0; index < data.modifications.length; index++) {
-          const element = data.modifications[index];
-          formattedData.modifications[createId()] = element;
-        }
-      }
-
-      if (data.history && formattedData.history) {
-        for (let index = 0; index < data.history.length; index++) {
-          const element = data.history[index];
-          formattedData.history[createId()] = element;
-        }
-      }
-
-      form.reset(formattedData);
     }
+
+    if (data.links && formattedData.links) {
+      for (let index = 0; index < data.links.length; index++) {
+        const element = data.links[index];
+        if (element) {
+          formattedData.links[createId()] = element;
+        }
+      }
+    }
+
+    if (data.modifications && formattedData.modifications) {
+      for (let index = 0; index < data.modifications.length; index++) {
+        const element = data.modifications[index];
+        formattedData.modifications[createId()] = element;
+      }
+    }
+
+    if (data.history && formattedData.history) {
+      for (let index = 0; index < data.history.length; index++) {
+        const element = data.history[index];
+        formattedData.history[createId()] = element;
+      }
+    }
+
+    form.reset(formattedData);
   }, [id, editSettings.data?.build]);
 
   const build = editSettings.data?.build;
@@ -582,6 +583,30 @@ const Edit = () => {
                 </FormItem>
               )}
             />
+
+            <H3>Comments</H3>
+
+            <FormField
+              control={form.control}
+              name="allow_comments"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Allow comments?</FormLabel>
+                    <FormDescription>
+                      Anyone with a WildBarrens account will be able to comment.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+
             <div className="flex flex-1 justify-between">
               <AlertDialog>
                 <AlertDialogTrigger asChild>

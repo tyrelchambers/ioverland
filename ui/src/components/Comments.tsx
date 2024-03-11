@@ -22,6 +22,7 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import DeletedComment from "./DeletedComment";
+import { useDomainUser } from "@/hooks/useDomainUser";
 
 export const CommentInput = ({
   buildId,
@@ -35,7 +36,7 @@ export const CommentInput = ({
   closeReply?: () => void;
 }) => {
   const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { user } = useDomainUser();
   const { post } = useComments({
     buildId,
     replyId,
@@ -87,12 +88,15 @@ export const CommentInput = ({
             )}
           />
           <div className="mt-6 flex justify-between bg-card p-3 items-center">
-            <Avatar className="w-6 h-6 mr-2">
-              <AvatarImage src={user?.imageUrl} />
-              <AvatarFallback>
-                <UserIcon size={14} />
-              </AvatarFallback>
-            </Avatar>
+            <header className="flex items-center gap-3">
+              <Avatar className="w-6 h-6 mr-2">
+                <AvatarImage src={user.data?.image_url} />
+                <AvatarFallback>
+                  <UserIcon size={18} />
+                </AvatarFallback>
+              </Avatar>
+              <p className="text-card-foreground">{user.data?.username}</p>
+            </header>
             <div className="flex gap-3">
               {replyId && (
                 <Button size="lg" variant="outline" onClick={closeReply}>
@@ -128,11 +132,13 @@ export const Comment = ({ c }: { c: IComment }) => {
   const { likeComment, dislikeComment, deleteComment } = useComments({
     buildId: c.build_id,
   });
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
+
+  const { user } = useDomainUser();
 
   const isLiked = c.likes?.includes(c.author?.uuid ?? "");
   const canDelete =
-    user?.id === c.author?.uuid || user?.id === c.build?.user_id;
+    user.data?.uuid === c.author?.uuid || user.data?.uuid === c.build?.user_id;
 
   return (
     <div className="flex flex-col gap-3">

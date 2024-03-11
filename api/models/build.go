@@ -27,6 +27,7 @@ type Build struct {
 	History       []*History     `gorm:"foreignKey:BuildId" json:"history"`
 	Adventures    []*Adventure   `gorm:"many2many:build_adventures;" json:"adventures"`
 	Sample        bool           `gorm:"default:false" json:"sample"`
+	AllowComments bool           `gorm:"default:true" json:"allow_comments"`
 }
 
 type Vehicle struct {

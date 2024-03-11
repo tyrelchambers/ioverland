@@ -112,6 +112,7 @@ func CreateBuild(c *gin.Context) {
 		UserId:        reqBody.UserId,
 		Banner:        reqBody.Banner,
 		Photos:        reqBody.Photos,
+		AllowComments: reqBody.AllowComments,
 	}
 
 	err = build_service.Create(dbConfig.Client, buildEntity)

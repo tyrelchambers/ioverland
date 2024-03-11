@@ -375,22 +375,26 @@ const Build = () => {
 
             <History history={build?.history} />
           </div>
-          <Separator />
+          {build.allow_comments && (
+            <>
+              <Separator />
 
-          <section className="my-10 lg:w-1/2 w-full">
-            <H2 className="mb-8">Comments</H2>
-            {isSignedIn ? (
-              <CommentInput buildId={build?.uuid} />
-            ) : (
-              <Info>
-                <p>Sign in to comment</p>
-              </Info>
-            )}
-            <Separator className="mt-6" />
-            {buildComments.data && (
-              <CommentList comments={buildComments.data} />
-            )}
-          </section>
+              <section className="my-10 lg:w-1/2 w-full">
+                <H2 className="mb-8">Comments</H2>
+                {isSignedIn ? (
+                  <CommentInput buildId={build?.uuid} />
+                ) : (
+                  <Info>
+                    <p>Sign in to comment</p>
+                  </Info>
+                )}
+                <Separator className="mt-6" />
+                {buildComments.data && (
+                  <CommentList comments={buildComments.data} />
+                )}
+              </section>
+            </>
+          )}
         </section>
       </section>
       <Footer />

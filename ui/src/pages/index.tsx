@@ -13,6 +13,7 @@ import {
   Lightbulb,
   MapPin,
   MessageSquare,
+  Shirt,
   Star,
   Trophy,
   Users,
@@ -330,6 +331,16 @@ export default function Home() {
               </div>
               <p className="text-muted-foreground">
                 Track your builds over time
+              </p>
+            </div>
+
+            <div>
+              <Shirt className="text-primary" size={30} />
+              <div className=" font-bold my-2 text-xl flex items-center gap-2">
+                <p>Merch</p>
+              </div>
+              <p className="text-muted-foreground">
+                Clothing, customs stickers, and more!
               </p>
             </div>
           </div>
