@@ -29,7 +29,10 @@ COPY . .
 ENV NEXT_PUBLIC_BACKEND_URL="https://api.wildbarrens.com"
 ENV NEXT_PUBLIC_FRONTEND_URL="https://wildbarrens.com"
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsud2lsZGJhcnJlbnMuY29tJA"
-
+ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
+ENV NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
 # If using npm comment out above and use below instead
 RUN npm run build
 

@@ -137,7 +137,7 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://iover.land", "https://wildbarrens.com"},
+	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://wildbarrens.com"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization", "Upload-Length", "Upload-Offset", "Upload-Name", "Upload-Length", "Clerk-User-Id"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
