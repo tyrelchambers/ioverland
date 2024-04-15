@@ -97,8 +97,11 @@ func Webhooks(c *gin.Context) {
 		}
 
 		newUser := models.User{
-			Uuid:     data.Data.ID,
-			Username: *data.Data.Username,
+			Uuid: data.Data.ID,
+		}
+
+		if data.Data.Username != nil {
+			newUser.Username = *data.Data.Username
 		}
 
 		// Create user from Clerk data
