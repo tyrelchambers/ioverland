@@ -6,9 +6,9 @@ import {
 } from "@/lib/utils";
 import React from "react";
 import EmptyListText from "../EmptyListText";
-import { History } from "@/types";
+import { History as HistoryType } from "@/types";
 
-const History = ({ history }: { history: History[] | undefined }) => {
+const History = ({ history }: { history: HistoryType[] | undefined }) => {
   if (!history || history.length === 0)
     return <EmptyListText text="No build history" />;
   return (
