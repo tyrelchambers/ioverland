@@ -28,6 +28,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export const routes = [
   {
@@ -157,33 +163,27 @@ const Header = ({ className, stickyOnScroll }: Props) => {
                   </Link>
                 ))}
 
-                <NavigationMenu>
-                  <NavigationMenuList>
-                    <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-primary">
-                        <PlusCircle size={16} className="mr-2" /> New
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="p-2 w-[200px] flex flex-col">
-                          <NavigationMenuLink
-                            href="/build/new"
-                            className="hover:bg-zinc-100 transition-all rounded-md p-2 flex gap-2 items-center text-muted-foreground"
-                          >
-                            <Wrench size={16} />
-                            New build
-                          </NavigationMenuLink>
-                          <NavigationMenuLink
-                            href="/adventure/new"
-                            className="hover:bg-zinc-100 transition-all rounded-md p-2 flex gap-2 items-center text-muted-foreground"
-                          >
-                            <Map size={16} />
-                            New adventure
-                          </NavigationMenuLink>
-                        </div>
-                      </NavigationMenuContent>
-                    </NavigationMenuItem>
-                  </NavigationMenuList>
-                </NavigationMenu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="bg-primary flex items-center px-4 py-2 rounded-lg">
+                    <PlusCircle size={16} className="mr-2" /> New
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <div className="w-[200px] flex flex-col">
+                      <Link href="/build/new">
+                        <DropdownMenuItem className="hover:bg-zinc-100 transition-all rounded-md flex gap-2 items-center text-muted-foreground">
+                          <Wrench size={16} />
+                          New build
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href="/adventure/new">
+                        <DropdownMenuItem className="hover:bg-zinc-100 transition-all rounded-md flex gap-2 items-center text-muted-foreground">
+                          <Map size={16} />
+                          New adventure
+                        </DropdownMenuItem>
+                      </Link>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
               <SignedOut>

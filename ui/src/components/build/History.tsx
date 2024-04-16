@@ -1,9 +1,4 @@
-import {
-  findCategory,
-  formatPrice,
-  groupHistoryByYear,
-  groupModificationsByCategory,
-} from "@/lib/utils";
+import { groupHistoryByYear } from "@/lib/utils";
 import React from "react";
 import EmptyListText from "../EmptyListText";
 import { History as HistoryType } from "@/types";
