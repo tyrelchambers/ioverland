@@ -38,10 +38,10 @@ export const newBuildSchema = z.object({
     .record(z.string(), z.string().min(1, { message: "Link is required" }))
     .optional(),
   vehicle: z.object({
-    model: z.string(),
-    make: z.string(),
-    year: z.string(),
-    type: z.string(),
+    model: z.string().min(1, { message: "Build model is required" }),
+    make: z.string().min(1, { message: "Build make is required" }),
+    year: z.string().min(1, { message: "Build year is required" }),
+    type: z.string().min(1, { message: "Build type is required" }),
   }),
   modifications: z.record(z.string(), modification).optional(),
   public: z.boolean(),

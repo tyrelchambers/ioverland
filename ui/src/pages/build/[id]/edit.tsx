@@ -34,6 +34,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,6 +77,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const Edit = () => {
   const router = useRouter();
@@ -385,6 +387,8 @@ const Edit = () => {
                 render={({ field }) => (
                   <FormItem className=" flex-1">
                     <FormLabel>Type</FormLabel>
+                    <FormMessage />
+
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -409,6 +413,8 @@ const Edit = () => {
                 render={({ field }) => (
                   <FormItem className=" flex-1">
                     <FormLabel>Make</FormLabel>
+                    <FormMessage />
+
                     <Combobox
                       defaultLabel="Select a make..."
                       searchLabel="makes"
@@ -426,6 +432,8 @@ const Edit = () => {
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormLabel>Make</FormLabel>
+                      <FormMessage />
+
                       <Combobox
                         defaultLabel="Select a make..."
                         searchLabel="makes"
@@ -445,6 +453,8 @@ const Edit = () => {
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormLabel>Year</FormLabel>
+                      <FormMessage />
+
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
