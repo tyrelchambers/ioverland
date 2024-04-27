@@ -1,28 +1,15 @@
-import { authMiddleware, redirectToSignUp } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default authMiddleware({
-  publicRoutes: [
-    "/",
-    "/explore",
-    "/build/:id",
-    "/pricing",
-    "/user/:username",
-    "/adventure/:id",
-  ],
-  afterAuth(auth, req, evt) {
-    // Handle users who aren't authenticated
-    if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignUp({ returnBackUrl: req.url });
-    }
+const isProtectedRoute = createRouteMatcher([
+  "/dashboard(.*)",
+  "/build/new",
+  "/build/[id]/edit",
+  "/adventure/new",
+  "/adventure/[id]/edit",
+]);
 
-    // If the user is logged in and trying to access a protected route, allow them to access route
-    if (auth.userId && !auth.isPublicRoute) {
-      return NextResponse.next();
-    }
-    // Allow users visiting public routes to access them
-    return NextResponse.next();
-  },
+export default clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) auth().protect();
 });
 
 export const config = {
