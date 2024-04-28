@@ -417,3 +417,10 @@ export interface AdventureSettings {
   adventure: Adventure;
   can_be_public: boolean;
 }
+
+export const newGroupSchema = z.object({
+  name: z.string().min(1, { message: "Group name is required" }),
+  privacy: z.enum(["private", "public"]),
+});
+
+export type NewGroupSchema = z.infer<typeof newGroupSchema>;

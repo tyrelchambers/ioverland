@@ -15,6 +15,7 @@ import {
   PlusCircle,
   Rss,
   Wrench,
+  Users,
 } from "lucide-react";
 interface Tab {
   tab: string;
@@ -91,5 +92,29 @@ export const authRoutes = [
     href: "/dashboard",
     label: "Dashboard",
     icon: <LayoutDashboard size={20} />,
+  },
+];
+
+interface ActionLink {
+  href: string;
+  label: string;
+  icon: JSX.Element;
+}
+
+export const navActionLinks: ActionLink[] = [
+  {
+    href: "/build/new",
+    label: "Create Build",
+    icon: <Wrench size={16} />,
+  },
+  {
+    href: "/adventure/new",
+    label: "Create Adventure",
+    icon: <Map size={16} />,
+  },
+  {
+    href: "/group/new",
+    label: "Create Group",
+    icon: <Users size={16} />,
   },
 ];

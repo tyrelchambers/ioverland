@@ -34,7 +34,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { authRoutes, routes } from "@/index.routes";
+import { authRoutes, navActionLinks, routes } from "@/index.routes";
 
 interface Props {
   on?: "dark" | "light";
@@ -136,18 +136,14 @@ const Header = ({ className, stickyOnScroll }: Props) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <div className="w-[200px] flex flex-col">
-                      <Link href="/build/new">
-                        <DropdownMenuItem className="hover:bg-zinc-100 transition-all rounded-md flex gap-2 items-center text-muted-foreground">
-                          <Wrench size={16} />
-                          New build
-                        </DropdownMenuItem>
-                      </Link>
-                      <Link href="/adventure/new">
-                        <DropdownMenuItem className="hover:bg-zinc-100 transition-all rounded-md flex gap-2 items-center text-muted-foreground">
-                          <Map size={16} />
-                          New adventure
-                        </DropdownMenuItem>
-                      </Link>
+                      {navActionLinks.map((link) => (
+                        <Link href={link.href} key={link.href}>
+                          <DropdownMenuItem className="hover:bg-zinc-100 transition-all rounded-md flex gap-2 items-center text-muted-foreground">
+                            {link.icon}
+                            {link.label}
+                          </DropdownMenuItem>
+                        </Link>
+                      ))}
                     </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
