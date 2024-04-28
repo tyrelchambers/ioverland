@@ -34,40 +34,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-
-export const routes = [
-  {
-    href: "/",
-    label: "Home",
-    icon: <Home size={20} />,
-  },
-  {
-    href: "/explore",
-    label: "Explore",
-    icon: <Mountain size={20} />,
-  },
-  {
-    href: "/pricing",
-    label: "Pricing",
-    icon: <BadgeDollarSign size={20} />,
-  },
-  {
-    href: "/blog",
-    label: "Blog",
-    icon: <Rss size={20} />,
-    external: {
-      href: "https://blog.wildbarrens.com",
-    },
-  },
-];
-
-export const authRoutes = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: <LayoutDashboard size={20} />,
-  },
-];
+import { authRoutes, routes } from "@/index.routes";
 
 interface Props {
   on?: "dark" | "light";
@@ -120,7 +87,7 @@ const Header = ({ className, stickyOnScroll }: Props) => {
             isLoading={search.isFetching}
           />
 
-          <MobileNav routes={routes} authRoutes={authRoutes} />
+          <MobileNav routes={routes} />
         </div>
 
         {/* this is the desktop nav */}

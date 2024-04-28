@@ -1,6 +1,5 @@
 import React from "react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { Button } from "../ui/button";
@@ -8,15 +7,8 @@ import { Route } from "@/types";
 import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import { dashboardTabs } from "@/index.routes";
-import { H2, H3 } from "../Heading";
 
-const MobileNav = ({
-  routes,
-  authRoutes,
-}: {
-  routes: Route[];
-  authRoutes: Route[];
-}) => {
+const MobileNav = ({ routes }: { routes: Route[] }) => {
   const [open, setOpen] = React.useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>

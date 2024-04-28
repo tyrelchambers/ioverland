@@ -6,8 +6,16 @@ import {
   LucideIcon,
   Sparkle,
   User,
+  BadgeDollarSign,
+  Home,
+  LayoutDashboard,
+  Map,
+  Mountain,
+  Plus,
+  PlusCircle,
+  Rss,
+  Wrench,
 } from "lucide-react";
-
 interface Tab {
   tab: string;
   icon: LucideIcon;
@@ -49,5 +57,39 @@ export const dashboardTabs: Tab[] = [
     tab: "followers",
     icon: Sparkle,
     label: "Followers",
+  },
+];
+
+export const routes = [
+  {
+    href: "/",
+    label: "Home",
+    icon: <Home size={20} />,
+  },
+  {
+    href: "/explore",
+    label: "Explore",
+    icon: <Mountain size={20} />,
+  },
+  {
+    href: "/pricing",
+    label: "Pricing",
+    icon: <BadgeDollarSign size={20} />,
+  },
+  {
+    href: "/blog",
+    label: "Blog",
+    icon: <Rss size={20} />,
+    external: {
+      href: "https://blog.wildbarrens.com",
+    },
+  },
+];
+
+export const authRoutes = [
+  {
+    href: "/dashboard",
+    label: "Dashboard",
+    icon: <LayoutDashboard size={20} />,
   },
 ];
