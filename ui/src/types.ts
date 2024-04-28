@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { Themes } from "./lib/mapTheme";
+import { describe } from "node:test";
 
 const trip = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
@@ -420,7 +422,9 @@ export interface AdventureSettings {
 
 export const newGroupSchema = z.object({
   name: z.string().min(1, { message: "Group name is required" }),
+  description: z.string().optional(),
   privacy: z.enum(["private", "public"]),
+  theme: z.enum(Themes),
 });
 
 export type NewGroupSchema = z.infer<typeof newGroupSchema>;

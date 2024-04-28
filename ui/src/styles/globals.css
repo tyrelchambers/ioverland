@@ -98,7 +98,7 @@
   position: absolute;
   top: 0px;
   right: 0px;
-  bottom: 0px;
+  top: 0px;
   left: 0px;
   opacity: 0.1;
 }
@@ -107,4 +107,32 @@
   .photo-list {
     grid-template-columns: 1fr !important;
   }
+}
+
+.gradient-blue {
+  background: linear-gradient(to top, #3e4272, #5a78d4);
+}
+
+.gradient-red {
+  background: linear-gradient(to top, #551a1a, #8f3a3a);
+}
+
+.gradient-green {
+  background: linear-gradient(to top, #0e3a0a, #4dbc4d);
+}
+
+.gradient-purple {
+  background: linear-gradient(to top, #491a5d, #6f3a8f);
+}
+
+.gradient-orange {
+  background: linear-gradient(to top, #3f2912, #bd914b);
+}
+
+.gradient-yellow {
+  background: linear-gradient(to top, #525216, #bdbd4b);
+}
+
+.gradient-default {
+  background: linear-gradient(to top, #165757, #3a8f8f);
 }
