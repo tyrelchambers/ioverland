@@ -620,3 +620,20 @@ func ViewProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, "success")
 }
+
+func GetGroups(c *gin.Context) {
+	user := utils.UserFromContext(c)
+
+	groups, err := user_service.GetGroups(dbConfig.Client, user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [USER] [GETGROUPS] Error getting groups",
+			Extra:   map[string]interface{}{"error": err.Error(), "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, groups)
+}

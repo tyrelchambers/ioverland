@@ -16,6 +16,7 @@ import {
   Rss,
   Wrench,
   Users,
+  Group,
 } from "lucide-react";
 interface Tab {
   tab: string;
@@ -33,6 +34,11 @@ export const dashboardTabs: Tab[] = [
     tab: "adventures",
     icon: FlameKindling,
     label: "Adventures",
+  },
+  {
+    tab: "groups",
+    icon: Group,
+    label: "Groups",
   },
   {
     tab: "bookmarks",

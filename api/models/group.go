@@ -3,10 +3,11 @@ package models
 import "gorm.io/gorm"
 
 type Group struct {
-	Uuid    string `gorm:"primaryKey;not null" json:"uuid"`
-	Name    string `gorm:"type:varchar(255)" json:"name"`
-	Privacy string `json:"privacy" gorm:"default:private"`
-	Theme   struct {
+	Uuid        string `gorm:"primaryKey;not null" json:"uuid"`
+	Name        string `gorm:"type:varchar(255)" json:"name"`
+	Description string `gorm:"type:text" json:"description"`
+	Privacy     string `json:"privacy" gorm:"default:private"`
+	Theme       struct {
 		GradientClass string `json:"gradientClass"`
 		Color         string `json:"color"`
 	} `json:"theme" gorm:"embedded;embeddedPrefix:theme_;"`

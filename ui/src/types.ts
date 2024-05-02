@@ -430,3 +430,20 @@ export const newGroupSchema = z.object({
 });
 
 export type NewGroupSchema = z.infer<typeof newGroupSchema>;
+
+interface GroupTheme {
+  gradientClass: string;
+  color: string;
+}
+
+export interface Group {
+  uuid: string;
+  name: string;
+  description: string;
+  privacy: string;
+  theme: GroupTheme;
+  adminId: string;
+  admin: DomainUser;
+  members: DomainUser[];
+  deletedAt: Date | null;
+}

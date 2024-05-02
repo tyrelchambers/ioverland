@@ -215,6 +215,7 @@ func main() {
 	userG.POST("/:username/view-profile", user_controller.ViewProfile)
 	userG.PATCH("/me/update", AuthRequired, user_controller.UpdateUser)
 	userG.POST("/me/remove-banner", AuthRequired, user_controller.RemoveBanner)
+	userG.GET("/me/groups", AuthRequired, user_controller.GetGroups)
 
 	webhooksG.POST("", webhooks_controller.Webhooks)
 	webhooksG.POST("/stripe", webhooks_controller.StripeWebhooks)

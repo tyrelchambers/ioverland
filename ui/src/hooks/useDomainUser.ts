@@ -2,6 +2,7 @@ import { request } from "@/lib/axios";
 import {
   Account,
   DomainUser,
+  Group,
   Media,
   PublicProfile,
   UpdateProfileWithBanner,
@@ -299,6 +300,19 @@ export const useDomainUser = ({
     },
   });
 
+  const groups = useQuery({
+    queryKey: ["groups"],
+    queryFn: async (): Promise<Group[]> => {
+      return request
+        .get(`/api/user/me/groups`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+  });
+
   return {
     user: query,
     bookmark,
@@ -314,5 +328,6 @@ export const useDomainUser = ({
     follow,
     unfollow,
     viewProfile,
+    groups,
   };
 };
