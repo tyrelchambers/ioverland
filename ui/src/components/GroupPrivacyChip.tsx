@@ -1,7 +1,7 @@
 import { Globe, Lock } from "lucide-react";
 import React from "react";
 
-const GroupPrivacyChip = ({ type }: { type: string }) => {
+const GroupPrivacyChip = ({ type }: { type: "private" | "public" }) => {
   if (type === "public") {
     return (
       <div className="flex gap-2 items-center text-muted-foreground text-sm font-medium">

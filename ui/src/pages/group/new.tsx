@@ -19,29 +19,46 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useDomainUser } from "@/hooks/useDomainUser";
-import { Themes, getTheme } from "@/lib/mapTheme";
-import { newGroupSchema } from "@/types";
+import { useGroup } from "@/hooks/useGroup";
+import { getTheme, groupThemes, themeMap, ThemeMap } from "@/lib/mapTheme";
+import { NewGroupSchema, newGroupSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 const NewGroup = () => {
   const { user } = useDomainUser();
+  const { create } = useGroup();
 
-  const form = useForm({
+  const form = useForm<NewGroupSchema>({
     resolver: zodResolver(newGroupSchema),
     defaultValues: {
       name: "",
       description: "",
-      privacy: "",
-      theme: "default",
+      privacy: "private",
+      themePreset: "default",
     },
   });
 
-  const themeWatch = form.watch("theme") as (typeof Themes)[number];
+  const themeWatch = form.watch("themePreset") as keyof typeof getTheme;
   const nameWatch = form.watch("name");
   const descriptionWatch = form.watch("description");
   const privacyWatch = form.watch("privacy");
+
+  const submitHandler = (data: NewGroupSchema) => {
+    const payload: NewGroupSchema & { theme: ThemeMap[keyof ThemeMap] } = {
+      ...data,
+      theme: getTheme(data.themePreset),
+    };
+
+    create.mutate(payload, {
+      onSuccess: () => {
+        form.reset();
+        toast.success("Group created");
+      },
+    });
+  };
 
   return (
     <main>
@@ -63,7 +80,10 @@ const NewGroup = () => {
           </div>
 
           <Form {...form}>
-            <form className="flex flex-col flex-1">
+            <form
+              className="flex flex-col flex-1"
+              onSubmit={form.handleSubmit(submitHandler)}
+            >
               <div className="flex flex-col gap-4 flex-1">
                 <FormField
                   name="name"
@@ -113,7 +133,7 @@ const NewGroup = () => {
                 />
 
                 <FormField
-                  name="theme"
+                  name="themePreset"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
@@ -128,7 +148,7 @@ const NewGroup = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Themes.map((t) => (
+                          {Object.values(groupThemes).map((t) => (
                             <SelectItem key={t} value={t}>
                               {t}
                             </SelectItem>
@@ -139,7 +159,9 @@ const NewGroup = () => {
                   )}
                 />
               </div>
-              <Button>Create group</Button>
+              <Button disabled={!form.formState.isValid || create.isPending}>
+                Create group
+              </Button>
             </form>
           </Form>
         </header>

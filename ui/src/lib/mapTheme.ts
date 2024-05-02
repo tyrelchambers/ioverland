@@ -1,20 +1,21 @@
-export const Themes = [
-  "blue",
-  "red",
-  "green",
-  "purple",
-  "orange",
-  "yellow",
-  "default",
-] as const;
-type ThemeMap = {
-  [key in (typeof Themes)[number]]: {
+export const groupThemes = {
+  blue: "blue",
+  red: "red",
+  green: "green",
+  purple: "purple",
+  orange: "orange",
+  yellow: "yellow",
+  default: "default",
+} as const;
+
+export type ThemeMap = {
+  [key in keyof typeof groupThemes]: {
     gradientClass: string;
     color: string;
   };
 };
 
-const themeMap: ThemeMap = {
+export const themeMap: ThemeMap = {
   blue: {
     gradientClass: "gradient-blue",
     color: "#5a78d4",
@@ -45,6 +46,8 @@ const themeMap: ThemeMap = {
   },
 };
 
-export const getTheme = (theme: (typeof Themes)[number]) => {
+export const getTheme = (
+  theme: keyof typeof groupThemes
+): ThemeMap[keyof ThemeMap] => {
   return themeMap[theme];
 };
