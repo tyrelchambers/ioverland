@@ -440,7 +440,7 @@ export interface Group {
   uuid: string;
   name: string;
   description: string;
-  privacy: string;
+  privacy: "private" | "public";
   theme: GroupTheme;
   adminId: string;
   admin: DomainUser;

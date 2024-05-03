@@ -1,6 +1,7 @@
 import React from "react";
 import { H2 } from "../Heading";
 import { useDomainUser } from "@/hooks/useDomainUser";
+import Link from "next/link";
 
 const Groups = () => {
   const { groups } = useDomainUser();
@@ -13,10 +14,14 @@ const Groups = () => {
 
       <div className="grid grid-cols-3 gap-10">
         {groups.data?.map((g) => (
-          <div key={g.uuid} className="border border-border p-4 rounded-md">
+          <Link
+            href={`/group/${g.uuid}`}
+            key={g.uuid}
+            className="border border-border p-4 rounded-md"
+          >
             <p className="text-foreground font-medium">{g.name}</p>
             <p className="text-muted-foreground">{g.description}</p>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

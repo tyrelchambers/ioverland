@@ -198,6 +198,7 @@ func main() {
 	commentG.DELETE("/:comment_id/delete", AuthRequired, comment_controller.DeleteComment)
 
 	groupG.POST("/new", AuthRequired, group_controller.Create)
+	groupG.GET("/:group_id", group_controller.GetById)
 
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)

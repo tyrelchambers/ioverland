@@ -1,9 +1,10 @@
 import { request } from "@/lib/axios";
-import { NewGroupSchema } from "@/types";
+import { Group, NewGroupSchema } from "@/types";
 import { useAuth } from "@clerk/nextjs";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 
-export const useGroup = () => {
+export const useGroup = ({ id }: { id?: string } = {}) => {
   const { getToken } = useAuth();
   const create = useMutation({
     mutationFn: async (data: NewGroupSchema) => {
@@ -14,8 +15,22 @@ export const useGroup = () => {
       });
     },
   });
+  const getById = useQuery({
+    queryKey: ["group", id],
+    queryFn: async (): Promise<Group> => {
+      return request
+        .get(`/api/group/${id}`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+    enabled: !!id,
+  });
 
   return {
     create,
+    group: getById,
   };
 };

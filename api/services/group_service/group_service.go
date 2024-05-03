@@ -15,3 +15,12 @@ func Create(db *gorm.DB, data models.Group) error {
 
 	return nil
 }
+
+func GetById(db *gorm.DB, uuid string) (*models.Group, error) {
+	var group *models.Group
+	err := db.Where("uuid = ?", uuid).Preload("Admin").First(&group).Error
+	if err != nil {
+		return group, err
+	}
+	return group, nil
+}
