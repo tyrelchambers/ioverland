@@ -24,3 +24,11 @@ func GetById(db *gorm.DB, uuid string) (*models.Group, error) {
 	}
 	return group, nil
 }
+
+func Update(db *gorm.DB, data models.Group) error {
+	err := db.Save(&data).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

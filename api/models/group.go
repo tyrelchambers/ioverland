@@ -8,8 +8,9 @@ type Group struct {
 	Description string `gorm:"type:text" json:"description"`
 	Privacy     string `json:"privacy" gorm:"default:private"`
 	Theme       struct {
-		GradientClass string `json:"gradientClass"`
 		Color         string `json:"color"`
+		GradientClass string `json:"gradientClass"`
+		Hex           string `json:"hex"`
 	} `json:"theme" gorm:"embedded;embeddedPrefix:theme_;"`
 	AdminId   string         `json:"admin_id"`
 	Admin     User           `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:AdminId;references:Uuid" json:"admin"`

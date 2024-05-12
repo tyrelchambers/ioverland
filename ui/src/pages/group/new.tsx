@@ -20,7 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useDomainUser } from "@/hooks/useDomainUser";
 import { useGroup } from "@/hooks/useGroup";
-import { getTheme, groupThemes, themeMap, ThemeMap } from "@/lib/mapTheme";
+import { getTheme, groupThemes, themeMap, TThemeMap } from "@/lib/mapTheme";
 import { NewGroupSchema, newGroupSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
@@ -47,7 +47,7 @@ const NewGroup = () => {
   const privacyWatch = form.watch("privacy");
 
   const submitHandler = (data: NewGroupSchema) => {
-    const payload: NewGroupSchema & { theme: ThemeMap[keyof ThemeMap] } = {
+    const payload: NewGroupSchema & { theme: TThemeMap[keyof TThemeMap] } = {
       ...data,
       theme: getTheme(data.themePreset),
     };

@@ -1,53 +1,39 @@
-export const groupThemes = {
-  blue: "blue",
-  red: "red",
-  green: "green",
-  purple: "purple",
-  orange: "orange",
-  yellow: "yellow",
-  default: "default",
-} as const;
-
-export type ThemeMap = {
-  [key in keyof typeof groupThemes]: {
-    gradientClass: string;
-    color: string;
-  };
-};
+import { ThemeMap } from "@/types";
 
 export const themeMap: ThemeMap = {
   blue: {
     gradientClass: "gradient-blue",
-    color: "#5a78d4",
+    color: "blue",
+    hex: "#5a78d4",
   },
   red: {
     gradientClass: "gradient-red",
-    color: "#8f3a3a",
+    color: "red",
+    hex: "#8f3a3a",
   },
   green: {
     gradientClass: "gradient-green",
-    color: "#0e3a0a",
+    color: "green",
+    hex: "#0e3a0a",
   },
   purple: {
     gradientClass: "gradient-purple",
-    color: "#6f3a8f",
+    color: "purple",
+    hex: "#6f3a8f",
   },
   orange: {
     gradientClass: "gradient-orange",
-    color: "#bd914b",
+    color: "orange",
+    hex: "#bd914b",
   },
   yellow: {
     gradientClass: "gradient-yellow",
-    color: "#bdbd4b",
+    color: "yellow",
+    hex: "#bdbd4b",
   },
   default: {
     gradientClass: "gradient-default",
-    color: "#3a8f8f",
+    color: "default",
+    hex: "#3a8f8f",
   },
-};
-
-export const getTheme = (
-  theme: keyof typeof groupThemes
-): ThemeMap[keyof ThemeMap] => {
-  return themeMap[theme];
 };

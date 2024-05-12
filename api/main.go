@@ -199,6 +199,7 @@ func main() {
 
 	groupG.POST("/new", AuthRequired, group_controller.Create)
 	groupG.GET("/:group_id", group_controller.GetById)
+	groupG.POST("/:group_id/edit", AuthRequired, group_controller.Edit)
 
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)
