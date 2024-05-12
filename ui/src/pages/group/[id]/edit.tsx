@@ -28,7 +28,7 @@ import {
 } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
-import { CircleCheck, Lock, ShieldX } from "lucide-react";
+import { CircleCheck, Globe, Lock, ShieldX } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -200,7 +200,17 @@ const Edit = () => {
                         anyone to join.
                       </p>
                     </div>
-                  ) : null}
+                  ) : (
+                    <div>
+                      <p className="font-medium flex gap-2 items-baseline">
+                        <Globe size={18} />
+                        Your group is public
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        Anyone can join your group.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 

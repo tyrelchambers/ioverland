@@ -77,21 +77,20 @@ const Group = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Link href={`/group/${group.data.uuid}/edit`}>Edit</Link>
-                </DropdownMenuItem>
+                <Link href={`/group/${group.data.uuid}/edit`}>
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                </Link>
               </DropdownMenuContent>
             </DropdownMenu>
-            <button
+            <Button
               type="button"
-              aria-label="Inactive button used for an example ui piece"
               className={`${buttonVariants({ variant: "default" })}`}
               style={{
                 backgroundColor: group.data.theme.color,
               }}
             >
-              Join group
-            </button>
+              {group.data.privacy === "private" ? "Request to Join" : "Join"}
+            </Button>
           </div>
         </div>
       </section>
