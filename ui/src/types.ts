@@ -158,6 +158,8 @@ const userBase = z.object({
   ),
 });
 
+export type UserBase = z.infer<typeof userBase>;
+
 const domainUser = z
   .object({
     followers: z.array(userBase),
@@ -458,14 +460,16 @@ export const editGroupSchema = newGroupSchema.extend({
 
 export type EditGroupSchema = z.infer<typeof editGroupSchema>;
 
-export interface Group {
-  uuid: string;
-  name: string;
-  description: string;
-  privacy: "private" | "public";
-  theme: Theme;
-  adminId: string;
-  admin: DomainUser;
-  members: DomainUser[];
-  deletedAt: Date | null;
-}
+export const groupSchema = z.object({
+  uuid: z.string(),
+  name: z.string(),
+  description: z.string(),
+  privacy: z.enum(["private", "public"]),
+  theme: themeSchema,
+  adminId: z.string(),
+  admin: userBase,
+  members: z.array(userBase),
+  deletedAt: z.date().nullable(),
+});
+
+export type Group = z.infer<typeof groupSchema>;

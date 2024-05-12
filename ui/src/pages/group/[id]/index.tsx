@@ -11,24 +11,39 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { useDomainUser } from "@/hooks/useDomainUser";
 import { useGroup } from "@/hooks/useGroup";
+import { checkMembership } from "@/lib/utils";
 import clsx from "clsx";
 import { Ellipsis, User, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useMemo } from "react";
 
 const Group = () => {
+  const { user } = useDomainUser();
   const params = useRouter();
 
-  const { group, join } = useGroup({
+  const { group, join, leave } = useGroup({
     id: params.query.id as string,
   });
+
+  const isAMember = useMemo(() => {
+    if (!group.data?.members || !user.data?.uuid) {
+      return undefined;
+    } else {
+      return checkMembership(group.data.members, user.data.uuid);
+    }
+  }, [group.data?.members, user.data?.uuid]);
 
   if (!group.data) return null;
 
   const joinHandler = () => {
     join.mutate(group.data.uuid);
+  };
+
+  const leaveHandler = () => {
+    leave.mutate(group.data.uuid);
   };
 
   return (
@@ -86,16 +101,21 @@ const Group = () => {
                 </Link>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button
-              type="button"
-              className={`${buttonVariants({ variant: "default" })}`}
-              style={{
-                backgroundColor: group.data.theme.color,
-              }}
-              onClick={joinHandler}
-            >
-              {group.data.privacy === "private" ? "Request to Join" : "Join"}
-            </Button>
+            {isAMember ? (
+              <Button type="button" variant="outline" onClick={leaveHandler}>
+                Leave group
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                style={{
+                  backgroundColor: group.data.theme.color,
+                }}
+                onClick={joinHandler}
+              >
+                {group.data.privacy === "private" ? "Request to Join" : "Join"}
+              </Button>
+            )}
           </div>
         </div>
       </section>

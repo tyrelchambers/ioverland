@@ -3,7 +3,7 @@ import {
   MAX_FILE_SIZE_PRO,
   modificationCategories,
 } from "@/constants";
-import { History, Modification } from "@/types";
+import { DomainUser, History, Modification, UserBase } from "@/types";
 import { createId } from "@paralleldrive/cuid2";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -184,4 +184,9 @@ export const convertToObject = <T>(
     obj[createId()] = a;
   });
   return obj;
+};
+
+export const checkMembership = (members: UserBase[], user_id: string) => {
+  if (!members || !user_id) return false;
+  return members.some((m) => m.uuid === user_id);
 };

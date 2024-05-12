@@ -101,15 +101,41 @@ func Edit(c *gin.Context) {
 
 func Join(c *gin.Context) {
 
-	groupId := c.Param("group_id")
+	group_id := c.Param("group_id")
 	user := utils.UserFromContext(c)
 
-	err := group_service.Join(dbConfig.Client, &models.Group{Uuid: groupId}, &models.User{Uuid: user.Uuid})
+	member := group_service.CheckMembership(dbConfig.Client, group_id, user)
+
+	if member {
+		c.String(http.StatusBadRequest, "You are already a member of this group")
+		return
+	}
+
+	err := group_service.Join(dbConfig.Client, &models.Group{Uuid: group_id}, &models.User{Uuid: user.Uuid})
 
 	if err != nil {
 		utils.CaptureError(c, &utils.CaptureErrorParams{
 			Message: "[CONTROLLERS] [GROUP] [JOIN] Error joining group",
-			Extra:   map[string]interface{}{"error": err.Error(), "group_id": groupId, "user_id": user.Uuid},
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
+
+func Leave(c *gin.Context) {
+
+	group_id := c.Param("group_id")
+	user := utils.UserFromContext(c)
+
+	err := group_service.Leave(dbConfig.Client, group_id, user)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [GROUP] [LEAVE] Error leaving group",
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
 		})
 		c.String(http.StatusInternalServerError, err.Error())
 		return

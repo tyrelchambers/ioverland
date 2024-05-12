@@ -201,6 +201,8 @@ func main() {
 	groupG.GET("/:group_id", group_controller.GetById)
 	groupG.POST("/:group_id/edit", AuthRequired, group_controller.Edit)
 	groupG.POST("/:group_id/join", AuthRequired, group_controller.Join)
+	groupG.POST("/:group_id/leave", AuthRequired, group_controller.Leave)
+
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.POST("/revert", UploadAuth, upload_controller.Revert)
