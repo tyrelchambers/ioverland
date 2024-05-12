@@ -313,3 +313,9 @@ func Search(db *gorm.DB, query string) ([]models.User, error) {
 
 	return users, err
 }
+
+func GetGroups(db *gorm.DB, user *models.User) ([]models.Group, error) {
+	var groups []models.Group
+	err := db.Table("groups").Where("admin_id = ?", user.Uuid).Find(&groups).Error
+	return groups, err
+}

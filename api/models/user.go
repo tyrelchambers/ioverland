@@ -23,4 +23,5 @@ type User struct {
 	ImageUrl            string         `json:"image_url"`
 	Comments            []*Comment     `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:AuthorId;references:Uuid" json:"comments"`
 	Adventures          []*Adventure   `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:UserId;references:Uuid" json:"adventures"`
+	Groups              []*Group       `gorm:"many2many:group_members" json:"groups"`
 }

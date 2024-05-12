@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { themeMap } from "./lib/mapTheme";
 
 const trip = z.object({
   name: z.string().min(1, { message: "Trip name is required" }),
@@ -413,7 +414,58 @@ export interface Point {
   lng: number;
 }
 
+export const themeSchema = z.object({
+  gradientClass: z.string(),
+  color: z.string(),
+  hex: z.string(),
+});
+
+export type Theme = z.infer<typeof themeSchema>;
+export type ThemeMap = {
+  [key: string]: {
+    gradientClass: string;
+    color: string;
+    hex: string;
+  };
+};
+
 export interface AdventureSettings {
   adventure: Adventure;
   can_be_public: boolean;
+}
+
+export const newGroupSchema = z.object({
+  name: z.string().min(1, { message: "Group name is required" }),
+  description: z.string().optional(),
+  privacy: z
+    .union([z.literal("private"), z.literal("public")])
+    .default("private"),
+  theme: themeSchema,
+});
+
+export type NewGroupSchema = z.infer<typeof newGroupSchema>;
+
+export const editGroupSchema = newGroupSchema.extend({
+  uuid: z.string(),
+  adminId: z.string(),
+  admin: userBase,
+  members: z.array(userBase),
+  deletedAt: z.date().nullable(),
+  moderation: z.object({
+    approvePosts: z.boolean().default(true),
+  }),
+});
+
+export type EditGroupSchema = z.infer<typeof editGroupSchema>;
+
+export interface Group {
+  uuid: string;
+  name: string;
+  description: string;
+  privacy: "private" | "public";
+  theme: Theme;
+  adminId: string;
+  admin: DomainUser;
+  members: DomainUser[];
+  deletedAt: Date | null;
 }

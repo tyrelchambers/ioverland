@@ -1,22 +1,14 @@
 import React from "react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { Button } from "../ui/button";
 import { Route } from "@/types";
 import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
-import { dashboardTabs } from "@/index.routes";
-import { H2, H3 } from "../Heading";
+import { dashboardTabs, navActionLinks } from "@/index.routes";
 
-const MobileNav = ({
-  routes,
-  authRoutes,
-}: {
-  routes: Route[];
-  authRoutes: Route[];
-}) => {
+const MobileNav = ({ routes }: { routes: Route[] }) => {
   const [open, setOpen] = React.useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -56,28 +48,18 @@ const MobileNav = ({
                 </Link>
               ))}
               <div className="flex flex-col gap-2 mt-6">
-                <Link
-                  href="/build/new"
-                  className="w-full block "
-                  onClick={() => setOpen(false)}
-                >
-                  <Button type="button" className={cn("w-full")}>
-                    New build
-                  </Button>
-                </Link>
-                <Link
-                  href="/adventure/new"
-                  className="w-full block"
-                  onClick={() => setOpen(false)}
-                >
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn("w-full")}
+                {navActionLinks.map((link) => (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    className="w-full block "
+                    onClick={() => setOpen(false)}
                   >
-                    New adventure
-                  </Button>
-                </Link>
+                    <Button type="button" className={cn("w-full")}>
+                      {link.label}
+                    </Button>
+                  </Link>
+                ))}
               </div>
             </SignedIn>
           </div>

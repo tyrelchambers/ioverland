@@ -1,7 +1,7 @@
 import React from "react";
-import { authRoutes, routes } from "./Header";
 import { SignedIn } from "@clerk/nextjs";
 import FeedbackForm from "./FeedbackForm";
+import { authRoutes, routes } from "@/index.routes";
 
 const Footer = () => {
   return (

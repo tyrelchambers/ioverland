@@ -18,6 +18,7 @@ import { useViewportWidth } from "@/hooks/useViewportWidth";
 import Head from "next/head";
 import Builds from "@/components/dashboard/Builds";
 import { Adventures } from "@/components/dashboard/Adventures";
+import Groups from "@/components/dashboard/Groups";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -127,6 +128,10 @@ const Dashboard = () => {
 
             <TabsContent value="adventures">
               <Adventures />
+            </TabsContent>
+
+            <TabsContent value="groups">
+              <Groups />
             </TabsContent>
 
             <TabsContent value="account">

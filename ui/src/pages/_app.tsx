@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Playfair_Display, Mulish } from "next/font/google";
+import { Playfair_Display, Mulish, Inter } from "next/font/google";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,7 +14,7 @@ export const headingFont = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-heading",
 });
-export const paragraphFont = Mulish({
+export const paragraphFont = Inter({
   weight: ["300", "400", "500", "700", "900"],
   subsets: ["latin"],
   variable: "--font-paragraph",

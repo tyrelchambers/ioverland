@@ -8,6 +8,7 @@ import (
 	comment_controller "api/controllers/comment"
 	explore_controller "api/controllers/explore"
 	feedback_controller "api/controllers/feedback"
+	group_controller "api/controllers/group"
 	health_controller "api/controllers/health"
 	search_controller "api/controllers/search"
 	upload_controller "api/controllers/upload"
@@ -84,7 +85,7 @@ func main() {
 
 	// ------- DB SETUP
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{}, &models.Group{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
@@ -158,6 +159,7 @@ func main() {
 	commentG := api.Group("/comment")
 	adventuresG := api.Group("/adventures")
 	adventureG := api.Group("/adventure")
+	groupG := api.Group("/group")
 
 	adventuresG.POST("/new", AuthRequired, adventure_controller.CreateNewAdventure)
 	adventuresG.GET("/:user_id", AuthRequired, adventure_controller.GetUserAdventures)
@@ -195,6 +197,10 @@ func main() {
 	commentG.PATCH("/:comment_id/dislike", AuthRequired, comment_controller.RemoveLike)
 	commentG.DELETE("/:comment_id/delete", AuthRequired, comment_controller.DeleteComment)
 
+	groupG.POST("/new", AuthRequired, group_controller.Create)
+	groupG.GET("/:group_id", group_controller.GetById)
+	groupG.POST("/:group_id/edit", AuthRequired, group_controller.Edit)
+
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.POST("/revert", UploadAuth, upload_controller.Revert)
@@ -211,6 +217,7 @@ func main() {
 	userG.POST("/:username/view-profile", user_controller.ViewProfile)
 	userG.PATCH("/me/update", AuthRequired, user_controller.UpdateUser)
 	userG.POST("/me/remove-banner", AuthRequired, user_controller.RemoveBanner)
+	userG.GET("/me/groups", AuthRequired, user_controller.GetGroups)
 
 	webhooksG.POST("", webhooks_controller.Webhooks)
 	webhooksG.POST("/stripe", webhooks_controller.StripeWebhooks)
