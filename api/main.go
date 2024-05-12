@@ -85,7 +85,7 @@ func main() {
 
 	// ------- DB SETUP
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{}, &models.Group{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{}, &models.Group{}, &models.UserGroup{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
@@ -200,7 +200,7 @@ func main() {
 	groupG.POST("/new", AuthRequired, group_controller.Create)
 	groupG.GET("/:group_id", group_controller.GetById)
 	groupG.POST("/:group_id/edit", AuthRequired, group_controller.Edit)
-
+	groupG.POST("/:group_id/join", AuthRequired, group_controller.Join)
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.POST("/revert", UploadAuth, upload_controller.Revert)

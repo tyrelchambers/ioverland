@@ -45,9 +45,29 @@ export const useGroup = ({ id }: { id?: string } = {}) => {
     },
   });
 
+  const join = useMutation({
+    mutationFn: async (groupId: string) => {
+      return request
+        .post(
+          `/api/group/${groupId}/join`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${await getToken()}`,
+            },
+          }
+        )
+        .then((res: AxiosResponse) => res.data);
+    },
+    onSuccess: () => {
+      qC.invalidateQueries({ queryKey: ["group", id] });
+    },
+  });
+
   return {
     create,
     group: getById,
     update,
+    join,
   };
 };

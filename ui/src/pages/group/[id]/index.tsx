@@ -21,11 +21,15 @@ import React from "react";
 const Group = () => {
   const params = useRouter();
 
-  const { group } = useGroup({
+  const { group, join } = useGroup({
     id: params.query.id as string,
   });
 
   if (!group.data) return null;
+
+  const joinHandler = () => {
+    join.mutate(group.data.uuid);
+  };
 
   return (
     <main>
@@ -88,6 +92,7 @@ const Group = () => {
               style={{
                 backgroundColor: group.data.theme.color,
               }}
+              onClick={joinHandler}
             >
               {group.data.privacy === "private" ? "Request to Join" : "Join"}
             </Button>

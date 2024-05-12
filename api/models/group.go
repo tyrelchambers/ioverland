@@ -14,6 +14,6 @@ type Group struct {
 	} `json:"theme" gorm:"embedded;embeddedPrefix:theme_;"`
 	AdminId   string         `json:"admin_id"`
 	Admin     User           `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:AdminId;references:Uuid" json:"admin"`
-	Members   []*User        `gorm:"many2many:group_members" json:"members"`
+	Members   []*User        `gorm:"many2many:user_groups;foreignKey:Uuid;joinForeignKey:GroupId;References:Uuid;JoinReferences:UserId" json:"members"`
 	DeletedAt gorm.DeletedAt `gorm:"default:null" json:"deleted_at"`
 }

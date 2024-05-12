@@ -98,3 +98,22 @@ func Edit(c *gin.Context) {
 
 	c.JSON(http.StatusOK, data)
 }
+
+func Join(c *gin.Context) {
+
+	groupId := c.Param("group_id")
+	user := utils.UserFromContext(c)
+
+	err := group_service.Join(dbConfig.Client, &models.Group{Uuid: groupId}, &models.User{Uuid: user.Uuid})
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [GROUP] [JOIN] Error joining group",
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": groupId, "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
