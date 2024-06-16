@@ -85,7 +85,7 @@ func main() {
 
 	// ------- DB SETUP
 	dbConfig.Init()
-	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{}, &models.Group{}, &models.UserGroup{})
+	err := dbConfig.Client.AutoMigrate(&models.Build{}, &models.Trip{}, &models.Modification{}, &models.Media{}, &models.User{}, &models.Comment{}, &models.History{}, &models.Day{}, &models.AdventureLikes{}, &models.BuildLikes{}, &models.Group{}, &models.UserGroup{}, &models.RequestToJoin{})
 
 	if err != nil {
 		sentry.CaptureMessage("[MAIN] [AUTOMIGRATE] " + err.Error())
@@ -139,7 +139,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{AllowOrigins: []string{"http://localhost:3000", "https://wildbarrens.com"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization", "Upload-Length", "Upload-Offset", "Upload-Name", "Upload-Length", "Clerk-User-Id"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Access-Control-Allow-Credentials", "file-type", "Authorization", "Upload-Length", "Upload-Offset", "Upload-Name", "Upload-Length", "Clerk-User-Id", "User-Id"},
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
 		ExposeHeaders:    []string{"Content-Type", "Accept", "Cookie", "Access-Control-Allow-Credentials"}}))
@@ -202,6 +202,7 @@ func main() {
 	groupG.POST("/:group_id/edit", AuthRequired, group_controller.Edit)
 	groupG.POST("/:group_id/join", AuthRequired, group_controller.Join)
 	groupG.POST("/:group_id/leave", AuthRequired, group_controller.Leave)
+	groupG.GET("/:group_id/requests", AuthRequired, group_controller.GetRequests)
 
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)

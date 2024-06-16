@@ -1,13 +1,10 @@
 import GroupPrivacyChip from "@/components/GroupPrivacyChip";
 import Header from "@/components/Header";
-import { H1 } from "@/components/Heading";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -28,22 +25,16 @@ const Group = () => {
     id: params.query.id as string,
   });
 
-  const isAMember = useMemo(() => {
-    if (!group.data?.members || !user.data?.uuid) {
-      return undefined;
-    } else {
-      return checkMembership(group.data.members, user.data.uuid);
-    }
-  }, [group.data?.members, user.data?.uuid]);
+  const groupDetails = group.data?.group;
 
-  if (!group.data) return null;
+  if (!groupDetails) return null;
 
   const joinHandler = () => {
-    join.mutate(group.data.uuid);
+    join.mutate(groupDetails.uuid);
   };
 
   const leaveHandler = () => {
-    leave.mutate(group.data.uuid);
+    leave.mutate(groupDetails.uuid);
   };
 
   return (
@@ -55,25 +46,25 @@ const Group = () => {
           <div
             className={clsx(
               "h-auto aspect-video rounded-lg",
-              group.data?.theme?.gradientClass
+              groupDetails.theme?.gradientClass
             )}
           ></div>
           <div className=" flex flex-col gap-3">
             <h1 className="text-4xl font-bold text-foreground">
-              {group.data.name}
+              {groupDetails.name}
             </h1>
-            <p>{group.data.description}</p>
-            <GroupPrivacyChip type={group.data.privacy} />
+            <p>{groupDetails.description}</p>
+            <GroupPrivacyChip type={groupDetails.privacy} />
             <p className="text-muted-foreground flex items-center">
               <Users className="mr-2" size={18} />
-              {group.data.members?.length ?? 0} members
+              {groupDetails.members?.length ?? 0} members
             </p>
             <div className="text-muted-foreground flex items-center">
               <User className="mr-2" size={18} />
               <p>
                 Created by{" "}
                 <span className="font-medium text-foreground">
-                  {group.data.admin.username}
+                  {groupDetails.admin.username}
                 </span>
               </p>
             </div>
@@ -96,25 +87,42 @@ const Group = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <Link href={`/group/${group.data.uuid}/edit`}>
+                <Link href={`/group/${groupDetails.uuid}/edit`}>
                   <DropdownMenuItem>Edit</DropdownMenuItem>
+                </Link>
+                <Link href={`/group/${groupDetails.uuid}/requests`}>
+                  <DropdownMenuItem>Join requests</DropdownMenuItem>
                 </Link>
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAMember ? (
-              <Button type="button" variant="outline" onClick={leaveHandler}>
-                Leave group
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                style={{
-                  backgroundColor: group.data.theme.color,
-                }}
-                onClick={joinHandler}
-              >
-                {group.data.privacy === "private" ? "Request to Join" : "Join"}
-              </Button>
+            {groupDetails.adminId !== user.data?.uuid && (
+              <>
+                {group.data?.is_member ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={leaveHandler}
+                  >
+                    Leave group
+                  </Button>
+                ) : group.data?.is_pending_member ? (
+                  <Button variant="outline" disabled>
+                    Request pending
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    style={{
+                      backgroundColor: groupDetails.theme.color,
+                    }}
+                    onClick={joinHandler}
+                  >
+                    {groupDetails.privacy === "private"
+                      ? "Request to Join"
+                      : "Join"}
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -473,3 +473,12 @@ export const groupSchema = z.object({
 });
 
 export type Group = z.infer<typeof groupSchema>;
+
+const groupJoinRequestSchema = z.object({
+  groupId: z.string(),
+  status: z.string(),
+  userId: z.string(),
+  user: userBase,
+});
+
+export type GroupJoinRequest = z.infer<typeof groupJoinRequestSchema>;

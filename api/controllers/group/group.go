@@ -3,8 +3,10 @@ package group_controller
 import (
 	dbConfig "api/db"
 	"api/models"
+	"api/services/email_service"
 	"api/services/group_service"
 	"api/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,7 +43,14 @@ func Create(c *gin.Context) {
 
 func GetById(c *gin.Context) {
 
+	var response struct {
+		Group           *models.Group `json:"group"`
+		IsMember        bool          `json:"is_member"`
+		IsPendingMember bool          `json:"is_pending_member"`
+	}
+
 	groupId := c.Param("group_id")
+	user_id := c.Request.Header.Get("User-Id")
 
 	group, err := group_service.GetById(dbConfig.Client, groupId)
 
@@ -54,7 +63,28 @@ func GetById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, group)
+	fmt.Println(user_id)
+	response.Group = group
+	response.IsMember = group_service.CheckMembership(dbConfig.Client, groupId, user_id)
+	requests, err := group_service.GetRequests(dbConfig.Client, groupId)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [GROUP] [GETBYID] Error getting requests",
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": groupId},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	for _, user := range requests {
+		fmt.Println(user.UserId, user_id)
+		if user.UserId == user_id {
+			response.IsPendingMember = true
+		}
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func Edit(c *gin.Context) {
@@ -104,22 +134,58 @@ func Join(c *gin.Context) {
 	group_id := c.Param("group_id")
 	user := utils.UserFromContext(c)
 
-	member := group_service.CheckMembership(dbConfig.Client, group_id, user)
+	group, err := group_service.GetById(dbConfig.Client, group_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [GROUP] [JOIN] Error getting group",
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	member := group_service.CheckMembership(dbConfig.Client, group_id, user.Uuid)
 
 	if member {
 		c.String(http.StatusBadRequest, "You are already a member of this group")
 		return
 	}
 
-	err := group_service.Join(dbConfig.Client, &models.Group{Uuid: group_id}, &models.User{Uuid: user.Uuid})
+	if group.Privacy == "public" {
+		err = group_service.Join(dbConfig.Client, &models.Group{Uuid: group_id}, &models.User{Uuid: user.Uuid})
 
-	if err != nil {
-		utils.CaptureError(c, &utils.CaptureErrorParams{
-			Message: "[CONTROLLERS] [GROUP] [JOIN] Error joining group",
-			Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
-		})
-		c.String(http.StatusInternalServerError, err.Error())
-		return
+		if err != nil {
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [GROUP] [JOIN] Error joining group",
+				Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+	} else {
+
+		err := group_service.RequestToJoin(dbConfig.Client, group_id, user.Uuid)
+
+		if err != nil {
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [GROUP] [JOIN] Error requesting to join group",
+				Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		err = email_service.SendEmail(group.Admin)
+
+		if err != nil {
+			utils.CaptureError(c, &utils.CaptureErrorParams{
+				Message: "[CONTROLLERS] [GROUP] [JOIN] Error sending email",
+				Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "user_id": user.Uuid},
+			})
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, nil)
@@ -142,4 +208,21 @@ func Leave(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, nil)
+}
+
+func GetRequests(c *gin.Context) {
+	group_id := c.Param("group_id")
+
+	requests, err := group_service.GetRequests(dbConfig.Client, group_id)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [GROUP] [GETREQUESTS] Error getting requests",
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, requests)
 }

@@ -1,11 +1,18 @@
 import { request } from "@/lib/axios";
-import { EditGroupSchema, Group, NewGroupSchema } from "@/types";
+import {
+  EditGroupSchema,
+  Group,
+  GroupJoinRequest,
+  NewGroupSchema,
+} from "@/types";
 import { useAuth } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
+import { useDomainUser } from "./useDomainUser";
 
 export const useGroup = ({ id }: { id?: string } = {}) => {
   const { getToken } = useAuth();
+  const { user } = useDomainUser();
   const qC = useQueryClient();
   const create = useMutation({
     mutationFn: async (data: NewGroupSchema): Promise<NewGroupSchema> => {
@@ -18,16 +25,20 @@ export const useGroup = ({ id }: { id?: string } = {}) => {
   });
   const getById = useQuery({
     queryKey: ["group", id],
-    queryFn: async (): Promise<Group> => {
+    queryFn: async (): Promise<{
+      group: Group;
+      is_member: boolean;
+      is_pending_member: boolean;
+    }> => {
       return request
         .get(`/api/group/${id}`, {
           headers: {
-            Authorization: `Bearer ${await getToken()}`,
+            ["User-Id"]: user.data?.uuid,
           },
         })
         .then((res) => res.data);
     },
-    enabled: !!id,
+    enabled: !!id && !!user.isSuccess,
   });
 
   const update = useMutation({
@@ -83,11 +94,26 @@ export const useGroup = ({ id }: { id?: string } = {}) => {
     },
   });
 
+  const requests = useQuery({
+    queryKey: ["group_requests", id],
+    queryFn: async (): Promise<GroupJoinRequest[]> => {
+      return request
+        .get(`/api/group/${id}/requests`, {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        })
+        .then((res) => res.data);
+    },
+    enabled: !!id,
+  });
+
   return {
     create,
     group: getById,
     update,
     join,
     leave,
+    requests,
   };
 };

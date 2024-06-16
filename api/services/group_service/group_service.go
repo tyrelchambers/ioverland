@@ -56,10 +56,10 @@ func FindMember(db *gorm.DB, group_id *models.Group, user_id *models.User) (foun
 	return member.User, nil
 }
 
-func CheckMembership(db *gorm.DB, group_id string, user *models.User) bool {
+func CheckMembership(db *gorm.DB, group_id string, user_id string) bool {
 	var count int64
 
-	db.Table("user_groups").Where("group_id = ? AND user_id = ?", group_id, user.Uuid).Count(&count)
+	db.Table("user_groups").Where("group_id = ? AND user_id = ?", group_id, user_id).Count(&count)
 
 	return count != 0
 
@@ -72,4 +72,27 @@ func Leave(db *gorm.DB, group_id string, user *models.User) error {
 		return err
 	}
 	return nil
+}
+
+func RequestToJoin(db *gorm.DB, groupId, userId string) error {
+	err := db.Create(&models.RequestToJoin{
+		GroupId: groupId,
+		UserId:  userId,
+		Status:  "pending",
+	})
+
+	if err != nil {
+		return err.Error
+	}
+	return nil
+}
+
+func GetRequests(db *gorm.DB, groupId string) ([]models.RequestToJoin, error) {
+
+	var requests []models.RequestToJoin
+	err := db.Table("request_to_joins").Preload("User").Where("group_id = ?", groupId).Find(&requests).Error
+	if err != nil {
+		return nil, err
+	}
+	return requests, nil
 }

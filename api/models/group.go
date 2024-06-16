@@ -12,7 +12,7 @@ type Group struct {
 		GradientClass string `json:"gradientClass"`
 		Hex           string `json:"hex"`
 	} `json:"theme" gorm:"embedded;embeddedPrefix:theme_;"`
-	AdminId   string         `json:"admin_id"`
+	AdminId   string         `json:"adminId"`
 	Admin     User           `gorm:"constraint:OnUpdate:CASCADE;OnDelete:CASCADE;foreignKey:AdminId;references:Uuid" json:"admin"`
 	Members   []*User        `gorm:"many2many:user_groups;foreignKey:Uuid;joinForeignKey:GroupId;References:Uuid;JoinReferences:UserId" json:"members"`
 	DeletedAt gorm.DeletedAt `gorm:"default:null" json:"deleted_at"`
