@@ -94,26 +94,11 @@ export const useGroup = ({ id }: { id?: string } = {}) => {
     },
   });
 
-  const requests = useQuery({
-    queryKey: ["group_requests", id],
-    queryFn: async (): Promise<GroupJoinRequest[]> => {
-      return request
-        .get(`/api/group/${id}/requests`, {
-          headers: {
-            Authorization: `Bearer ${await getToken()}`,
-          },
-        })
-        .then((res) => res.data);
-    },
-    enabled: !!id,
-  });
-
   return {
     create,
     group: getById,
     update,
     join,
     leave,
-    requests,
   };
 };

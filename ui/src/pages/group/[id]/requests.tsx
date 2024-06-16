@@ -4,6 +4,7 @@ import { AvatarWrapper } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGroup } from "@/hooks/useGroup";
+import { useRequests } from "@/hooks/useRequests";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/router";
 import React from "react";
@@ -12,11 +13,17 @@ const Requests = () => {
   const {
     query: { id },
   } = useRouter();
-  const { requests } = useGroup({
-    id: id as string,
+  const { requests, decision } = useRequests({
+    group_id: id as string,
   });
 
-  console.log(requests);
+  const decisionHandler = (choice: "approve" | "deny", user_id: string) => {
+    decision.mutate({
+      decision: choice,
+      group_id: id as string,
+      user_id,
+    });
+  };
 
   return (
     <main>
@@ -39,14 +46,30 @@ const Requests = () => {
                   joined {formatDistanceToNow(new Date(req.user.created_at))}
                 </p>
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" size="sm">
-                  Reject
+              {req.status === "pending" ? (
+                <>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => decisionHandler("deny", req.userId)}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => decisionHandler("approve", req.userId)}
+                    >
+                      Approve
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <Button variant="outline" size="sm" disabled>
+                  Request {req.status}
                 </Button>
-                <Button variant="default" size="sm">
-                  Approve
-                </Button>
-              </div>
+              )}
             </div>
           ))}
         </div>

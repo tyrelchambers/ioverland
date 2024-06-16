@@ -203,6 +203,7 @@ func main() {
 	groupG.POST("/:group_id/join", AuthRequired, group_controller.Join)
 	groupG.POST("/:group_id/leave", AuthRequired, group_controller.Leave)
 	groupG.GET("/:group_id/requests", AuthRequired, group_controller.GetRequests)
+	groupG.POST("/:group_id/requests/:user_id/:decision", AuthRequired, group_controller.RequestDecision)
 
 	uploadG.POST("/process", UploadAuth, upload_controller.ProcessUpload)
 	uploadG.PATCH("", UploadAuth, upload_controller.ProcessUpload)

@@ -96,3 +96,26 @@ func GetRequests(db *gorm.DB, groupId string) ([]models.RequestToJoin, error) {
 	}
 	return requests, nil
 }
+
+func RequestDecision(db *gorm.DB, groupId, userId, status string) error {
+	if status == "approve" {
+		err := db.Table("request_to_joins").Where("group_id = ? AND user_id = ?", groupId, userId).Update("status", "approved").Error
+		if err != nil {
+			return err
+		}
+
+		db.Table("user_groups").Create(models.UserGroup{
+			UserId:  userId,
+			GroupId: groupId,
+		})
+		return nil
+	} else if status == "deny" {
+		err := db.Table("request_to_joins").Where("group_id = ? AND user_id = ?", groupId, userId).Update("status", "denied").Error
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return nil
+}

@@ -226,3 +226,20 @@ func GetRequests(c *gin.Context) {
 
 	c.JSON(http.StatusOK, requests)
 }
+
+func RequestDecision(c *gin.Context) {
+	group_id := c.Param("group_id")
+	decision := c.Param("decision")
+	user_id := c.Param("user_id")
+
+	err := group_service.RequestDecision(dbConfig.Client, group_id, user_id, decision)
+
+	if err != nil {
+		utils.CaptureError(c, &utils.CaptureErrorParams{
+			Message: "[CONTROLLERS] [GROUP] [REQUESTDECISION] Error requesting decision",
+			Extra:   map[string]interface{}{"error": err.Error(), "group_id": group_id, "decision": decision, "user_id": user_id},
+		})
+		c.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+}
