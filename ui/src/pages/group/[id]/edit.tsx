@@ -44,10 +44,12 @@ const Edit = () => {
     resolver: zodResolver(newGroupSchema),
   });
 
-  useEffect(() => {
-    if (!group.data) return;
+  const groupData = group.data?.group;
 
-    form.reset(group.data);
+  useEffect(() => {
+    if (!group.data?.group) return;
+
+    form.reset(group.data.group);
   }, [group.data, group.isLoading]);
 
   if (group.isLoading || !group.data) return null;
@@ -74,8 +76,6 @@ const Edit = () => {
       theme: themeMap[data.theme.color] ?? themeMap.default,
     };
 
-    console.log(payload);
-
     update.mutate(payload, {
       onSuccess: () => {
         form.reset();
@@ -93,7 +93,7 @@ const Edit = () => {
       <Header />
 
       <section className="max-w-screen-md mx-auto my-10">
-        <H1>Editing {group.data?.name}</H1>
+        <H1>Editing {groupData?.name}</H1>
 
         <Form {...form}>
           <form
@@ -128,7 +128,7 @@ const Edit = () => {
                   <FormLabel>Privacy</FormLabel>
 
                   <Select
-                    defaultValue={group.data.privacy}
+                    defaultValue={groupData?.privacy}
                     onValueChange={field.onChange}
                   >
                     <FormControl>
@@ -188,7 +188,7 @@ const Edit = () => {
                 <h3 className="font-medium mb-4">New members</h3>
 
                 <div className="flex border border-border rounded-lg p-4 bg-card">
-                  {group.data?.privacy === "private" ? (
+                  {groupData?.privacy === "private" ? (
                     <div>
                       <p className="font-medium flex gap-2 items-baseline">
                         <Lock size={18} />
