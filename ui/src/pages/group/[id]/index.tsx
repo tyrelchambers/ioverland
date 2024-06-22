@@ -95,7 +95,7 @@ const Group = () => {
                 </Link>
               </DropdownMenuContent>
             </DropdownMenu>
-            {groupDetails.adminId !== user.data?.uuid && (
+            {user.data?.uuid && groupDetails.adminId !== user.data?.uuid && (
               <>
                 {group.data?.is_member ? (
                   <Button

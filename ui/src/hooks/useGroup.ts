@@ -38,7 +38,7 @@ export const useGroup = ({ id }: { id?: string } = {}) => {
         })
         .then((res) => res.data);
     },
-    enabled: !!id && !!user.isSuccess,
+    enabled: !!id,
   });
 
   const update = useMutation({

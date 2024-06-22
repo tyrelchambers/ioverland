@@ -16,7 +16,7 @@ export const useDomainUser = ({
   id,
   username,
 }: { id?: string; username?: string } = {}) => {
-  const { getToken, userId } = useAuth();
+  const { getToken, userId, isSignedIn } = useAuth();
   const router = useRouter();
   const context = useQueryClient();
   const query = useQuery({
@@ -311,6 +311,7 @@ export const useDomainUser = ({
         })
         .then((res) => res.data);
     },
+    enabled: !!isSignedIn,
   });
 
   return {
