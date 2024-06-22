@@ -51,14 +51,6 @@ export const routes = [
     label: "Pricing",
     icon: <BadgeDollarSign size={20} />,
   },
-  {
-    href: "/blog",
-    label: "Blog",
-    icon: <Rss size={20} />,
-    external: {
-      href: "https://blog.wildbarrens.com",
-    },
-  },
 ];
 
 export const authRoutes = [
