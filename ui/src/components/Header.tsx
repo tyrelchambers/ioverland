@@ -125,25 +125,15 @@ const Header = ({ className, stickyOnScroll }: Props) => {
               isLoading={search.isFetching}
             />
             <div className="gap-8 items-center hidden lg:flex">
-              {routes.map((route) =>
-                route.external ? (
-                  <a
-                    href={route.external.href}
-                    key={route.label}
-                    className="flex gap-3 items-center  hover:text-primary text-foreground/50"
-                  >
-                    {route.label}
-                  </a>
-                ) : (
-                  <Link
-                    href={route.href}
-                    key={route.label}
-                    className="flex gap-3 items-center  hover:text-primary text-foreground/50"
-                  >
-                    {route.label}
-                  </Link>
-                )
-              )}
+              {routes.map((route) => (
+                <Link
+                  href={route.href}
+                  key={route.label}
+                  className="flex gap-3 items-center  hover:text-primary text-foreground/50"
+                >
+                  {route.label}
+                </Link>
+              ))}
               <SignedIn>
                 {authRoutes.map((route) => (
                   <Link
